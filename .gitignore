@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+chess
+
+# auto-gen
+*.plist
+.cache
+compile_commands.json
+
+# pgn spec
+PGN_standard_1994-03-12.txt
