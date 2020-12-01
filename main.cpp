@@ -8,7 +8,9 @@ int
 main()
 {
     init_ncurses();
-    draw_board();
+    BoardT board;
+    init_board(board);
+    draw_board(board);
     getch();
     endwin();
 }
@@ -33,10 +35,12 @@ init_ncurses(void)
     clrtoeol();
 #endif
 
-    init_pair(WhiteOnWhite, COLOR_WHITE, COLOR_BLACK);
-    init_pair(WhiteOnBlack, COLOR_WHITE, COLOR_BLACK);
-    init_pair(BlackOnWhite, COLOR_BLACK, COLOR_WHITE);
-    init_pair(BlackOnBlack, COLOR_BLACK, COLOR_WHITE);
-    init_pair(WhiteBlank, COLOR_BLACK, COLOR_WHITE);
-    init_pair(BlackBlank, COLOR_WHITE, COLOR_BLACK);
+    const short fg_white = COLOR_WHITE,
+                bg_white = 8,
+                fg_black = COLOR_BLACK,
+                bg_black = 9;
+    init_pair(WhiteOnWhite, fg_white, bg_white);
+    init_pair(WhiteOnBlack, fg_white, bg_black);
+    init_pair(BlackOnWhite, fg_black, bg_white);
+    init_pair(BlackOnBlack, fg_black, bg_black);
 }
