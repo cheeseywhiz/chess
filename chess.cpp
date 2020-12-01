@@ -1,8 +1,9 @@
-#include <iostream>
+#include <ncurses.h>
 #include "chess.hpp"
 
 void
 hello(void)
 {
-    std::cout << "hello world" << std::endl;
+    printw("hello world");
+    getch();
 }

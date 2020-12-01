@@ -1,4 +1,5 @@
-#BUILD ?= build
+# out-of-tree build
+BUILD ?= build
 # in-tree build
 BUILD ?= .
 
