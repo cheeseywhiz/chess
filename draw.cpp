@@ -7,7 +7,9 @@
 static const short WhiteOnWhite = 1,
                    WhiteOnBlack = 2,
                    BlackOnWhite = 3,
-                   BlackOnBlack = 4;
+                   BlackOnBlack = 4,
+                   RedOnWhite = 5,
+                   RedOnBlack = 6;
 static const short WhiteBlank = BlackOnWhite,
                    BlackBlank = WhiteOnBlack;
 
@@ -39,6 +41,8 @@ init_ncurses(void)
     init_pair(WhiteOnBlack, fg_white, bg_black);
     init_pair(BlackOnWhite, fg_black, bg_white);
     init_pair(BlackOnBlack, fg_black, bg_black);
+    init_pair(RedOnWhite, COLOR_RED, bg_white);
+    init_pair(RedOnBlack, COLOR_RED, bg_black);
 }
 
 static const int CELL_WIDTH = 7, CELL_HEIGHT = 3;
@@ -108,6 +112,39 @@ draw_board(const BoardT& board)
         move(2 + BOARD_HEIGHT * CELL_HEIGHT,
              static_cast<int>(col * CELL_WIDTH + 1 + CELL_WIDTH / 2));
         addch('a' + static_cast<int>(col));
+    }
+}
+
+void
+clear_possible_moves(void)
+{
+    for (size_t i = 0; i < BOARD_HEIGHT; ++i) {
+        for (size_t j = 0; j < BOARD_WIDTH; ++j) {
+            const bool cell_is_white = (i + j) % 2 == 0;
+            short color = cell_is_white ? RedOnWhite : RedOnBlack;
+            const size_t x0 = j * CELL_WIDTH + 1,
+                         y0 = i * CELL_HEIGHT + 2;
+            move(static_cast<int>(y0 + CELL_HEIGHT / 2 + 1),
+                 static_cast<int>(x0 + CELL_WIDTH / 2));
+            addch(' ' | COLOR_PAIR(color));
+        }
+    }
+}
+
+void
+draw_possible_moves(const BoardT& board, size_t row, size_t col)
+{
+    clear_possible_moves();
+    const vector<CellReference> moves = get_possible_moves(board, row, col);
+
+    for (const CellReference &cell : moves) {
+        const bool cell_is_white = (cell.row + cell.col) % 2 == 0;
+        short color = cell_is_white ? RedOnWhite : RedOnBlack;
+        const size_t x0 = cell.col * CELL_WIDTH + 1,
+                     y0 = cell.row * CELL_HEIGHT + 2;
+        move(static_cast<int>(y0 + CELL_HEIGHT / 2 + 1),
+             static_cast<int>(x0 + CELL_WIDTH / 2));
+        addch('*' | A_BOLD | A_DIM | COLOR_PAIR(color));
     }
 }
 

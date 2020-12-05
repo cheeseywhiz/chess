@@ -27,6 +27,7 @@ main()
         if (c == 27 /* ESC */) {
             state = State::Ready;
             draw_selection(state, column1, row1, column2);
+            clear_possible_moves();
             continue;
         }
 
@@ -46,6 +47,7 @@ main()
             row1 = tmp;
             state = State::Row1Selected;
             draw_selection(state, column1, row1, column2);
+            draw_possible_moves(board, row1, column1);
             break;
         case State::Row1Selected:
             tmp = static_cast<size_t>(c) - 'a';
@@ -84,6 +86,7 @@ main()
 
             state = State::Ready;
             draw_selection(state, column1, row1, column2);
+            clear_possible_moves();
             player = new_player;
             break; }
         default:
