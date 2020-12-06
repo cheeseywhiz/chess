@@ -1,4 +1,5 @@
 // the abstract chess game
+#include <cassert>
 #include <algorithm>
 #include <vector>
 #include "chess.hpp"
@@ -64,53 +65,117 @@ do_move(BoardT& board, Player player, size_t row1, size_t column1,
     return result;
 }
 
+static bool try_add_move(vector<CellReference>&, const BoardT&, Player, size_t,
+                         size_t, bool guarantee_opponent=false);
+
+/* generate the possible moves for the piece at the given cell */
 vector<CellReference>
 get_possible_moves(const BoardT& board, size_t row, size_t col)
 {
     const Cell& cell = board[row][col];
     vector<CellReference> moves;
+    assert(cell.player != Player::None);
 
     if (cell.piece == Piece::Pawn) {
         if (cell.player == Player::White) {  // moves "up" (lower row)
-            if (row) {
-                // space in front is free?
-                if (board[row - 1][col].piece == Piece::None) {
-                    moves.emplace_back(row - 1, col);
-                    // has not moved and two spaces in front is free?
-                    if (!cell.has_moved
-                            && board[row - 2][col].piece == Piece::None)
-                        moves.emplace_back(row - 2, col);
-                }
+            if (try_add_move(moves, board, cell.player, row - 1, col)) {
+                if (!cell.has_moved)
+                    try_add_move(moves, board, cell.player, row - 2, col);
+            }
 
-                // can take forward left?
-                if (col && board[row - 1][col - 1].player == Player::Black)
-                    moves.emplace_back(row - 1, col - 1);
-                // can take forward right?
-                if (col != BOARD_WIDTH - 1
-                        && board[row - 1][col + 1].player == Player::Black)
-                    moves.emplace_back(row - 1, col + 1);
-            }  // else if at the top row, no possible moves
+            try_add_move(moves, board, cell.player, row - 1, col - 1, true);
+            try_add_move(moves, board, cell.player, row - 1, col + 1, true);
         } else {  // black moves "down" (higher row)
-            if (row != BOARD_HEIGHT - 1) {
-                // space in front is free?
-                if (board[row + 1][col].piece == Piece::None) {
-                    moves.emplace_back(row + 1, col);
-                    // has not moved and two spaces in front is free?
-                    if (!cell.has_moved
-                            && board[row + 2][col].piece == Piece::None)
-                        moves.emplace_back(row + 2, col);
-                }
+            if (try_add_move(moves, board, cell.player, row + 1, col)) {
+                if (!cell.has_moved)
+                    try_add_move(moves, board, cell.player, row + 2, col);
+            }
 
-                // can take forward left?
-                if (col != BOARD_WIDTH - 1
-                        && board[row + 1][col + 1].player == Player::White)
-                    moves.emplace_back(row + 1, col + 1);
-                // can take forward right?
-                if (col && board[row + 1][col - 1].player == Player::White)
-                    moves.emplace_back(row + 1, col - 1);
-            }  // else if at the top row, no possible moves
+            try_add_move(moves, board, cell.player, row + 1, col - 1, true);
+            try_add_move(moves, board, cell.player, row + 1, col + 1, true);
         }
     }
 
+    // horizontal moves
+    if (cell.piece == Piece::Rook || cell.piece == Piece::Queen) {
+        size_t i = row;
+        while (try_add_move(moves, board, cell.player, --i, col))
+            ;
+
+        i = row;
+        while (try_add_move(moves, board, cell.player, ++i, col))
+            ;
+
+        size_t j = col;
+        while (try_add_move(moves, board, cell.player, row, --j))
+            ;
+
+        j = col;
+        while (try_add_move(moves, board, cell.player, row, ++j))
+            ;
+    }
+
+    // diagonal moves
+    if (cell.piece == Piece::Bishop || cell.piece == Piece::Queen) {
+        size_t i, j;
+
+        i = row;
+        j = col;
+        while (try_add_move(moves, board, cell.player, --i, --j))
+            ;
+
+        i = row;
+        j = col;
+        while (try_add_move(moves, board, cell.player, --i, ++j))
+            ;
+
+        i = row;
+        j = col;
+        while (try_add_move(moves, board, cell.player, ++i, --j))
+            ;
+
+        i = row;
+        j = col;
+        while (try_add_move(moves, board, cell.player, ++i, ++j))
+            ;
+    }
+
+    if (cell.piece == Piece::Knight) {
+        try_add_move(moves, board, cell.player, row - 2, col - 1);
+        try_add_move(moves, board, cell.player, row - 2, col + 1);
+        try_add_move(moves, board, cell.player, row - 1, col - 2);
+        try_add_move(moves, board, cell.player, row - 1, col + 2);
+        try_add_move(moves, board, cell.player, row + 2, col - 1);
+        try_add_move(moves, board, cell.player, row + 2, col + 1);
+        try_add_move(moves, board, cell.player, row + 1, col - 2);
+        try_add_move(moves, board, cell.player, row + 1, col + 2);
+    } else if (cell.piece == Piece::King) {
+        try_add_move(moves, board, cell.player, row - 1, col - 1);
+        try_add_move(moves, board, cell.player, row - 1, col);
+        try_add_move(moves, board, cell.player, row - 1, col + 1);
+        try_add_move(moves, board, cell.player, row, col - 1);
+        try_add_move(moves, board, cell.player, row, col + 1);
+        try_add_move(moves, board, cell.player, row + 1, col - 1);
+        try_add_move(moves, board, cell.player, row + 1, col);
+        try_add_move(moves, board, cell.player, row + 1, col + 1);
+    }
+
     return moves;
+}
+
+/* return if we can keep trying to add more moves
+ * guarantee_opponent: don't move if the chosen cell is not the opponent */
+static bool
+try_add_move(vector<CellReference>& moves, const BoardT& board, Player player,
+             size_t row, size_t col, bool guarantee_opponent)
+{
+    if (row >= BOARD_HEIGHT || col >= BOARD_WIDTH)
+        return false;
+    const Cell& cell = board[row][col];
+    if (cell.player == player)
+        return false;
+    if (guarantee_opponent && cell.player == Player::None)
+        return false;
+    moves.emplace_back(row, col);
+    return cell.player == Player::None;
 }
