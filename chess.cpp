@@ -65,53 +65,65 @@ do_move(BoardT& board, Player player, size_t row1, size_t column1,
     return result;
 }
 
-static bool try_add_move(vector<CellReference>&, const BoardT&, Player, size_t,
-                         size_t, bool guarantee_opponent=false);
+enum MoveType { Normal, PawnStright, PawnDiagonal };
+
+static bool try_add_move(
+    vector<CellReference>&, const BoardT&, CellReference, CellReference,
+    MoveType move_type=MoveType::Normal);
 
 /* generate the possible moves for the piece at the given cell */
 vector<CellReference>
 get_possible_moves(const BoardT& board, size_t row, size_t col)
 {
     const Cell& cell = board[row][col];
+    CellReference cell_ref = { row, col };
     vector<CellReference> moves;
     assert(cell.player != Player::None);
 
     if (cell.piece == Piece::Pawn) {
         if (cell.player == Player::White) {  // moves "up" (lower row)
-            if (try_add_move(moves, board, cell.player, row - 1, col)) {
+            if (try_add_move(moves, board, cell_ref, { row - 1, col },
+                             MoveType::PawnStright)) {
                 if (!cell.has_moved)
-                    try_add_move(moves, board, cell.player, row - 2, col);
+                    try_add_move(moves, board, cell_ref, { row - 2, col },
+                                 MoveType::PawnStright);
             }
 
-            try_add_move(moves, board, cell.player, row - 1, col - 1, true);
-            try_add_move(moves, board, cell.player, row - 1, col + 1, true);
+            try_add_move(moves, board, cell_ref, { row - 1, col - 1 },
+                         MoveType::PawnDiagonal);
+            try_add_move(moves, board, cell_ref, { row - 1, col + 1 },
+                         MoveType::PawnDiagonal);
         } else {  // black moves "down" (higher row)
-            if (try_add_move(moves, board, cell.player, row + 1, col)) {
+            if (try_add_move(moves, board, cell_ref, { row + 1, col },
+                             MoveType::PawnStright)) {
                 if (!cell.has_moved)
-                    try_add_move(moves, board, cell.player, row + 2, col);
+                    try_add_move(moves, board, cell_ref, { row + 2, col },
+                                 MoveType::PawnStright);
             }
 
-            try_add_move(moves, board, cell.player, row + 1, col - 1, true);
-            try_add_move(moves, board, cell.player, row + 1, col + 1, true);
+            try_add_move(moves, board, cell_ref, { row + 1, col - 1 },
+                         MoveType::PawnDiagonal);
+            try_add_move(moves, board, cell_ref, { row + 1, col + 1 },
+                         MoveType::PawnDiagonal);
         }
     }
 
     // horizontal moves
     if (cell.piece == Piece::Rook || cell.piece == Piece::Queen) {
         size_t i = row;
-        while (try_add_move(moves, board, cell.player, --i, col))
+        while (try_add_move(moves, board, cell_ref, { --i, col }))
             ;
 
         i = row;
-        while (try_add_move(moves, board, cell.player, ++i, col))
+        while (try_add_move(moves, board, cell_ref, { ++i, col }))
             ;
 
         size_t j = col;
-        while (try_add_move(moves, board, cell.player, row, --j))
+        while (try_add_move(moves, board, cell_ref, { row, --j }))
             ;
 
         j = col;
-        while (try_add_move(moves, board, cell.player, row, ++j))
+        while (try_add_move(moves, board, cell_ref, { row, ++j }))
             ;
     }
 
@@ -121,61 +133,68 @@ get_possible_moves(const BoardT& board, size_t row, size_t col)
 
         i = row;
         j = col;
-        while (try_add_move(moves, board, cell.player, --i, --j))
+        while (try_add_move(moves, board, cell_ref, { --i, --j }))
             ;
 
         i = row;
         j = col;
-        while (try_add_move(moves, board, cell.player, --i, ++j))
+        while (try_add_move(moves, board, cell_ref, { --i, ++j }))
             ;
 
         i = row;
         j = col;
-        while (try_add_move(moves, board, cell.player, ++i, --j))
+        while (try_add_move(moves, board, cell_ref, { ++i, --j }))
             ;
 
         i = row;
         j = col;
-        while (try_add_move(moves, board, cell.player, ++i, ++j))
+        while (try_add_move(moves, board, cell_ref, { ++i, ++j }))
             ;
     }
 
     if (cell.piece == Piece::Knight) {
-        try_add_move(moves, board, cell.player, row - 2, col - 1);
-        try_add_move(moves, board, cell.player, row - 2, col + 1);
-        try_add_move(moves, board, cell.player, row - 1, col - 2);
-        try_add_move(moves, board, cell.player, row - 1, col + 2);
-        try_add_move(moves, board, cell.player, row + 2, col - 1);
-        try_add_move(moves, board, cell.player, row + 2, col + 1);
-        try_add_move(moves, board, cell.player, row + 1, col - 2);
-        try_add_move(moves, board, cell.player, row + 1, col + 2);
+        try_add_move(moves, board, cell_ref, { row - 2, col - 1 });
+        try_add_move(moves, board, cell_ref, { row - 2, col + 1 });
+        try_add_move(moves, board, cell_ref, { row - 1, col - 2 });
+        try_add_move(moves, board, cell_ref, { row - 1, col + 2 });
+        try_add_move(moves, board, cell_ref, { row + 2, col - 1 });
+        try_add_move(moves, board, cell_ref, { row + 2, col + 1 });
+        try_add_move(moves, board, cell_ref, { row + 1, col - 2 });
+        try_add_move(moves, board, cell_ref, { row + 1, col + 2 });
     } else if (cell.piece == Piece::King) {
-        try_add_move(moves, board, cell.player, row - 1, col - 1);
-        try_add_move(moves, board, cell.player, row - 1, col);
-        try_add_move(moves, board, cell.player, row - 1, col + 1);
-        try_add_move(moves, board, cell.player, row, col - 1);
-        try_add_move(moves, board, cell.player, row, col + 1);
-        try_add_move(moves, board, cell.player, row + 1, col - 1);
-        try_add_move(moves, board, cell.player, row + 1, col);
-        try_add_move(moves, board, cell.player, row + 1, col + 1);
+        try_add_move(moves, board, cell_ref, { row - 1, col - 1 });
+        try_add_move(moves, board, cell_ref, { row - 1, col });
+        try_add_move(moves, board, cell_ref, { row - 1, col + 1 });
+        try_add_move(moves, board, cell_ref, { row, col - 1 });
+        try_add_move(moves, board, cell_ref, { row, col + 1 });
+        try_add_move(moves, board, cell_ref, { row + 1, col - 1 });
+        try_add_move(moves, board, cell_ref, { row + 1, col });
+        try_add_move(moves, board, cell_ref, { row + 1, col + 1 });
     }
 
     return moves;
 }
 
-/* return if we can keep trying to add more moves
- * guarantee_opponent: don't move if the chosen cell is not the opponent */
+/* return if we can move cell1 to cell2
+ * move_type handles special cases for pawn moves */
 static bool
-try_add_move(vector<CellReference>& moves, const BoardT& board, Player player,
-             size_t row, size_t col, bool guarantee_opponent)
+try_add_move(vector<CellReference>& moves, const BoardT& board,
+             CellReference cell_ref_1, CellReference cell_ref_2,
+             MoveType move_type)
 {
-    if (row >= BOARD_HEIGHT || col >= BOARD_WIDTH)
+    if (cell_ref_2.row >= BOARD_HEIGHT || cell_ref_2.col >= BOARD_WIDTH)
         return false;
-    const Cell& cell = board[row][col];
-    if (cell.player == player)
+    const Cell& cell1 = board[cell_ref_1.row][cell_ref_1.col];
+    const Cell& cell2 = board[cell_ref_2.row][cell_ref_2.col];
+    // cannot move into our own piece
+    if (cell2.player == cell1.player)
         return false;
-    if (guarantee_opponent && cell.player == Player::None)
+    // if straight is not empty, then cannot move
+    if (move_type == MoveType::PawnStright && cell2.piece != Piece::None)
         return false;
-    moves.emplace_back(row, col);
-    return cell.player == Player::None;
+    // if the diagonal is not the opponent, then cannot move
+    if (move_type == MoveType::PawnDiagonal && cell2.player == Player::None)
+        return false;
+    moves.push_back(cell_ref_2);
+    return cell2.player == Player::None;
 }
