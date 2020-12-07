@@ -37,9 +37,11 @@ struct ChessState {
     BoardT board;
     State state;
     Player player;
+    bool check;
     vector<Piece> white_captures, black_captures;
 
-    ChessState() : state(State::Ready), player(Player::White) {
+    ChessState() : state(State::Ready), player(Player::White),
+                   check(false) {
         init_board(board);
     }
 };
@@ -63,3 +65,5 @@ struct CellReference {
 
 vector<CellReference> get_possible_moves(const BoardT&, size_t, size_t,
                                          bool do_check_check=true);
+
+bool player_is_in_check(const BoardT&, Player);

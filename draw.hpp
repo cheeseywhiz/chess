@@ -9,5 +9,5 @@ void draw_board(const BoardT&);
 void clear_possible_moves(void);
 void draw_possible_moves(const BoardT&, size_t, size_t);
 void draw_captures(const vector<Piece>&, const vector<Piece>&);
-void draw_player(Player);
+void draw_player(Player, bool);
 void draw_selection(State, size_t, size_t, size_t);

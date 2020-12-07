@@ -202,8 +202,6 @@ get_possible_moves(const BoardT& board, size_t row, size_t col,
     return moves;
 }
 
-static bool player_is_in_check(const BoardT&, Player);
-
 /* return if we can move cell1 to cell2
  * move_type handles special cases for pawn moves */
 static bool
@@ -244,7 +242,7 @@ try_add_move(
 static CellReference find_king(const BoardT&, Player);
 
 /* is the player in check? */
-static bool
+bool
 player_is_in_check(const BoardT& board, Player player)
 {
     CellReference king_ref = find_king(board, player);

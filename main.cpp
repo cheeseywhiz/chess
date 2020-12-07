@@ -12,7 +12,7 @@ main()
     stack<ChessState> history, backtrace;
     history.emplace();
     draw_board(history.top().board);
-    draw_player(history.top().player);
+    draw_player(history.top().player, history.top().check);
     size_t column1 = 0, row1 = 0, column2 = 0, row2 = 0, tmp;
     int c;
 
@@ -41,7 +41,7 @@ main()
             clear_possible_moves();
             draw_captures(history.top().white_captures,
                           history.top().black_captures);
-            draw_player(history.top().player);
+            draw_player(history.top().player, history.top().check);
             draw_selection(history.top().state, column1, row1, column2);
             continue;
         }
@@ -55,7 +55,7 @@ main()
             draw_board(state.board);
             clear_possible_moves();
             draw_captures(state.white_captures, state.black_captures);
-            draw_player(state.player);
+            draw_player(state.player, state.check);
             draw_selection(state.state, column1, row1, column2);
             history.push(std::move(state));
             continue;
@@ -110,31 +110,31 @@ main()
             MoveResult result = \
                 do_move(new_state.board, new_state.player, row1,
                         column1, row2, column2);
+            if (!result.did_move)
+                break;
+            Player player = new_state.player;
+            new_state.player = player == Player::White
+                ? Player::Black
+                : Player::White;
+            new_state.check = \
+                player_is_in_check(new_state.board, new_state.player);
+            draw_board(new_state.board);
+            draw_player(new_state.player, new_state.check);
 
-            if (result.did_move) {
-                Player player = new_state.player;
-                new_state.player = player == Player::White
-                    ? Player::Black
-                    : Player::White;
-                draw_board(new_state.board);
-                draw_player(new_state.player);
-
-                if (result.capture != Piece::None) {
-                    if (player == Player::White) {
-                        new_state.white_captures.push_back(result.capture);
-                    } else {
-                        new_state.black_captures.push_back(result.capture);
-                    }
-
-                    draw_captures(new_state.white_captures,
-                                  new_state.black_captures);
+            if (result.capture != Piece::None) {
+                if (player == Player::White) {
+                    new_state.white_captures.push_back(result.capture);
+                } else {
+                    new_state.black_captures.push_back(result.capture);
                 }
 
-                history.push(std::move(new_state));
-                while (!backtrace.empty())
-                    backtrace.pop();
+                draw_captures(new_state.white_captures,
+                              new_state.black_captures);
             }
 
+            history.push(std::move(new_state));
+            while (!backtrace.empty())
+                backtrace.pop();
             break; }
         default:
             break;
