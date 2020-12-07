@@ -50,4 +50,5 @@ struct CellReference {
     }
 };
 
-vector<CellReference> get_possible_moves(const BoardT&, size_t, size_t);
+vector<CellReference> get_possible_moves(const BoardT&, size_t, size_t,
+                                         bool do_check_check=true);
