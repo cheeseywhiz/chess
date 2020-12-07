@@ -173,6 +173,7 @@ draw_captures(Player player, const vector<Piece>& captures)
     }
 
     move(row, 1);
+    clrtoeol();
     attron(COLOR_PAIR(color) | A_BOLD | A_DIM);
     for (Piece piece : captures)
         printw(" %c ", piece_char[static_cast<int>(piece)]);

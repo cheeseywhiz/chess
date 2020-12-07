@@ -1,20 +1,18 @@
-#include <vector>
+#include <cassert>
+#include <stack>
 #include <ncurses.h>
 #include "chess.hpp"
 #include "draw.hpp"
-using std::vector;
+using std::stack;
 
 int
 main()
 {
     init_ncurses();
-    BoardT board;
-    init_board(board);
-    draw_board(board);
-    State state = State::Ready;
-    Player player = Player::White;
-    draw_player(player);
-    vector<Piece> white_captures, black_captures;
+    stack<ChessState> history, backtrace;
+    history.emplace();
+    draw_board(history.top().board);
+    draw_player(history.top().player);
     size_t column1 = 0, row1 = 0, column2 = 0, row2 = 0, tmp;
     int c;
 
@@ -25,69 +23,118 @@ main()
         }
 
         if (c == 27 /* ESC */) {
-            state = State::Ready;
-            draw_selection(state, column1, row1, column2);
+            history.top().state = State::Ready;
+            draw_selection(history.top().state, column1, row1, column2);
             clear_possible_moves();
             continue;
         }
 
-        switch (state) {
+        if (c == KEY_LEFT) {
+            // backwards through history
+            if (history.size() <= 1)
+                continue;
+            ChessState state = std::move(history.top());
+            state.state = State::Ready;
+            history.pop();
+            backtrace.push(std::move(state));
+            draw_board(history.top().board);
+            clear_possible_moves();
+            draw_captures(history.top().white_captures,
+                          history.top().black_captures);
+            draw_player(history.top().player);
+            draw_selection(history.top().state, column1, row1, column2);
+            continue;
+        }
+
+        if (c == KEY_RIGHT) {
+            // forwards through history
+            if (backtrace.empty())
+                continue;
+            ChessState state = std::move(backtrace.top());
+            backtrace.pop();
+            draw_board(state.board);
+            clear_possible_moves();
+            draw_captures(state.white_captures, state.black_captures);
+            draw_player(state.player);
+            draw_selection(state.state, column1, row1, column2);
+            history.push(std::move(state));
+            continue;
+        }
+
+        assert(history.size());
+
+        switch (history.top().state) {
         case State::Ready:
             tmp = static_cast<size_t>(c) - 'a';
             if (tmp >= BOARD_WIDTH)
                 break;
             column1 = tmp;
-            state = State::Column1Selected;
-            draw_selection(state, column1, row1, column2);
+            history.top().state = State::Column1Selected;
+            draw_selection(history.top().state, column1, row1, column2);
             break;
         case State::Column1Selected:
             tmp = '0' + BOARD_HEIGHT - static_cast<size_t>(c);
             if (tmp >= BOARD_HEIGHT)
                 break;
             row1 = tmp;
-            state = State::Row1Selected;
-            draw_selection(state, column1, row1, column2);
-            draw_possible_moves(board, row1, column1);
+
+            if (history.top().board[row1][column1].player
+                    != history.top().player) {
+                history.top().state = State::Ready;
+                draw_selection(history.top().state, column1, row1, column2);
+                clear_possible_moves();
+                break;
+            }
+
+            history.top().state = State::Row1Selected;
+            draw_selection(history.top().state, column1, row1, column2);
+            draw_possible_moves(history.top().board, row1, column1);
             break;
         case State::Row1Selected:
             tmp = static_cast<size_t>(c) - 'a';
             if (tmp >= BOARD_WIDTH)
                 break;
             column2 = tmp;
-            state = State::Column2Selected;
-            draw_selection(state, column1, row1, column2);
+            history.top().state = State::Column2Selected;
+            draw_selection(history.top().state, column1, row1, column2);
             break;
         case State::Column2Selected: {
             tmp = '0' + BOARD_HEIGHT - static_cast<size_t>(c);
             if (tmp >= BOARD_HEIGHT)
                 break;
             row2 = tmp;
+            history.top().state = State::Ready;
+            draw_selection(history.top().state, column1, row1, column2);
+            clear_possible_moves();
+            ChessState new_state = history.top();
             MoveResult result = \
-                do_move(board, player, row1, column1, row2, column2);
-            Player new_player = player;
+                do_move(new_state.board, new_state.player, row1,
+                        column1, row2, column2);
 
             if (result.did_move) {
-                draw_board(board);
-                new_player = player == Player::White
+                Player player = new_state.player;
+                new_state.player = player == Player::White
                     ? Player::Black
                     : Player::White;
-                draw_player(new_player);
-            }
+                draw_board(new_state.board);
+                draw_player(new_state.player);
 
-            if (result.capture != Piece::None) {
-                if (player == Player::White) {
-                    white_captures.push_back(result.capture);
-                } else {
-                    black_captures.push_back(result.capture);
+                if (result.capture != Piece::None) {
+                    if (player == Player::White) {
+                        new_state.white_captures.push_back(result.capture);
+                    } else {
+                        new_state.black_captures.push_back(result.capture);
+                    }
+
+                    draw_captures(new_state.white_captures,
+                                  new_state.black_captures);
                 }
 
-                draw_captures(white_captures, black_captures);
+                history.push(std::move(new_state));
+                while (!backtrace.empty())
+                    backtrace.pop();
             }
 
-            state = State::Ready;
-            draw_selection(state, column1, row1, column2);
-            clear_possible_moves();
-            player = new_player;
             break; }
         default:
             break;

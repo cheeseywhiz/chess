@@ -33,6 +33,17 @@ static const int BOARD_WIDTH = 8, BOARD_HEIGHT = 8;
 using BoardT = array<array<Cell, BOARD_WIDTH>, BOARD_HEIGHT>;
 void init_board(BoardT&);
 
+struct ChessState {
+    BoardT board;
+    State state;
+    Player player;
+    vector<Piece> white_captures, black_captures;
+
+    ChessState() : state(State::Ready), player(Player::White) {
+        init_board(board);
+    }
+};
+
 struct MoveResult {
     bool did_move;  /* were we actually able to move the piece? */
     Piece capture;  /* did the player capture an opponents piece? */
