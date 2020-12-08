@@ -12,6 +12,7 @@ enum class State {
     Row1Selected,
     Column2Selected,
     // Row2Selected,
+    Endgame,
 };
 
 enum class Piece { None, Pawn, Knight, Bishop, Rook, Queen, King };
@@ -33,15 +34,17 @@ static const int BOARD_WIDTH = 8, BOARD_HEIGHT = 8;
 using BoardT = array<array<Cell, BOARD_WIDTH>, BOARD_HEIGHT>;
 void init_board(BoardT&);
 
+enum class EndgameState { None, Check, Checkmate, Stalemate };
+
 struct ChessState {
     BoardT board;
     State state;
     Player player;
-    bool check;
+    EndgameState endgame_state;
     vector<Piece> white_captures, black_captures;
 
     ChessState() : state(State::Ready), player(Player::White),
-                   check(false) {
+                   endgame_state(EndgameState::None) {
         init_board(board);
     }
 };
@@ -66,4 +69,4 @@ struct CellReference {
 vector<CellReference> get_possible_moves(const BoardT&, size_t, size_t,
                                          bool do_check_check=true);
 
-bool player_is_in_check(const BoardT&, Player);
+EndgameState get_endgame_state(const BoardT&, Player);

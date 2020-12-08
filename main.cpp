@@ -12,7 +12,7 @@ main()
     stack<ChessState> history, backtrace;
     history.emplace();
     draw_board(history.top().board);
-    draw_player(history.top().player, history.top().check);
+    draw_player(history.top().player, history.top().endgame_state);
     size_t column1 = 0, row1 = 0, column2 = 0, row2 = 0, tmp;
     int c;
 
@@ -41,7 +41,7 @@ main()
             clear_possible_moves();
             draw_captures(history.top().white_captures,
                           history.top().black_captures);
-            draw_player(history.top().player, history.top().check);
+            draw_player(history.top().player, history.top().endgame_state);
             draw_selection(history.top().state, column1, row1, column2);
             continue;
         }
@@ -55,13 +55,13 @@ main()
             draw_board(state.board);
             clear_possible_moves();
             draw_captures(state.white_captures, state.black_captures);
-            draw_player(state.player, state.check);
+            draw_player(state.player, state.endgame_state);
             draw_selection(state.state, column1, row1, column2);
             history.push(std::move(state));
             continue;
         }
 
-        assert(history.size());
+        assert(!history.empty());
 
         switch (history.top().state) {
         case State::Ready:
@@ -116,10 +116,13 @@ main()
             new_state.player = player == Player::White
                 ? Player::Black
                 : Player::White;
-            new_state.check = \
-                player_is_in_check(new_state.board, new_state.player);
+            new_state.endgame_state = \
+                get_endgame_state(new_state.board, new_state.player);
+            if (new_state.endgame_state == EndgameState::Checkmate
+                    || new_state.endgame_state == EndgameState::Stalemate)
+                new_state.state = State::Endgame;
             draw_board(new_state.board);
-            draw_player(new_state.player, new_state.check);
+            draw_player(new_state.player, new_state.endgame_state);
 
             if (result.capture != Piece::None) {
                 if (player == Player::White) {
@@ -136,7 +139,7 @@ main()
             while (!backtrace.empty())
                 backtrace.pop();
             break; }
-        default:
+        case State::Endgame:
             break;
         }
     }

@@ -20,6 +20,8 @@ init_board(BoardT& board)
 static void
 init_player_pieces(BoardT& board, Player player)
 {
+    if (player == Player::None)
+        return;
     size_t row = player == Player::White ? BOARD_HEIGHT - 2 : 1;
     for (size_t col = 0; col < BOARD_WIDTH; ++col)
         board[row][col] = Cell(Piece::Pawn, player);
@@ -202,6 +204,8 @@ get_possible_moves(const BoardT& board, size_t row, size_t col,
     return moves;
 }
 
+static bool player_is_in_check(const BoardT&, Player);
+
 /* return if we can move cell1 to cell2
  * move_type handles special cases for pawn moves */
 static bool
@@ -239,10 +243,22 @@ try_add_move(
     return cell2.player == Player::None;
 }
 
+static bool player_has_no_moves(const BoardT&, Player);
+
+/* get the state of the game given that the chosen player takes the next move */
+EndgameState
+get_endgame_state(const BoardT& board, Player player)
+{
+    bool has_no_moves = player_has_no_moves(board, player);
+    if (player_is_in_check(board, player))
+        return has_no_moves ? EndgameState::Checkmate : EndgameState::Check;
+    return has_no_moves ? EndgameState::Stalemate : EndgameState::None;
+}
+
 static CellReference find_king(const BoardT&, Player);
 
 /* is the player in check? */
-bool
+static bool
 player_is_in_check(const BoardT& board, Player player)
 {
     CellReference king_ref = find_king(board, player);
@@ -278,4 +294,18 @@ find_king(const BoardT& board, Player player)
     }
 
     throw runtime_error("player has no king on the board");
+}
+
+/* this can be used to determine stalemate or checkmate */
+static bool player_has_no_moves(const BoardT& board, Player player)
+{
+    for (size_t row = 0; row < BOARD_HEIGHT; ++row) {
+        for (size_t col = 0; col < BOARD_WIDTH; ++col) {
+            if (board[row][col].player == player
+                    && !get_possible_moves(board, row, col).empty())
+                return false;
+        }
+    }
+
+    return true;
 }
