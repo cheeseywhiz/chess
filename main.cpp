@@ -22,7 +22,9 @@ main()
             return 0;
         }
 
-        if (c == 27 /* ESC */) {
+        assert(!history.empty());
+
+        if (c == 27) {  // ESC
             history.top().state = State::Ready;
             draw_selection(history.top().state, column1, row1, column2);
             clear_possible_moves();
@@ -60,8 +62,6 @@ main()
             history.push(std::move(state));
             continue;
         }
-
-        assert(!history.empty());
 
         switch (history.top().state) {
         case State::Ready:

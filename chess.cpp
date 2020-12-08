@@ -1,4 +1,4 @@
-// the abstract chess game
+/* the abstract chess game */
 #include <cassert>
 #include <stdexcept>
 #include <algorithm>

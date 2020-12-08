@@ -1,4 +1,4 @@
-// the abstract chess game
+/* the abstract chess game */
 #pragma once
 #include <vector>
 #include <array>
@@ -7,7 +7,7 @@ using std::array;
 using std::size_t;
 
 enum class State {
-    Ready,   /* ready to select a piece */
+    Ready,   // ready to select a piece
     Column1Selected,
     Row1Selected,
     Column2Selected,
@@ -50,8 +50,8 @@ struct ChessState {
 };
 
 struct MoveResult {
-    bool did_move;  /* were we actually able to move the piece? */
-    Piece capture;  /* did the player capture an opponents piece? */
+    bool did_move;  // were we actually able to move the piece?
+    Piece capture;  // did the player capture an opponents piece?
 };
 
 MoveResult do_move(BoardT&, Player, size_t, size_t, size_t, size_t);

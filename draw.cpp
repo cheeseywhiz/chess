@@ -1,4 +1,4 @@
-// draw the chess game state
+/* draw the chess game state */
 #include <unistd.h>
 #include <ncurses.h>
 #include "draw.hpp"
@@ -48,13 +48,13 @@ init_ncurses(void)
 static const int CELL_WIDTH = 7, CELL_HEIGHT = 3;
 
 static const unsigned piece_char[] = {
-    ' ', /* None */
-    'p', /* Pawn */
-    'N', /* Knight */
-    'B', /* Bishop */
-    'R', /* Rook */
-    'Q', /* Queen */
-    'K', /* King */
+    ' ', // None
+    'p', // Pawn
+    'N', // Knight
+    'B', // Bishop
+    'R', // Rook
+    'Q', // Queen
+    'K', // King
 };
 
 void
