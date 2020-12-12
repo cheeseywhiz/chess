@@ -13,14 +13,8 @@ static void init_player_pieces(BoardT&, Player);
 void
 init_board(BoardT& board)
 {
-    //init_player_pieces(board, Player::White);
-    //init_player_pieces(board, Player::Black);
-    init_player_pieces(board, Player::None);
-    board[0][4] = Cell(Piece::King, Player::Black);
-    board[1][6] = Cell(Piece::Queen, Player::Black);
-    board[7][0] = Cell(Piece::Rook, Player::White);
-    board[7][4] = Cell(Piece::King, Player::White);
-    board[7][7] = Cell(Piece::Rook, Player::White);
+    init_player_pieces(board, Player::White);
+    init_player_pieces(board, Player::Black);
 }
 
 static void
