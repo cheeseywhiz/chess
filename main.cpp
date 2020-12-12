@@ -88,7 +88,8 @@ main()
 
             history.top().state = State::Row1Selected;
             draw_selection(history.top().state, column1, row1, column2);
-            draw_possible_moves(history.top().board, row1, column1);
+            draw_possible_moves(
+                history.top().board, history.top().endgame_state, row1, column1);
             break;
         case State::Row1Selected:
             tmp = static_cast<size_t>(c) - 'a';
@@ -108,8 +109,8 @@ main()
             clear_possible_moves();
             ChessState new_state = history.top();
             MoveResult result = \
-                do_move(new_state.board, new_state.player, row1,
-                        column1, row2, column2);
+                do_move(new_state.board, new_state.endgame_state,
+                        new_state.player, row1, column1, row2, column2);
             if (!result.did_move)
                 break;
             Player player = new_state.player;

@@ -26,8 +26,18 @@ struct Cell {
 
     Cell() : piece(Piece::None), player(Player::None), has_moved(false) {}
 
-    Cell(Piece piece_in, Player player_in)
-        : piece(piece_in), player(player_in), has_moved(false) {}
+    Cell(Piece piece_in, Player player_in, bool has_moved_in=false)
+        : piece(piece_in), player(player_in), has_moved(has_moved_in) {}
+
+    bool operator==(const Cell &cell) const {
+        return piece == cell.piece \
+            && player == cell.player \
+            && has_moved == cell.has_moved;
+    }
+
+    bool operator!=(const Cell &cell) const {
+        return !(*this == cell);
+    }
 };
 
 static const int BOARD_WIDTH = 8, BOARD_HEIGHT = 8;
@@ -54,7 +64,8 @@ struct MoveResult {
     Piece capture;  // did the player capture an opponents piece?
 };
 
-MoveResult do_move(BoardT&, Player, size_t, size_t, size_t, size_t);
+MoveResult do_move(BoardT&, EndgameState, Player, size_t, size_t, size_t,
+                   size_t);
 
 struct CellReference {
     size_t row, col;
@@ -68,5 +79,16 @@ struct CellReference {
 
 vector<CellReference> get_possible_moves(const BoardT&, size_t, size_t,
                                          bool do_check_check=true);
+
+enum class Castles {
+    None = 0,
+    Queen = 1 << 0,
+    King = 1 << 1,
+};
+
+Castles operator|=(Castles&, Castles);
+bool operator&(Castles, Castles);
+
+Castles get_possible_castles(const BoardT&, size_t, size_t, EndgameState);
 
 EndgameState get_endgame_state(const BoardT&, Player);

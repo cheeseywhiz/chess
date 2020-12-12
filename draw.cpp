@@ -132,16 +132,25 @@ clear_possible_moves(void)
 }
 
 void
-draw_possible_moves(const BoardT& board, size_t row, size_t col)
+draw_possible_moves(const BoardT& board, EndgameState endgame_state, size_t row,
+                    size_t col)
 {
     clear_possible_moves();
-    const vector<CellReference> moves = get_possible_moves(board, row, col);
+    vector<CellReference> moves = get_possible_moves(board, row, col);
+    size_t king_row = \
+        board[row][col].player == Player::White ? BOARD_HEIGHT - 1 : 0;
+    Castles castles = \
+        get_possible_castles(board, row, col, endgame_state);
+    if (castles & Castles::Queen)
+        moves.emplace_back(king_row, 2);
+    if (castles & Castles::King)
+        moves.emplace_back(king_row, BOARD_WIDTH - 2);
 
-    for (const CellReference &cell : moves) {
-        const bool cell_is_white = (cell.row + cell.col) % 2 == 0;
+    for (const CellReference &cell_ref : moves) {
+        const bool cell_is_white = (cell_ref.row + cell_ref.col) % 2 == 0;
         short color = cell_is_white ? RedOnWhite : RedOnBlack;
-        const size_t x0 = cell.col * CELL_WIDTH + 1,
-                     y0 = cell.row * CELL_HEIGHT + 2;
+        const size_t x0 = cell_ref.col * CELL_WIDTH + 1,
+                     y0 = cell_ref.row * CELL_HEIGHT + 2;
         move(static_cast<int>(y0 + CELL_HEIGHT / 2 + 1),
              static_cast<int>(x0 + CELL_WIDTH / 2));
         addch('*' | A_BOLD | A_DIM | COLOR_PAIR(color));
