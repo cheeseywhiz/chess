@@ -261,7 +261,8 @@ try_add_move(
         test_cell_2.has_moved = true;
         test_cell_1 = Cell();
         if (player_is_in_check(test_board, cell1.player))
-            return false;
+            // do not add the move, but keep trying more moves
+            return true;
     }
 
     if (moves)
