@@ -38,8 +38,8 @@ $(BUILD)/%.o: %.cpp
 $(BUILD):
 	@mkdir -p $(BUILD)
 
-tags:
-	ctags --exclude Makefile .
+tags: $(SOURCES) $(HEADERS)
+	ctags $^
 
 compile_commands.json: $(SOURCES) $(HEADERS) Makefile
 	make clean

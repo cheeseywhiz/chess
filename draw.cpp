@@ -221,17 +221,37 @@ draw_player(Player player, EndgameState endgame_state)
 }
 
 void
-draw_selection(State state, size_t column1, size_t row1, size_t column2)
+draw_promotion_prompt(Player player)
+{
+    move(2 + BOARD_HEIGHT * CELL_HEIGHT + 2, 1);
+    clrtoeol();
+    const char *player2;
+    short color;
+
+    if (player == Player::White) {
+        player2 = "white";
+        color = WhiteOnBlack;
+    } else {
+        player2 = "black";
+        color = BlackOnWhite;
+    }
+
+    printw("%s select promotion: ", player2);
+    attron(COLOR_PAIR(color) | A_BOLD | A_DIM);
+    for (Piece piece : { Piece::Knight, Piece::Bishop, Piece::Rook,
+                         Piece::Queen })
+        printw(" %c ", piece_char[static_cast<int>(piece)]);
+    attroff(COLOR_PAIR(color) | A_BOLD | A_DIM);
+}
+
+void
+draw_selection(size_t column1, size_t row1, size_t column2)
 {
     move(2 + BOARD_HEIGHT * CELL_HEIGHT + 3, 1);
-    clrtoeol();
-    if (state == State::Column1Selected
-            || state == State::Row1Selected
-            || state == State::Column2Selected)
-        printw("%c", static_cast<char>(column1) + 'a');
-    if (state == State::Row1Selected
-            || state == State::Column2Selected)
-        printw("%c", '0' + BOARD_HEIGHT - static_cast<char>(row1));
-    if (state == State::Column2Selected)
-        printw("%c", static_cast<char>(column2) + 'a');
+    printw("%c%c%c",
+        column1 < BOARD_WIDTH ? static_cast<char>(column1) + 'a' : ' ',
+        row1 < BOARD_HEIGHT
+            ? '0' + BOARD_HEIGHT - static_cast<char>(row1)
+            : ' ',
+        column2 < BOARD_HEIGHT ? static_cast<char>(column2) + 'a' : ' ');
 }

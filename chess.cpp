@@ -38,7 +38,7 @@ do_move(
     BoardT& board, EndgameState endgame_state, Player player, size_t row1,
     size_t column1, size_t row2, size_t column2
 ) {
-    MoveResult result = { false, Piece::None };
+    MoveResult result = { false, false, Piece::None };
     // can't move invalid selection
     if (row1>= BOARD_HEIGHT || column1 >= BOARD_WIDTH
             || row2 >= BOARD_HEIGHT || column2 >= BOARD_WIDTH)
@@ -86,6 +86,12 @@ do_move(
     if (it == moves.end())
         return result;
     result.did_move = true;
+
+    if (cell1.piece == Piece::Pawn) {
+        size_t end_row = cell1.player == Player::White ? 0 : BOARD_HEIGHT - 1;
+        result.can_promote = row2 == end_row;
+    }
+
     if (cell2.piece != Piece::None)
         result.capture = cell2.piece;
     cell2 = std::move(cell1);

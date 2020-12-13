@@ -14,10 +14,11 @@ main()
     draw_board(history.top().board);
     draw_player(history.top().player, history.top().endgame_state);
     size_t column1 = 0, row1 = 0, column2 = 0, row2 = 0, tmp;
+    ChessState new_state;
     int c;
 
     while ((c = getch()) != ERR) {
-        if (c == 'q') {
+        if (c == 'Q') {
             endwin();
             return 0;
         }
@@ -25,9 +26,23 @@ main()
         assert(!history.empty());
 
         if (c == 27) {  // ESC
-            history.top().state = State::Ready;
-            draw_selection(history.top().state, column1, row1, column2);
-            clear_possible_moves();
+            switch (history.top().state) {
+            case State::Promotion:
+                history.top().state = State::Ready;
+                draw_board(history.top().board);
+                draw_player(history.top().player, history.top().endgame_state);
+                break;
+            case State::Column1Selected:
+            case State::Row1Selected:
+            case State::Column2Selected:
+                history.top().state = State::Ready;
+                draw_selection();
+                clear_possible_moves();
+                break;
+            case State::Ready:
+            case State::Endgame:
+                break;
+            }
             continue;
         }
 
@@ -44,7 +59,7 @@ main()
             draw_captures(history.top().white_captures,
                           history.top().black_captures);
             draw_player(history.top().player, history.top().endgame_state);
-            draw_selection(history.top().state, column1, row1, column2);
+            draw_selection();
             continue;
         }
 
@@ -58,7 +73,7 @@ main()
             clear_possible_moves();
             draw_captures(state.white_captures, state.black_captures);
             draw_player(state.player, state.endgame_state);
-            draw_selection(state.state, column1, row1, column2);
+            draw_selection();
             history.push(std::move(state));
             continue;
         }
@@ -70,7 +85,7 @@ main()
                 break;
             column1 = tmp;
             history.top().state = State::Column1Selected;
-            draw_selection(history.top().state, column1, row1, column2);
+            draw_selection(column1);
             break;
         case State::Column1Selected:
             tmp = '0' + BOARD_HEIGHT - static_cast<size_t>(c);
@@ -81,13 +96,13 @@ main()
             if (history.top().board[row1][column1].player
                     != history.top().player) {
                 history.top().state = State::Ready;
-                draw_selection(history.top().state, column1, row1, column2);
+                draw_selection();
                 clear_possible_moves();
                 break;
             }
 
             history.top().state = State::Row1Selected;
-            draw_selection(history.top().state, column1, row1, column2);
+            draw_selection(column1, row1);
             draw_possible_moves(
                 history.top().board, history.top().endgame_state, row1, column1);
             break;
@@ -97,7 +112,7 @@ main()
                 break;
             column2 = tmp;
             history.top().state = State::Column2Selected;
-            draw_selection(history.top().state, column1, row1, column2);
+            draw_selection(column1, row1, column2);
             break;
         case State::Column2Selected: {
             tmp = '0' + BOARD_HEIGHT - static_cast<size_t>(c);
@@ -105,25 +120,24 @@ main()
                 break;
             row2 = tmp;
             history.top().state = State::Ready;
-            draw_selection(history.top().state, column1, row1, column2);
+            draw_selection();
             clear_possible_moves();
-            ChessState new_state = history.top();
+            new_state = history.top();
             MoveResult result = \
                 do_move(new_state.board, new_state.endgame_state,
                         new_state.player, row1, column1, row2, column2);
             if (!result.did_move)
                 break;
+            draw_board(new_state.board);
             Player player = new_state.player;
-            new_state.player = player == Player::White
+            Player new_player = player == Player::White
                 ? Player::Black
                 : Player::White;
             new_state.endgame_state = \
-                get_endgame_state(new_state.board, new_state.player);
+                get_endgame_state(new_state.board, new_player);
             if (new_state.endgame_state == EndgameState::Checkmate
                     || new_state.endgame_state == EndgameState::Stalemate)
                 new_state.state = State::Endgame;
-            draw_board(new_state.board);
-            draw_player(new_state.player, new_state.endgame_state);
 
             if (result.capture != Piece::None) {
                 if (player == Player::White) {
@@ -136,6 +150,50 @@ main()
                               new_state.black_captures);
             }
 
+            if (result.can_promote) {
+                history.top().state = new_state.state = State::Promotion;
+                draw_promotion_prompt(player);
+            } else {
+                new_state.player = new_player;
+                draw_player(new_player, new_state.endgame_state);
+                history.push(std::move(new_state));
+                while (!backtrace.empty())
+                    backtrace.pop();
+            }
+
+            break; }
+        case State::Promotion: {
+            Piece piece = Piece::None;
+
+            switch (c) {
+            case 'n':
+                piece = Piece::Knight;
+                break;
+            case 'b':
+                piece = Piece::Bishop;
+                break;
+            case 'r':
+                piece = Piece::Rook;
+                break;
+            case 'q':
+                piece = Piece::Queen;
+                break;
+            }
+
+            if (piece == Piece::None)
+                break;
+            new_state.state = State::Ready;
+            new_state.board[row2][column2].piece = piece;
+            draw_board(new_state.board);
+            new_state.player = new_state.player == Player::White
+                ? Player::Black
+                : Player::White;
+            new_state.endgame_state = \
+                get_endgame_state(new_state.board, new_state.player);
+            if (new_state.endgame_state == EndgameState::Checkmate
+                    || new_state.endgame_state == EndgameState::Stalemate)
+                new_state.state = State::Endgame;
+            draw_player(new_state.player, new_state.endgame_state);
             history.push(std::move(new_state));
             while (!backtrace.empty())
                 backtrace.pop();

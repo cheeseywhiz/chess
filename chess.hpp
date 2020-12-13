@@ -11,7 +11,7 @@ enum class State {
     Column1Selected,
     Row1Selected,
     Column2Selected,
-    // Row2Selected,
+    Promotion,
     Endgame,
 };
 
@@ -60,8 +60,9 @@ struct ChessState {
 };
 
 struct MoveResult {
-    bool did_move;  // were we actually able to move the piece?
-    Piece capture;  // did the player capture an opponents piece?
+    bool did_move;     // were we actually able to move the piece?
+    bool can_promote;  // pawn has reached the end of the board?
+    Piece capture;     // did the player capture an opponents piece?
 };
 
 MoveResult do_move(BoardT&, EndgameState, Player, size_t, size_t, size_t,
