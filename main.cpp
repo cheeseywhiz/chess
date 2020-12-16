@@ -13,6 +13,7 @@ main()
     history.emplace();
     draw_board(history.top().board);
     draw_player(history.top().player, history.top().endgame_state);
+    draw_n_moves(history.top().n_moves);
     size_t column1 = 0, row1 = 0, column2 = 0, row2 = 0, tmp;
     ChessState new_state;
     int c;
@@ -58,6 +59,7 @@ main()
             clear_possible_moves();
             draw_captures(history.top().white_captures,
                           history.top().black_captures);
+            draw_n_moves(history.top().n_moves);
             draw_player(history.top().player, history.top().endgame_state);
             draw_selection();
             continue;
@@ -72,6 +74,7 @@ main()
             draw_board(state.board);
             clear_possible_moves();
             draw_captures(state.white_captures, state.black_captures);
+            draw_n_moves(state.n_moves);
             draw_player(state.player, state.endgame_state);
             draw_selection();
             history.push(std::move(state));
@@ -153,9 +156,13 @@ main()
             if (result.can_promote) {
                 history.top().state = new_state.state = State::Promotion;
                 draw_promotion_prompt(player);
+                draw_n_moves(new_state.n_moves);
             } else {
                 new_state.player = new_player;
                 draw_player(new_player, new_state.endgame_state);
+                if (new_state.player == Player::White)
+                    ++new_state.n_moves;
+                draw_n_moves(new_state.n_moves);
                 history.push(std::move(new_state));
                 while (!backtrace.empty())
                     backtrace.pop();
@@ -194,6 +201,9 @@ main()
                     || new_state.endgame_state == EndgameState::Stalemate)
                 new_state.state = State::Endgame;
             draw_player(new_state.player, new_state.endgame_state);
+            if (new_state.player == Player::White)
+                ++new_state.n_moves;
+            draw_n_moves(new_state.n_moves);
             history.push(std::move(new_state));
             while (!backtrace.empty())
                 backtrace.pop();

@@ -51,10 +51,11 @@ struct ChessState {
     State state;
     Player player;
     EndgameState endgame_state;
+    unsigned n_moves;
     vector<Piece> white_captures, black_captures;
 
     ChessState() : state(State::Ready), player(Player::White),
-                   endgame_state(EndgameState::None) {
+                   endgame_state(EndgameState::None), n_moves(1) {
         init_board(board);
     }
 };

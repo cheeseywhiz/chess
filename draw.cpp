@@ -190,6 +190,13 @@ draw_captures(Player player, const vector<Piece>& captures)
 }
 
 void
+draw_n_moves(unsigned n_moves)
+{
+    move(0, 15 * 3 + 1);
+    printw("%11d", n_moves);
+}
+
+void
 draw_player(Player player, EndgameState endgame_state)
 {
     move(2 + BOARD_HEIGHT * CELL_HEIGHT + 2, 1);
