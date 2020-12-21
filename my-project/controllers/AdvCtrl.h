@@ -16,7 +16,7 @@ class AdvCtrl : public drogon::HttpController<AdvCtrl> {
         METHOD_LIST_END
 
         // your declaration of processing function maybe like this:
-        void getAdv(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr&)>&& callback, int p1, std::string p2);
+        void getAdv(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr&)>&& callback, int p1, const std::string& p2);
         void login(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr&)>&& callback);
         void logout(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr&)>&& callback);
 };

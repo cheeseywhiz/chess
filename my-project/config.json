@@ -188,5 +188,11 @@
         }
     }],*/
     //custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method.
-    "custom_config": {}
+    "custom_config": {},
+    "db_clients": [
+        {
+            "rdbms": "sqlite3",
+            "filename": "../chess.sqlite3"
+        }
+    ]
 }

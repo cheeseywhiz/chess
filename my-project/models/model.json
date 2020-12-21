@@ -1,8 +1,9 @@
+// vim: ft=javascript
 {
     //rdbms: server type, postgresql,mysql or sqlite3
-    "rdbms": "postgresql",
+    "rdbms": "sqlite3",
     //filename: sqlite3 db file name
-    //"filename":"",
+    "filename":"chess.sqlite3",
     //host: server address,localhost by default;
     "host": "127.0.0.1",
     //port: server port, 5432 by default;
@@ -21,8 +22,8 @@
     //table: An array of tables to be modelized. if the array is empty, all revealed tables are modelized.
     "tables": [],
     "relationships": {
-        "enabled": false,
-        "items": [{
+        "enabled": true,
+        /*"items": [{
                 "type": "has one",
                 "original_table_name": "products",
                 "original_table_alias": "product",
@@ -57,7 +58,8 @@
                 "target_key": "id",
                 "enable_reverse": true
             }
-        ]
+        ]*/
+        "items": [],
     },
     "restful_api_controllers": {
         "enabled": false,

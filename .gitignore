@@ -47,3 +47,4 @@ PGN_standard_1994-03-12.txt
 # folders
 deps
 build
+chess.sqlite3
