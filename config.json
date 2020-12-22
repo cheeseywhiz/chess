@@ -61,7 +61,7 @@
     "db_clients": [
         {
             "rdbms": "sqlite3",
-            "filename": "../chess.sqlite3"
+            "filename": "../build/chess.sqlite3"
         }
     ],
     "app": {

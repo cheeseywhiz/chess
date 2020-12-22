@@ -3,7 +3,7 @@
     //rdbms: server type, postgresql,mysql or sqlite3
     "rdbms": "sqlite3",
     //filename: sqlite3 db file name
-    "filename":"chess.sqlite3",
+    "filename":"build/chess.sqlite3",
     //host: server address,localhost by default;
     "host": "127.0.0.1",
     //port: server port, 5432 by default;
