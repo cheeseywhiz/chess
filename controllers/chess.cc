@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <vector>
-#include "chess.hpp"
+#include "chess.h"
 using std::find;
 using std::runtime_error;
 using std::vector;

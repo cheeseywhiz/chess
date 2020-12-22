@@ -40,6 +40,7 @@ tags
 session.json
 cmake-build-debug
 .idea
+*.sqlite3
 
 # pgn spec
 PGN_standard_1994-03-12.txt
@@ -47,4 +48,3 @@ PGN_standard_1994-03-12.txt
 # folders
 deps
 build
-chess.sqlite3
