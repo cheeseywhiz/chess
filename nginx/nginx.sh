@@ -6,6 +6,7 @@ PID="$(cat nginx.pid 2>/dev/null || true)"
 
 case $1 in
     start)
+        rm -rf *.log
         $NGINX
         trap "$0 stop; exit" SIGINT
         $0 log

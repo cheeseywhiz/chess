@@ -1,16 +1,25 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const STATIC = path.join(__dirname, 'static');
+const SOURCE = path.join(__dirname, 'src');
 
 module.exports = {
     mode: 'development',
     entry: './src/main.jsx',
     output: {
-        path: path.join(__dirname, 'static'),
+        path: STATIC,
         filename: 'bundle.js',
     },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: path.join(SOURCE, 'index.html'),
+            title: 'Chess',
+        }),
+    ],
     module: {
         rules: [
             {
-                // Test for js or jsx files
                 test: /\.jsx?$/,
                 loader: 'babel-loader',
                 options: {
