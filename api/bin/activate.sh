@@ -1,5 +1,5 @@
 #!/bin/bash
-export PS1="(chess) ${PS1}"
+export PS1="(api) ${PS1}"
 export PATH="${PATH}:$(realpath deps/bin)"
 export PATH="${PATH}:$(realpath bin)"
 
@@ -15,6 +15,7 @@ print(':'.join(
 EOF
     }
 
-    export PS1="${PS1##(chess) }"
+    export PS1="${PS1##(api) }"
     export PATH="$(get_path)"
+    unset deactivate
 }

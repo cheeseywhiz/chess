@@ -32,6 +32,13 @@
 *.app
 chess
 
+# pgn spec
+PGN_standard_1994-03-12.txt
+
+# folders
+deps
+build
+
 # auto-gen
 *.plist
 .cache
@@ -43,10 +50,6 @@ cmake-build-debug
 *.sqlite3
 *.log
 *.pid
-
-# pgn spec
-PGN_standard_1994-03-12.txt
-
-# folders
-deps
-build
+node_modules
+bundle.js
+bundle.js.LICENSE.txt
