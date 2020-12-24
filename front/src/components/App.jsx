@@ -9,6 +9,7 @@ import * as actions from '../actions';
 import selectors from '../selectors';
 import Navbar from './Navbar';
 import Login from './Login';
+import Create from './Create';
 
 const mapStateToProps = (state) => ({
     username: selectors.username(state),
@@ -55,6 +56,9 @@ class App extends React.Component {
                     <Switch>
                         <Route exact path="/login">
                             <Login />
+                        </Route>
+                        <Route exact path="/create">
+                            <Create />
                         </Route>
                         <Route>
                             {username ? mainContent : <Redirect to={loginRedirectUrl} />}

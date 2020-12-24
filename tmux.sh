@@ -8,11 +8,8 @@ tmux send '. bin/activate.sh' 'C-j'
 tmux send 'cd build' 'C-j'
 tmux send 'C-l' 'make -j5 && gdb -ex r ./chess' 'C-j'
 
-# api terminal
+# terminal
 tmux split-window
-tmux send 'cd api' 'C-j'
-tmux send '. bin/activate.sh' 'C-j'
-tmux send 'C-l' 'http --json --session=./session.json http://0.0.0.0:8080/api/AuthCtrl/login username=spencer'
 
 # front server
 tmux split-window -t 1 -l 20%

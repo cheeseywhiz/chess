@@ -3,6 +3,13 @@ using drogon_model::sqlite3::Users;
 
 namespace drogon_model {
 namespace sqlite3 {
-using User = Users;
+class User : public Users {
+    public:
+        using Users::Users;
+        using Ptr = std::shared_ptr<User>;
+
+        // get User by primary key
+        static Ptr lookup_user(const std::string& username);
+};
 }
 }

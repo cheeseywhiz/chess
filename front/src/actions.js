@@ -1,15 +1,13 @@
 export const types = {
-    LOGIN_FORM_UPDATE_USERNAME: 'LOGIN_FORM_UPDATE_USERNAME',
+    LOGIN_FORM_USERNAME_SET: 'LOGIN_FORM_USERNAME_SET',
     LOGIN_FORM_CLEAR: 'LOGIN_FORM_CLEAR',
     USERNAME_SET: 'USERNAME_SET',
+    CREATE_FORM_USERNAME_SET: 'CREATE_FORM_USERNAME_SET',
+    CREATE_FORM_CLEAR: 'CREATE_FORM_CLEAR',
 };
 
-export const defaultLoginForm = {
-    username: '',
-};
-
-export const loginFormUpdateUsername = (username) => ({
-    type: types.LOGIN_FORM_UPDATE_USERNAME,
+export const loginFormUsernameSet = (username) => ({
+    type: types.LOGIN_FORM_USERNAME_SET,
     username,
 });
 
@@ -26,6 +24,15 @@ export const loginFormClear = () => ({
 export const usernameSet = (username = '') => ({
     type: types.USERNAME_SET,
     username,
+});
+
+export const createFormUsernameSet = (username) => ({
+    type: types.CREATE_FORM_USERNAME_SET,
+    username,
+});
+
+export const createFormClear = () => ({
+    type: types.CREATE_FORM_CLEAR,
 });
 
 export const login = (username) => (dispatch) => {
@@ -61,3 +68,19 @@ export const logout = () => (dispatch) => {
 };
 
 export const init = () => (dispatch) => dispatch(login());
+
+export const create = (username) => (dispatch) => {
+    dispatch(createFormClear());
+    fetch('/api/AuthCtrl/create', {
+        method: 'post',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+    }).then((response) => {
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
+    }).then((user) => {
+        console.log(user);
+        dispatch(login(username));
+    }).catch((error) => console.log(error));
+};

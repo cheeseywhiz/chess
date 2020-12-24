@@ -5,6 +5,7 @@ HttpResponsePtr to_error(HttpStatusCode status_code, const std::string& reason) 
         { HttpStatusCode::k400BadRequest, "Bad Request" },
         { HttpStatusCode::k401Unauthorized, "Unauthorized" },
         { HttpStatusCode::k404NotFound, "Not Found" },
+        { HttpStatusCode::k409Conflict, "Conflict" },
     };
     Json::Value res;
     res["status"] = status_code;
