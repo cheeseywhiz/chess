@@ -2,6 +2,7 @@
     "license": "UNLICENSED",
     "scripts": {
         "build": "webpack --mode production",
+        "build-debug": "webpack --mode development",
         "start": "webpack --mode development --hot --watch"
     },
     "devDependencies": {
@@ -10,6 +11,7 @@
         "@babel/preset-env": "^7.12.11",
         "@babel/preset-react": "^7.12.10",
         "babel-loader": "^8.2.2",
+        "babel-plugin-transform-class-properties": "^6.24.1",
         "eslint": "^7.16.0",
         "eslint-config-airbnb": "^18.2.1",
         "eslint-plugin-import": "^2.22.1",
@@ -21,16 +23,26 @@
         "webpack-cli": "^4.2.0"
     },
     "dependencies": {
+        "prop-types": "^15.7.2",
         "react": "^17.0.1",
+        "react-bootstrap": "^1.4.0",
         "react-dom": "^17.0.1",
-        "react-router-dom": "^5.2.0"
+        "react-redux": "^7.2.2",
+        "react-router-bootstrap": "^0.25.0",
+        "react-router-dom": "^5.2.0",
+        "redux": "^4.0.5",
+        "redux-devtools-extension": "^2.13.8",
+        "redux-thunk": "^2.3.0",
+        "reselect": "^4.0.0"
     },
     "babel": {
         "presets": [
             "@babel/preset-env",
             "@babel/preset-react"
         ],
-        "plugins": []
+        "plugins": [
+            "transform-class-properties"
+        ]
     },
     "eslintConfig": {
         "env": {

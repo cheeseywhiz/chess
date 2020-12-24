@@ -1,20 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {
-    BrowserRouter as Router, Route, Switch,
-} from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import root from './reducers/root';
+import App from './components/App';
 
-const Main = () => (
-    <Router>
-        <Switch>
-            <Route exact path="/">
-                <div>index</div>
-            </Route>
-            <Route>
-                <div>404 not found</div>
-            </Route>
-        </Switch>
-    </Router>
+const store = createStore(
+    root,
+    composeWithDevTools(applyMiddleware(thunk)),
 );
-
-ReactDOM.render(<Main />, document.getElementById('react-app'));
+ReactDOM.render((
+    <Provider store={store}>
+        <Router>
+            <App />
+        </Router>
+    </Provider>
+), document.getElementById('react-app'));
