@@ -27,18 +27,6 @@ class App extends React.Component {
 
     render() {
         const { username, location } = this.props;
-        // uninitialized?
-        if (username === null) return <div>Loading</div>;
-        const mainContent = (
-            <Switch>
-                <Route exact path="/">
-                    <div>index</div>
-                </Route>
-                <Route>
-                    <div>404 not found</div>
-                </Route>
-            </Switch>
-        );
         // set up redirect to the page we redirect from if not logged in
         const url = `${location.pathname}${location.search}${location.hash}`;
         let loginRedirectUrl = '/login';
@@ -47,6 +35,25 @@ class App extends React.Component {
             const params = new URLSearchParams();
             params.set('referrer', url);
             loginRedirectUrl += `?${params}`;
+        }
+
+        let authenticatedContent;
+
+        if (username === null) {
+            authenticatedContent = <div>Loading</div>;
+        } else if (username) {
+            authenticatedContent = (
+                <Switch>
+                    <Route exact path="/">
+                        <div>index</div>
+                    </Route>
+                    <Route>
+                        <div>404 not found</div>
+                    </Route>
+                </Switch>
+            );
+        } else {
+            authenticatedContent = <Redirect to={loginRedirectUrl} />;
         }
 
         return (
@@ -61,7 +68,7 @@ class App extends React.Component {
                             <Create />
                         </Route>
                         <Route>
-                            {username ? mainContent : <Redirect to={loginRedirectUrl} />}
+                            {authenticatedContent}
                         </Route>
                     </Switch>
                 </Container>
