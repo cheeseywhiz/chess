@@ -16,15 +16,19 @@ const mapDispatchToProps = (dispatch) => ({
         event.preventDefault();
         dispatch(actions.newGameOpponentSet(event.target.value));
     },
+    newGame: (player, opponent) => (event) => {
+        event.preventDefault();
+        dispatch(actions.newGame(player, opponent));
+    },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(
     ({
-        player, opponent, playerSet, opponentSet,
+        player, opponent, playerSet, opponentSet, newGame,
     }) => {
         const players = ['White', 'Black', 'Random'];
         return (
-            <Form onSubmit={(event) => event.preventDefault()}>
+            <Form onSubmit={newGame(player, opponent)}>
                 <Form.Group>
                     <Form.Label>Play as</Form.Label>
                     {players.map((playerOption) => (

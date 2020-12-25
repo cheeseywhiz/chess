@@ -1,9 +1,9 @@
 {
     "license": "UNLICENSED",
     "scripts": {
-        "build": "webpack --mode production",
-        "build-debug": "webpack --mode development",
-        "start": "webpack --mode development --hot --watch"
+        "build": "rm -rf static && webpack --mode production",
+        "build-debug": "rm -rf static && webpack --mode development",
+        "start": "rm -rf static && webpack --mode development --hot --watch"
     },
     "devDependencies": {
         "@babel/core": "^7.12.10",

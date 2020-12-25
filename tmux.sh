@@ -8,8 +8,16 @@ tmux send '. bin/activate.sh' 'C-j'
 tmux send 'cd build' 'C-j'
 tmux send 'C-l' 'make -j5 && gdb -ex r ./chess' 'C-j'
 
-# terminal
+# api terminal
+tmux split-window -l 67%
+tmux send 'cd api' 'C-j'
+tmux send '. bin/activate.sh' 'C-j'
+tmux send 'C-l'
+
+# front terminal
 tmux split-window
+tmux send 'cd front' 'C-j'
+tmux send 'C-l'
 
 # front server
 tmux split-window -t 1 -l 20%

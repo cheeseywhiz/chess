@@ -7,19 +7,14 @@ using drogon_model::sqlite3::User;
 
 void api::AuthCtrl::login(const HttpRequestPtr& req, Callback&& callback) {
     const auto& json = req->getJsonObject();
-    const auto& db = drogon::app().getDbClient();
 
     if (req->getMethod() == drogon::Post) {
         // Post -> RequireJson
         // { "username": "..." }
-        if (!json->isMember("username"))
-            return callback(to_error(HttpStatusCode::k400BadRequest, "\"username\" not in request body"));
+        ASSERT_JSON_MEMBER(json, username);
         const auto& username = (*json)["username"].asString();
-        const auto& rows = db->execSqlSync("SELECT count(*) FROM users WHERE username=?", username);
-        auto n_rows = rows[0]["count(*)"].as<int>();
-        if (!n_rows)
+        if (!User::lookup_user(username))
             return callback(to_error(HttpStatusCode::k404NotFound, "unknown username"));
-        assert(n_rows == 1);
         req->session()->insert("username", username);
     }
 
@@ -42,11 +37,11 @@ void api::AuthCtrl::logout(const HttpRequestPtr& req, Callback&& callback) {
 void api::AuthCtrl::create(const HttpRequestPtr& req, Callback&& callback) {
     const auto& json = req->getJsonObject();
     const auto& db = drogon::app().getDbClient();
-    if (!json->isMember("username"))
-        return callback(to_error(HttpStatusCode::k400BadRequest, "\"username\" not in request body"));
+    ASSERT_JSON_MEMBER(json, username);
     const auto& username = (*json)["username"].asString();
     if (User::lookup_user(username))
-        return callback(to_error(HttpStatusCode::k409Conflict, "the given username already exists"));
+        return callback(to_error(HttpStatusCode::k409Conflict,
+                                 "the given username already exists"));
     db->execSqlSync("INSERT INTO users(username) VALUES (?)", username);
     const auto& user = User::lookup_user(username);
     callback(drogon::toResponse(user->toJson()));

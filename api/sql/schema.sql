@@ -5,3 +5,16 @@ CREATE TABLE users(
     created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     PRIMARY KEY (username)
 );
+
+CREATE TABLE games(
+    game_id INTEGER PRIMARY KEY,
+    white VARCHAR NOT NULL,
+    black VARCHAR NOT NULL,
+    created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (white) REFERENCES users (username)
+        ON DELETE CASCADE
+    FOREIGN KEY (black) REFERENCES users (username)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+        ON UPDATE CASCADE
+);

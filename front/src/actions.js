@@ -22,7 +22,7 @@ export const loginFormClear = () => ({
  * username:
  *     uninitialized: null
  *     not logged in: ''
- *     logged in:     non-empty string
+ *     logged in: non-empty string
  */
 export const usernameSet = (username = '') => ({
     type: types.USERNAME_SET,
@@ -80,11 +80,7 @@ const fetch2 = async ({ url, json, ...optionsIn }) => {
 export const login = (username) => (dispatch) => {
     dispatch(loginFormClear());
     const req = { url: '/api/AuthCtrl/login' };
-
-    if (username !== undefined) {
-        req.json = { username };
-    }
-
+    if (username !== undefined) req.json = { username };
     fetch2(req)
         .then((user) => {
             console.log(user);
@@ -103,7 +99,14 @@ export const create = (username) => (dispatch) => {
     dispatch(createFormClear());
     fetch2({
         url: '/api/AuthCtrl/create',
-        method: 'post',
         json: { username },
     }).then(() => dispatch(login(username)));
+};
+
+export const newGame = (player, opponent) => (dispatch) => {
+    dispatch(newGameClear());
+    fetch2({
+        url: '/api/GamesCtrl/new_game',
+        json: { player, opponent },
+    }).then((game) => console.log(game));
 };

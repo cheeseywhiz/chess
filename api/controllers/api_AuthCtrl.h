@@ -5,7 +5,7 @@ using drogon::HttpRequestPtr, drogon::HttpResponsePtr;
 using drogon::Get, drogon::Post;
 
 namespace api {
-class AuthCtrl:public drogon::HttpController<AuthCtrl> {
+class AuthCtrl : public drogon::HttpController<AuthCtrl> {
     public:
         METHOD_LIST_BEGIN
         METHOD_ADD(AuthCtrl::login, "/login", Get, "RequireAuth");

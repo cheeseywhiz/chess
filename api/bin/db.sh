@@ -37,6 +37,7 @@ case $1 in
     dump)
         assert_exists
         dump-table users
+        dump-table games
         ;;
     cmd)
         sqlite3 $DB
