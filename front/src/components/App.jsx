@@ -7,9 +7,11 @@ import { connect } from 'react-redux';
 import Container from 'react-bootstrap/Container';
 import * as actions from '../actions';
 import selectors from '../selectors';
+import LoadingSpinner from './LoadingSpinner';
 import Navbar from './Navbar';
 import Login from './Login';
 import Create from './Create';
+import NewGame from './NewGame';
 
 const mapStateToProps = (state) => ({
     username: selectors.username(state),
@@ -40,12 +42,15 @@ class App extends React.Component {
         let authenticatedContent;
 
         if (username === null) {
-            authenticatedContent = <div>Loading</div>;
+            authenticatedContent = <LoadingSpinner />;
         } else if (username) {
             authenticatedContent = (
                 <Switch>
                     <Route exact path="/">
                         <div>index</div>
+                    </Route>
+                    <Route exact path="/new_game">
+                        <NewGame />
                     </Route>
                     <Route>
                         <div>404 not found</div>

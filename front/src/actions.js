@@ -4,6 +4,9 @@ export const types = {
     USERNAME_SET: 'USERNAME_SET',
     CREATE_FORM_USERNAME_SET: 'CREATE_FORM_USERNAME_SET',
     CREATE_FORM_CLEAR: 'CREATE_FORM_CLEAR',
+    NEW_GAME_PLAYER_SET: 'NEW_GAME_PLAYER_SET',
+    NEW_GAME_OPPONENT_SET: 'NEW_GAME_OPPONENT_SET',
+    NEW_GAME_CLEAR: 'NEW_GAME_CLEAR',
 };
 
 export const loginFormUsernameSet = (username) => ({
@@ -33,6 +36,20 @@ export const createFormUsernameSet = (username) => ({
 
 export const createFormClear = () => ({
     type: types.CREATE_FORM_CLEAR,
+});
+
+export const newGamePlayerSet = (player) => ({
+    type: types.NEW_GAME_PLAYER_SET,
+    player,
+});
+
+export const newGameOpponentSet = (opponent) => ({
+    type: types.NEW_GAME_OPPONENT_SET,
+    opponent,
+});
+
+export const newGameClear = () => ({
+    type: types.NEW_GAME_CLEAR,
 });
 
 // fetch with improved interface

@@ -17,6 +17,10 @@ function assert_not_exists() {
     fi
 }
 
+function dump-table () {
+    sqlite3 -batch -line $DB '.mode column' '.header on' "SELECT * FROM $1"
+}
+
 case $1 in
     create)
         assert_not_exists
@@ -32,7 +36,7 @@ case $1 in
         ;;
     dump)
         assert_exists
-        sqlite3 -batch -line $DB '.mode column' '.header on' 'SELECT * FROM users'
+        dump-table users
         ;;
     cmd)
         sqlite3 $DB
