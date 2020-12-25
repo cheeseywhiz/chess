@@ -35,52 +35,58 @@ export const createFormClear = () => ({
     type: types.CREATE_FORM_CLEAR,
 });
 
-export const login = (username) => (dispatch) => {
-    dispatch(loginFormClear());
-    const req = { credentials: 'same-origin' };
+// fetch with improved interface
+// cookies are included by default
+// option json sets Content-Type header and sets default method to POST
+// see https://developer.mozilla.org/en-US/docs/Web/API/Response#An_Ajax_Call for ajax inspiration
+const fetch2 = async ({ url, json, ...optionsIn }) => {
+    let options = { credentials: 'same-origin', headers: {}, ...optionsIn };
 
-    if (username !== undefined) {
-        req.method = 'post';
-        req.headers = { 'Content-Type': 'application/json' };
-        req.body = JSON.stringify({ username });
+    if (json !== undefined) {
+        options = { method: 'post', ...options, body: JSON.stringify(json) };
+        options.headers['Content-Type'] = 'application/json';
     }
 
-    fetch('/api/AuthCtrl/login', req).then((response) => {
-        if (!response.ok) throw Error(response.statusText);
-        return response.json();
-    }).then((user) => {
-        console.log(user);
-        dispatch(usernameSet(username || user.username));
-    }).catch((error) => {
-        console.log(error);
-        dispatch(usernameSet());
-    });
+    const response = await fetch(url, options);
+    if (response.status >= 500) throw new Error(response.statusText);
+    if (response.status === 204) return Promise.resolve();
+    const jsonRes = await response.json();
+
+    if (response.status >= 400) {
+        console.log(jsonRes);
+        return Promise.reject(jsonRes);
+    }
+
+    return Promise.resolve(jsonRes);
+};
+
+export const login = (username) => (dispatch) => {
+    dispatch(loginFormClear());
+    const req = { url: '/api/AuthCtrl/login' };
+
+    if (username !== undefined) {
+        req.json = { username };
+    }
+
+    fetch2(req)
+        .then((user) => {
+            console.log(user);
+            dispatch(usernameSet(username || user.username));
+        }).catch(() => dispatch(usernameSet()));
 };
 
 export const logout = () => (dispatch) => {
     dispatch(usernameSet());
-    fetch('/api/AuthCtrl/logout', {
-        method: 'post',
-        credentials: 'same-origin',
-    }).then((response) => {
-        if (!response.ok) throw Error(response.statusText);
-    }).catch((error) => console.log(error));
+    fetch2({ url: '/api/AuthCtrl/logout', method: 'post' });
 };
 
 export const init = () => (dispatch) => dispatch(login());
 
 export const create = (username) => (dispatch) => {
     dispatch(createFormClear());
-    fetch('/api/AuthCtrl/create', {
+    fetch2({
+        url: '/api/AuthCtrl/create',
         method: 'post',
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }),
-    }).then((response) => {
-        if (!response.ok) throw Error(response.statusText);
-        return response.json();
-    }).then((user) => {
-        console.log(user);
-        dispatch(login(username));
-    }).catch((error) => console.log(error));
+        json: { username },
+    }).then(() => dispatch(login(username)));
 };
