@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {
     Route, Switch, Redirect, withRouter,
 } from 'react-router-dom';
@@ -81,19 +80,5 @@ class App extends React.Component {
         );
     }
 }
-
-App.propTypes = {
-    username: PropTypes.string,
-    location: PropTypes.shape({
-        pathname: PropTypes.string.isRequired,
-        search: PropTypes.string.isRequired,
-        hash: PropTypes.string.isRequired,
-    }).isRequired,
-    init: PropTypes.func.isRequired,
-};
-
-App.defaultProps = {
-    username: null,
-};
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

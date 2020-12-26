@@ -1,6 +1,5 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
@@ -14,15 +13,6 @@ const NavLink = ({ to, value, children }) => (
         {value ? <Nav.Link>{value}</Nav.Link> : children}
     </LinkContainer>
 );
-NavLink.propTypes = {
-    to: PropTypes.string.isRequired,
-    value: PropTypes.string,
-    children: PropTypes.node,
-};
-NavLink.defaultProps = {
-    value: undefined,
-    children: undefined,
-};
 
 const mapStateToProps = (state) => ({
     username: selectors.username(state),

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -64,17 +63,5 @@ class NewGame extends React.Component {
         );
     }
 }
-
-NewGame.propTypes = {
-    player: PropTypes.string,
-    opponent: PropTypes.string.isRequired,
-    clear: PropTypes.func.isRequired,
-    playerSet: PropTypes.func.isRequired,
-    opponentSet: PropTypes.func.isRequired,
-    newGame: PropTypes.func.isRequired,
-};
-NewGame.defaultProps = {
-    player: null,
-};
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewGame);

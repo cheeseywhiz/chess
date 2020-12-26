@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Redirect, withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
@@ -57,19 +56,5 @@ class Login extends React.Component {
         );
     }
 }
-
-Login.propTypes = {
-    loginFormUsername: PropTypes.string.isRequired,
-    username: PropTypes.string,
-    clear: PropTypes.func.isRequired,
-    updateUsername: PropTypes.func.isRequired,
-    login: PropTypes.func.isRequired,
-    location: PropTypes.shape({
-        search: PropTypes.string.isRequired,
-    }).isRequired,
-};
-Login.defaultProps = {
-    username: null,
-};
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));

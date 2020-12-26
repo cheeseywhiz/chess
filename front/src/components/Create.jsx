@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
@@ -53,19 +52,5 @@ class Create extends React.Component {
         );
     }
 }
-
-Create.propTypes = {
-    username: PropTypes.string,
-    createFormUsername: PropTypes.string.isRequired,
-    updateUsername: PropTypes.func.isRequired,
-    clear: PropTypes.func.isRequired,
-    create: PropTypes.func.isRequired,
-    location: PropTypes.shape({
-        search: PropTypes.string.isRequired,
-    }).isRequired,
-};
-Create.defaultProps = {
-    username: null,
-};
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Create));
