@@ -78,7 +78,6 @@ const fetch2 = async ({ url, json, ...optionsIn }) => {
 };
 
 export const login = (username) => (dispatch) => {
-    dispatch(loginFormClear());
     const req = { url: '/api/AuthCtrl/login' };
     if (username !== undefined) req.json = { username };
     fetch2(req)
@@ -96,15 +95,13 @@ export const logout = () => (dispatch) => {
 export const init = () => (dispatch) => dispatch(login());
 
 export const create = (username) => (dispatch) => {
-    dispatch(createFormClear());
     fetch2({
         url: '/api/AuthCtrl/create',
         json: { username },
     }).then(() => dispatch(login(username)));
 };
 
-export const newGame = (player, opponent) => (dispatch) => {
-    dispatch(newGameClear());
+export const newGame = (player, opponent) => (/* dispatch */) => {
     fetch2({
         url: '/api/GamesCtrl/new_game',
         json: { player, opponent },
