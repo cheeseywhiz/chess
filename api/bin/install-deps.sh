@@ -10,9 +10,11 @@ function main() {
 
 function clone() {
     pushd deps
-    git clone https://github.com/an-tao/drogon.git
+    git clone https://github.com/cheeseywhiz/drogon.git
     pushd drogon
-    git checkout "v1.2.0"
+    git config pull.rebase true
+    git config credential.helper store
+    git checkout fixes
     git submodule update --init
     popd
     popd
