@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -11,6 +12,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    clear: () => dispatch(actions.newGameClear()),
     playerSet: (player) => dispatch(actions.newGamePlayerSet(player)),
     opponentSet: (event) => {
         event.preventDefault();
@@ -22,10 +24,16 @@ const mapDispatchToProps = (dispatch) => ({
     },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-    ({
-        player, opponent, playerSet, opponentSet, newGame,
-    }) => {
+class NewGame extends React.Component {
+    componentDidMount() {
+        const { clear } = this.props;
+        clear();
+    }
+
+    render() {
+        const {
+            player, opponent, playerSet, opponentSet, newGame,
+        } = this.props;
         const players = ['White', 'Black', 'Random'];
         return (
             <Form onSubmit={newGame(player, opponent)}>
@@ -54,5 +62,19 @@ export default connect(mapStateToProps, mapDispatchToProps)(
                 <Button type="submit">New Game</Button>
             </Form>
         );
-    },
-);
+    }
+}
+
+NewGame.propTypes = {
+    player: PropTypes.string,
+    opponent: PropTypes.string.isRequired,
+    clear: PropTypes.func.isRequired,
+    playerSet: PropTypes.func.isRequired,
+    opponentSet: PropTypes.func.isRequired,
+    newGame: PropTypes.func.isRequired,
+};
+NewGame.defaultProps = {
+    player: null,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewGame);

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
@@ -12,6 +13,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    clear: () => dispatch(actions.createFormClear()),
     updateUsername: (event) => {
         event.preventDefault();
         dispatch(actions.createFormUsernameSet(event.target.value));
@@ -22,10 +24,16 @@ const mapDispatchToProps = (dispatch) => ({
     },
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(
-    ({
-        username, createFormUsername, updateUsername, create, location,
-    }) => {
+class Create extends React.Component {
+    componentDidMount() {
+        const { clear } = this.props;
+        clear();
+    }
+
+    render() {
+        const {
+            username, createFormUsername, updateUsername, create, location,
+        } = this.props;
         const params = new URLSearchParams(location.search);
         const referrer = params.get('referrer');
         if (username) return <Redirect to={referrer || '/'} />;
@@ -43,5 +51,21 @@ export default withRouter(connect(mapStateToProps, mapDispatchToProps)(
                 <Button type="submit">Create Account</Button>
             </Form>
         );
-    },
-));
+    }
+}
+
+Create.propTypes = {
+    username: PropTypes.string,
+    createFormUsername: PropTypes.string.isRequired,
+    updateUsername: PropTypes.func.isRequired,
+    clear: PropTypes.func.isRequired,
+    create: PropTypes.func.isRequired,
+    location: PropTypes.shape({
+        search: PropTypes.string.isRequired,
+    }).isRequired,
+};
+Create.defaultProps = {
+    username: null,
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Create));
