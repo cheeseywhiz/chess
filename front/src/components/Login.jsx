@@ -7,7 +7,7 @@ import * as actions from '../actions';
 import selectors from '../selectors';
 
 const mapStateToProps = (state) => ({
-    loginFormUsername: selectors.loginForm.username(state),
+    loginForm: selectors.loginForm(state),
     username: selectors.username(state),
 });
 
@@ -31,7 +31,7 @@ class Login extends React.Component {
 
     render() {
         const {
-            loginFormUsername, username, updateUsername, login, location,
+            loginForm, username, updateUsername, login, location,
         } = this.props;
         const params = new URLSearchParams(location.search);
         const referrer = params.get('referrer');
@@ -39,15 +39,19 @@ class Login extends React.Component {
         const createUrl = referrer ? `/create?${params}` : '/create';
         return (
             <>
-                <Form onSubmit={login(loginFormUsername)}>
+                <Form noValidate onSubmit={login(loginForm.username.text)}>
                     <Form.Group>
                         <Form.Label>Username</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Username"
-                            value={loginFormUsername}
+                            value={loginForm.username.text}
                             onChange={updateUsername}
+                            isInvalid={loginForm.username.invalid}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {loginForm.username.invalid}
+                        </Form.Control.Feedback>
                     </Form.Group>
                     <Button type="submit">Login</Button>
                 </Form>

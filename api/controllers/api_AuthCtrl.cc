@@ -14,7 +14,7 @@ void api::AuthCtrl::login(const HttpRequestPtr& req, Callback&& callback) {
         ASSERT_JSON_MEMBER(json, username);
         const auto& username = (*json)["username"].asString();
         if (!User::lookup_user(username))
-            return callback(to_error(HttpStatusCode::k404NotFound, "unknown username"));
+            return callback(to_error(HttpStatusCode::k404NotFound, "Unknown username"));
         req->session()->insert("username", username);
     }
 
@@ -39,9 +39,12 @@ void api::AuthCtrl::create(const HttpRequestPtr& req, Callback&& callback) {
     const auto& db = drogon::app().getDbClient();
     ASSERT_JSON_MEMBER(json, username);
     const auto& username = (*json)["username"].asString();
+    if (username.empty())
+        return callback(to_error(HttpStatusCode::k400BadRequest,
+                                 "Please enter a username"));
     if (User::lookup_user(username))
         return callback(to_error(HttpStatusCode::k409Conflict,
-                                 "the given username already exists"));
+                                 "Username already exists"));
     db->execSqlSync("INSERT INTO users(username) VALUES (?)", username);
     const auto& user = User::lookup_user(username);
     callback(drogon::toResponse(user->toJson()));

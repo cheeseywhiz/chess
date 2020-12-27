@@ -8,7 +8,7 @@ import selectors from '../selectors';
 
 const mapStateToProps = (state) => ({
     username: selectors.username(state),
-    createFormUsername: selectors.createForm.username(state),
+    createForm: selectors.createForm(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -31,21 +31,25 @@ class Create extends React.Component {
 
     render() {
         const {
-            username, createFormUsername, updateUsername, create, location,
+            username, createForm, updateUsername, create, location,
         } = this.props;
         const params = new URLSearchParams(location.search);
         const referrer = params.get('referrer');
         if (username) return <Redirect to={referrer || '/'} />;
         return (
-            <Form onSubmit={create(createFormUsername)}>
+            <Form onSubmit={create(createForm.username.text)}>
                 <Form.Group>
                     <Form.Label>Username</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Username"
-                        value={createFormUsername}
+                        value={createForm.username.text}
                         onChange={updateUsername}
+                        isInvalid={createForm.username.invalid}
                     />
+                    <Form.Control.Feedback type="invalid">
+                        {createForm.username.invalid}
+                    </Form.Control.Feedback>
                 </Form.Group>
                 <Button type="submit">Create Account</Button>
             </Form>

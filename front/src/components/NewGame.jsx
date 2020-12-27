@@ -6,8 +6,7 @@ import selectors from '../selectors';
 import * as actions from '../actions';
 
 const mapStateToProps = (state) => ({
-    player: selectors.newGame.player(state),
-    opponent: selectors.newGame.opponent(state),
+    newGame: selectors.newGame(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -17,9 +16,9 @@ const mapDispatchToProps = (dispatch) => ({
         event.preventDefault();
         dispatch(actions.newGameOpponentSet(event.target.value));
     },
-    newGame: (player, opponent) => (event) => {
+    submitNewGame: (player, opponent) => (event) => {
         event.preventDefault();
-        dispatch(actions.newGame(player, opponent));
+        dispatch(actions.submitNewGame(player, opponent));
     },
 });
 
@@ -31,22 +30,32 @@ class NewGame extends React.Component {
 
     render() {
         const {
-            player, opponent, playerSet, opponentSet, newGame,
+            newGame, playerSet, opponentSet, submitNewGame,
         } = this.props;
         const players = ['White', 'Black', 'Random'];
         return (
-            <Form onSubmit={newGame(player, opponent)}>
+            <Form noValidate onSubmit={submitNewGame(newGame.player.text, newGame.opponent.text)}>
                 <Form.Group>
                     <Form.Label>Play as</Form.Label>
-                    {players.map((playerOption) => (
+                    {players.map((playerOption, index) => (
                         <Form.Check
-                            type="radio"
                             key={playerOption}
+                            type="radio"
                             id={playerOption}
-                            label={playerOption}
-                            checked={playerOption === player}
-                            onChange={() => playerSet(playerOption)}
-                        />
+                        >
+                            <Form.Check.Input
+                                type="radio"
+                                isInvalid={newGame.player.invalid}
+                                checked={playerOption === newGame.player.text}
+                                onChange={() => playerSet(playerOption)}
+                            />
+                            <Form.Check.Label>{playerOption}</Form.Check.Label>
+                            {index === players.length - 1 && (
+                                <Form.Control.Feedback type="invalid">
+                                    {newGame.player.invalid}
+                                </Form.Control.Feedback>
+                            )}
+                        </Form.Check>
                     ))}
                 </Form.Group>
                 <Form.Group>
@@ -54,9 +63,13 @@ class NewGame extends React.Component {
                     <Form.Control
                         type="text"
                         placeholder="Opponent"
-                        value={opponent}
+                        value={newGame.opponent.text}
                         onChange={opponentSet}
+                        isInvalid={newGame.opponent.invalid}
                     />
+                    <Form.Control.Feedback type="invalid">
+                        {newGame.opponent.invalid}
+                    </Form.Control.Feedback>
                 </Form.Group>
                 <Button type="submit">New Game</Button>
             </Form>

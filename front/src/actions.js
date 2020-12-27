@@ -1,17 +1,55 @@
 export const types = {
     LOGIN_FORM_USERNAME_SET: 'LOGIN_FORM_USERNAME_SET',
+    LOGIN_FORM_USERNAME_INVALID_SET: 'LOGIN_FORM_USERNAME_INVALID_SET',
     LOGIN_FORM_CLEAR: 'LOGIN_FORM_CLEAR',
     USERNAME_SET: 'USERNAME_SET',
     CREATE_FORM_USERNAME_SET: 'CREATE_FORM_USERNAME_SET',
+    CREATE_FORM_USERNAME_INVALID_SET: 'CREATE_FORM_USERNAME_INVALID_SET',
     CREATE_FORM_CLEAR: 'CREATE_FORM_CLEAR',
     NEW_GAME_PLAYER_SET: 'NEW_GAME_PLAYER_SET',
+    NEW_GAME_PLAYER_INVALID_SET: 'NEW_GAME_PLAYER_INVALID_SET',
     NEW_GAME_OPPONENT_SET: 'NEW_GAME_OPPONENT_SET',
+    NEW_GAME_OPPONENT_INVALID_SET: 'NEW_GAME_OPPONENT_INVALID_SET',
     NEW_GAME_CLEAR: 'NEW_GAME_CLEAR',
+};
+
+export const defaultState = {
+    loginForm: {
+        username: {
+            text: '',
+            invalid: '',
+        },
+    },
+
+    username: null,
+
+    createForm: {
+        username: {
+            text: '',
+            invalid: '',
+        },
+    },
+
+    newGame: {
+        player: {
+            text: '',
+            invalid: '',
+        },
+        opponent: {
+            text: '',
+            invalid: '',
+        },
+    },
 };
 
 export const loginFormUsernameSet = (username) => ({
     type: types.LOGIN_FORM_USERNAME_SET,
     username,
+});
+
+export const loginFormUsernameInvalidSet = (invalid = defaultState.loginForm.username.invalid) => ({
+    type: types.LOGIN_FORM_USERNAME_INVALID_SET,
+    invalid,
 });
 
 export const loginFormClear = () => ({
@@ -34,6 +72,13 @@ export const createFormUsernameSet = (username) => ({
     username,
 });
 
+export const createFormUsernameInvalidSet = (
+    invalid = defaultState.createForm.username.invalid,
+) => ({
+    type: types.CREATE_FORM_USERNAME_INVALID_SET,
+    invalid,
+});
+
 export const createFormClear = () => ({
     type: types.CREATE_FORM_CLEAR,
 });
@@ -43,9 +88,19 @@ export const newGamePlayerSet = (player) => ({
     player,
 });
 
+export const newGamePlayerInvalidSet = (invalid = defaultState.newGame.player.invalid) => ({
+    type: types.NEW_GAME_PLAYER_INVALID_SET,
+    invalid,
+});
+
 export const newGameOpponentSet = (opponent) => ({
     type: types.NEW_GAME_OPPONENT_SET,
     opponent,
+});
+
+export const newGameOpponentInvalidSet = (invalid = defaultState.newGame.opponent.invalid) => ({
+    type: types.NEW_GAME_OPPONENT_INVALID_SET,
+    invalid,
 });
 
 export const newGameClear = () => ({
@@ -79,12 +134,16 @@ const fetch2 = async ({ url, json, ...optionsIn }) => {
 
 export const login = (username) => (dispatch) => {
     const req = { url: '/api/AuthCtrl/login' };
-    if (username !== undefined) req.json = { username };
+    if (username) req.json = { username };
     fetch2(req)
         .then((user) => {
             console.log(user);
             dispatch(usernameSet(username || user.username));
-        }).catch(() => dispatch(usernameSet()));
+            dispatch(loginFormUsernameInvalidSet());
+        }).catch(({ reason }) => {
+            dispatch(usernameSet());
+            dispatch(loginFormUsernameInvalidSet(reason));
+        });
 };
 
 export const logout = () => (dispatch) => {
@@ -98,12 +157,24 @@ export const create = (username) => (dispatch) => {
     fetch2({
         url: '/api/AuthCtrl/create',
         json: { username },
-    }).then(() => dispatch(login(username)));
+    }).then(() => {
+        dispatch(login(username));
+        dispatch(createFormUsernameInvalidSet());
+    }).catch(({ reason }) => {
+        dispatch(createFormUsernameInvalidSet(reason));
+    });
 };
 
-export const newGame = (player, opponent) => (/* dispatch */) => {
+export const submitNewGame = (player, opponent) => (dispatch) => {
     fetch2({
         url: '/api/GamesCtrl/new_game',
         json: { player, opponent },
-    }).then((game) => console.log(game));
+    }).then((game) => {
+        console.log(game);
+        dispatch(newGamePlayerInvalidSet());
+        dispatch(newGameOpponentInvalidSet());
+    }).catch(({ reason }) => {
+        dispatch(newGamePlayerInvalidSet(reason.includes('player') ? reason : ''));
+        dispatch(newGameOpponentInvalidSet(reason.includes('opponent') ? reason : ''));
+    });
 };
