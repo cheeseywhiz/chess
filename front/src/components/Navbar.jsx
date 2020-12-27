@@ -6,7 +6,6 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
-import selectors from '../selectors';
 
 const NavLink = ({ to, value, children }) => (
     <LinkContainer to={to}>
@@ -14,8 +13,8 @@ const NavLink = ({ to, value, children }) => (
     </LinkContainer>
 );
 
-const mapStateToProps = (state) => ({
-    username: selectors.username(state),
+const mapStateToProps = ({ username }) => ({
+    username,
 });
 
 const mapDispatchToProps = (dispatch) => ({

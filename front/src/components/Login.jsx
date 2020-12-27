@@ -4,11 +4,9 @@ import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import * as actions from '../actions';
-import selectors from '../selectors';
 
-const mapStateToProps = (state) => ({
-    loginForm: selectors.loginForm(state),
-    username: selectors.username(state),
+const mapStateToProps = ({ loginForm, username }) => ({
+    loginForm, username,
 });
 
 const mapDispatchToProps = (dispatch) => ({

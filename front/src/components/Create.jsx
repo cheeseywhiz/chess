@@ -4,11 +4,9 @@ import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import * as actions from '../actions';
-import selectors from '../selectors';
 
-const mapStateToProps = (state) => ({
-    username: selectors.username(state),
-    createForm: selectors.createForm(state),
+const mapStateToProps = ({ username, createForm }) => ({
+    username, createForm,
 });
 
 const mapDispatchToProps = (dispatch) => ({

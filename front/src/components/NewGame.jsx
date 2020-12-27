@@ -2,11 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import selectors from '../selectors';
 import * as actions from '../actions';
 
-const mapStateToProps = (state) => ({
-    newGame: selectors.newGame(state),
+const mapStateToProps = ({ newGame }) => ({
+    newGame,
 });
 
 const mapDispatchToProps = (dispatch) => ({
