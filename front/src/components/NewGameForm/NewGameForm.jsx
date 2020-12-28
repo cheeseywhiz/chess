@@ -9,16 +9,10 @@ const mapStateToProps = ({ newGameForm }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    setPlayer: (player) => dispatch(NewGameFormActions.player.set(player)),
+    setOpponent: (opponent) => dispatch(NewGameFormActions.opponent.set(opponent)),
     clear: () => dispatch(NewGameFormActions.clear()),
-    playerSet: (player) => dispatch(NewGameFormActions.player.set(player)),
-    opponentSet: (event) => {
-        event.preventDefault();
-        dispatch(NewGameFormActions.opponent.set(event.target.value));
-    },
-    submitNewGame: (player, opponent) => (event) => {
-        event.preventDefault();
-        dispatch(NewGameFormActions.submit(player, opponent));
-    },
+    submit: (player, opponent) => dispatch(NewGameFormActions.submit(player, opponent)),
 });
 
 class NewGameForm extends React.Component {
@@ -29,15 +23,16 @@ class NewGameForm extends React.Component {
 
     render() {
         const {
-            newGameForm, playerSet, opponentSet, submitNewGame,
+            newGameForm, setPlayer, setOpponent, submit,
         } = this.props;
         const players = ['White', 'Black', 'Random'];
         return (
             <Form
                 noValidate
-                onSubmit={submitNewGame(
-                    newGameForm.player.value, newGameForm.opponent.value,
-                )}
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    submit(newGameForm.player.value, newGameForm.opponent.value);
+                }}
             >
                 <Form.Group>
                     <Form.Label>Play as</Form.Label>
@@ -51,7 +46,7 @@ class NewGameForm extends React.Component {
                                 type="radio"
                                 isInvalid={newGameForm.player.invalid}
                                 checked={playerOption === newGameForm.player.value}
-                                onChange={() => playerSet(playerOption)}
+                                onChange={() => setPlayer(playerOption)}
                             />
                             <Form.Check.Label>{playerOption}</Form.Check.Label>
                             {index === players.length - 1 && (
@@ -68,7 +63,10 @@ class NewGameForm extends React.Component {
                         type="text"
                         placeholder="Opponent"
                         value={newGameForm.opponent.value}
-                        onChange={opponentSet}
+                        onChange={(event) => {
+                            event.preventDefault();
+                            setOpponent(event.target.value);
+                        }}
                         isInvalid={newGameForm.opponent.invalid}
                     />
                     <Form.Control.Feedback type="invalid">

@@ -32,9 +32,7 @@ const actions = {
             }),
         },
     },
-    clear: () => ({
-        type: types.clear,
-    }),
+    clear: () => ({ type: types.clear }),
     submit: (username) => (dispatch) => {
         fetch2({
             url: '/api/AuthCtrl/create',

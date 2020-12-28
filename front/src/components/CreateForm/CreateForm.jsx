@@ -10,15 +10,9 @@ const mapStateToProps = ({ username, createForm }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    setUsername: (username) => dispatch(CreateFormActions.username.set(username)),
     clear: () => dispatch(CreateFormActions.clear()),
-    updateUsername: (event) => {
-        event.preventDefault();
-        dispatch(CreateFormActions.username.set(event.target.value));
-    },
-    submit: (username) => (event) => {
-        event.preventDefault();
-        dispatch(CreateFormActions.submit(username));
-    },
+    submit: (username) => dispatch(CreateFormActions.submit(username)),
 });
 
 class CreateForm extends React.Component {
@@ -29,20 +23,29 @@ class CreateForm extends React.Component {
 
     render() {
         const {
-            username, createForm, updateUsername, submit, location,
+            username, createForm, setUsername, submit, location,
         } = this.props;
         const params = new URLSearchParams(location.search);
         const referrer = params.get('referrer');
         if (username) return <Redirect to={referrer || '/'} />;
         return (
-            <Form onSubmit={submit(createForm.username.value)}>
+            <Form
+                noValidate
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    submit(createForm.username.value);
+                }}
+            >
                 <Form.Group>
                     <Form.Label>Username</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Username"
                         value={createForm.username.value}
-                        onChange={updateUsername}
+                        onChange={(event) => {
+                            event.preventDefault();
+                            setUsername(event.target.value);
+                        }}
                         isInvalid={createForm.username.invalid}
                     />
                     <Form.Control.Feedback type="invalid">

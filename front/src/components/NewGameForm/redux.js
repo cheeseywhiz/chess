@@ -53,9 +53,7 @@ const actions = {
             }),
         },
     },
-    clear: () => ({
-        type: types.clear,
-    }),
+    clear: () => ({ type: types.clear }),
     submit: (player, opponent) => (dispatch) => {
         fetch2({
             url: '/api/GamesCtrl/new_game',
