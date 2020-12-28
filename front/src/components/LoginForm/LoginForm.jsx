@@ -3,25 +3,25 @@ import { Redirect, withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import * as actions from '../actions';
+import LoginFormActions from './redux';
 
 const mapStateToProps = ({ loginForm, username }) => ({
     loginForm, username,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    clear: () => dispatch(actions.loginFormClear()),
+    clear: () => dispatch(LoginFormActions.clear()),
     updateUsername: (event) => {
         event.preventDefault();
-        dispatch(actions.loginFormUsernameSet(event.target.value));
+        dispatch(LoginFormActions.username.set(event.target.value));
     },
     login: (username) => (event) => {
         event.preventDefault();
-        dispatch(actions.login(username));
+        dispatch(LoginFormActions.login(username));
     },
 });
 
-class Login extends React.Component {
+class LoginForm extends React.Component {
     componentDidMount() {
         const { clear } = this.props;
         clear();
@@ -37,13 +37,13 @@ class Login extends React.Component {
         const createUrl = referrer ? `/create?${params}` : '/create';
         return (
             <>
-                <Form noValidate onSubmit={login(loginForm.username.text)}>
+                <Form noValidate onSubmit={login(loginForm.username.value)}>
                     <Form.Group>
                         <Form.Label>Username</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Username"
-                            value={loginForm.username.text}
+                            value={loginForm.username.value}
                             onChange={updateUsername}
                             isInvalid={loginForm.username.invalid}
                         />
@@ -59,4 +59,4 @@ class Login extends React.Component {
     }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LoginForm));

@@ -2,26 +2,26 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import * as actions from '../actions';
+import NewGameFormActions from './redux';
 
-const mapStateToProps = ({ newGame }) => ({
-    newGame,
+const mapStateToProps = ({ newGameForm }) => ({
+    newGameForm,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    clear: () => dispatch(actions.newGameClear()),
-    playerSet: (player) => dispatch(actions.newGamePlayerSet(player)),
+    clear: () => dispatch(NewGameFormActions.clear()),
+    playerSet: (player) => dispatch(NewGameFormActions.player.set(player)),
     opponentSet: (event) => {
         event.preventDefault();
-        dispatch(actions.newGameOpponentSet(event.target.value));
+        dispatch(NewGameFormActions.opponent.set(event.target.value));
     },
     submitNewGame: (player, opponent) => (event) => {
         event.preventDefault();
-        dispatch(actions.submitNewGame(player, opponent));
+        dispatch(NewGameFormActions.submit(player, opponent));
     },
 });
 
-class NewGame extends React.Component {
+class NewGameForm extends React.Component {
     componentDidMount() {
         const { clear } = this.props;
         clear();
@@ -29,11 +29,16 @@ class NewGame extends React.Component {
 
     render() {
         const {
-            newGame, playerSet, opponentSet, submitNewGame,
+            newGameForm, playerSet, opponentSet, submitNewGame,
         } = this.props;
         const players = ['White', 'Black', 'Random'];
         return (
-            <Form noValidate onSubmit={submitNewGame(newGame.player.text, newGame.opponent.text)}>
+            <Form
+                noValidate
+                onSubmit={submitNewGame(
+                    newGameForm.player.value, newGameForm.opponent.value,
+                )}
+            >
                 <Form.Group>
                     <Form.Label>Play as</Form.Label>
                     {players.map((playerOption, index) => (
@@ -44,14 +49,14 @@ class NewGame extends React.Component {
                         >
                             <Form.Check.Input
                                 type="radio"
-                                isInvalid={newGame.player.invalid}
-                                checked={playerOption === newGame.player.text}
+                                isInvalid={newGameForm.player.invalid}
+                                checked={playerOption === newGameForm.player.value}
                                 onChange={() => playerSet(playerOption)}
                             />
                             <Form.Check.Label>{playerOption}</Form.Check.Label>
                             {index === players.length - 1 && (
                                 <Form.Control.Feedback type="invalid">
-                                    {newGame.player.invalid}
+                                    {newGameForm.player.invalid}
                                 </Form.Control.Feedback>
                             )}
                         </Form.Check>
@@ -62,12 +67,12 @@ class NewGame extends React.Component {
                     <Form.Control
                         type="text"
                         placeholder="Opponent"
-                        value={newGame.opponent.text}
+                        value={newGameForm.opponent.value}
                         onChange={opponentSet}
-                        isInvalid={newGame.opponent.invalid}
+                        isInvalid={newGameForm.opponent.invalid}
                     />
                     <Form.Control.Feedback type="invalid">
-                        {newGame.opponent.invalid}
+                        {newGameForm.opponent.invalid}
                     </Form.Control.Feedback>
                 </Form.Group>
                 <Button type="submit">New Game</Button>
@@ -76,4 +81,4 @@ class NewGame extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(NewGame);
+export default connect(mapStateToProps, mapDispatchToProps)(NewGameForm);

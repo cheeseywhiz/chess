@@ -4,25 +4,25 @@ import {
 } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Container from 'react-bootstrap/Container';
-import * as actions from '../actions';
+import LoginFormActions from './LoginForm/redux';
 import LoadingSpinner from './LoadingSpinner';
-import Navbar from './Navbar';
-import Login from './Login';
-import Create from './Create';
-import NewGame from './NewGame';
+import Navbar from './Navbar/Navbar';
+import LoginForm from './LoginForm/LoginForm';
+import CreateForm from './CreateForm/CreateForm';
+import NewGameForm from './NewGameForm/NewGameForm';
 
 const mapStateToProps = ({ username }) => ({
     username,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    init: () => dispatch(actions.init()),
+    login: () => dispatch(LoginFormActions.login()),
 });
 
 class App extends React.Component {
     componentDidMount() {
-        const { init } = this.props;
-        init();
+        const { login } = this.props;
+        login();
     }
 
     render() {
@@ -48,7 +48,7 @@ class App extends React.Component {
                         <div>index</div>
                     </Route>
                     <Route exact path="/new_game">
-                        <NewGame />
+                        <NewGameForm />
                     </Route>
                     <Route>
                         <div>404 not found</div>
@@ -65,10 +65,10 @@ class App extends React.Component {
                 <Container>
                     <Switch>
                         <Route exact path="/login">
-                            <Login />
+                            <LoginForm />
                         </Route>
                         <Route exact path="/create">
-                            <Create />
+                            <CreateForm />
                         </Route>
                         <Route>
                             {authenticatedContent}

@@ -3,25 +3,25 @@ import { Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import * as actions from '../actions';
+import CreateFormActions from './redux';
 
 const mapStateToProps = ({ username, createForm }) => ({
     username, createForm,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    clear: () => dispatch(actions.createFormClear()),
+    clear: () => dispatch(CreateFormActions.clear()),
     updateUsername: (event) => {
         event.preventDefault();
-        dispatch(actions.createFormUsernameSet(event.target.value));
+        dispatch(CreateFormActions.username.set(event.target.value));
     },
-    create: (username) => (event) => {
+    submit: (username) => (event) => {
         event.preventDefault();
-        dispatch(actions.create(username));
+        dispatch(CreateFormActions.submit(username));
     },
 });
 
-class Create extends React.Component {
+class CreateForm extends React.Component {
     componentDidMount() {
         const { clear } = this.props;
         clear();
@@ -29,19 +29,19 @@ class Create extends React.Component {
 
     render() {
         const {
-            username, createForm, updateUsername, create, location,
+            username, createForm, updateUsername, submit, location,
         } = this.props;
         const params = new URLSearchParams(location.search);
         const referrer = params.get('referrer');
         if (username) return <Redirect to={referrer || '/'} />;
         return (
-            <Form onSubmit={create(createForm.username.text)}>
+            <Form onSubmit={submit(createForm.username.value)}>
                 <Form.Group>
                     <Form.Label>Username</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Username"
-                        value={createForm.username.text}
+                        value={createForm.username.value}
                         onChange={updateUsername}
                         isInvalid={createForm.username.invalid}
                     />
@@ -55,4 +55,4 @@ class Create extends React.Component {
     }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Create));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateForm));

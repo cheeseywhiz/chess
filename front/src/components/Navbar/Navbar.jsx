@@ -5,7 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
-import * as actions from '../actions';
+import UsernameActions from './UsernameRedux';
 
 const NavLink = ({ to, value, children }) => (
     <LinkContainer to={to}>
@@ -18,7 +18,7 @@ const mapStateToProps = ({ username }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    logout: () => dispatch(actions.logout()),
+    logout: () => dispatch(UsernameActions.logout()),
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(
