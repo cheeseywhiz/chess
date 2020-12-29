@@ -40,8 +40,8 @@ class Games
   public:
     struct Cols
     {
-        static const std::string _game_id;
-        static const std::string _state_id;
+        static const std::string _gameId;
+        static const std::string _stateId;
         static const std::string _white;
         static const std::string _black;
         static const std::string _created;
@@ -96,25 +96,25 @@ class Games
                           std::string &err, 
                           bool isForCreation);
 
-    /**  For column game_id  */
-    ///Get the value of the column game_id, returns the default value if the column is null
-    const uint64_t &getValueOfGameId() const noexcept;
+    /**  For column gameId  */
+    ///Get the value of the column gameId, returns the default value if the column is null
+    const uint64_t &getValueOfGameid() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<uint64_t> &getGameId() const noexcept;
+    const std::shared_ptr<uint64_t> &getGameid() const noexcept;
 
-    ///Set the value of the column game_id
-    void setGameId(const uint64_t &pGameId) noexcept;
-    void setGameIdToNull() noexcept;
+    ///Set the value of the column gameId
+    void setGameid(const uint64_t &pGameid) noexcept;
+    void setGameidToNull() noexcept;
 
 
-    /**  For column state_id  */
-    ///Get the value of the column state_id, returns the default value if the column is null
-    const uint64_t &getValueOfStateId() const noexcept;
+    /**  For column stateId  */
+    ///Get the value of the column stateId, returns the default value if the column is null
+    const uint64_t &getValueOfStateid() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<uint64_t> &getStateId() const noexcept;
+    const std::shared_ptr<uint64_t> &getStateid() const noexcept;
 
-    ///Set the value of the column state_id
-    void setStateId(const uint64_t &pStateId) noexcept;
+    ///Set the value of the column stateId
+    void setStateid(const uint64_t &pStateid) noexcept;
 
 
     /**  For column white  */
@@ -164,8 +164,8 @@ class Games
     void updateArgs(drogon::orm::internal::SqlBinder &binder) const;
     ///For mysql or sqlite3
     void updateId(const uint64_t id);
-    std::shared_ptr<uint64_t> gameId_;
-    std::shared_ptr<uint64_t> stateId_;
+    std::shared_ptr<uint64_t> gameid_;
+    std::shared_ptr<uint64_t> stateid_;
     std::shared_ptr<std::string> white_;
     std::shared_ptr<std::string> black_;
     std::shared_ptr<::trantor::Date> created_;
@@ -184,13 +184,13 @@ class Games
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
-        static const std::string sql="select * from " + tableName + " where game_id = ?";
+        static const std::string sql="select * from " + tableName + " where gameId = ?";
         return sql;                   
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
-        static const std::string sql="delete from " + tableName + " where game_id = ?";
+        static const std::string sql="delete from " + tableName + " where gameId = ?";
         return sql;                   
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -200,12 +200,12 @@ class Games
         needSelection = false;
         if(dirtyFlag_[0])
         {
-            sql += "game_id,";
+            sql += "gameId,";
             ++parametersCount;
         }
         if(dirtyFlag_[1])
         {
-            sql += "state_id,";
+            sql += "stateId,";
             ++parametersCount;
         }
         if(dirtyFlag_[2])

@@ -12,27 +12,27 @@
 using namespace drogon;
 using namespace drogon_model::sqlite3;
 
-const std::string States::Cols::_state_id = "state_id";
+const std::string States::Cols::_stateId = "stateId";
 const std::string States::Cols::_state = "state";
 const std::string States::Cols::_player = "player";
-const std::string States::Cols::_endgame_state = "endgame_state";
-const std::string States::Cols::_n_moves = "n_moves";
-const std::string States::Cols::_white_captures = "white_captures";
-const std::string States::Cols::_black_captures = "black_captures";
+const std::string States::Cols::_endgameState = "endgameState";
+const std::string States::Cols::_nMoves = "nMoves";
+const std::string States::Cols::_whiteCaptures = "whiteCaptures";
+const std::string States::Cols::_blackCaptures = "blackCaptures";
 const std::string States::Cols::_board = "board";
 const std::string States::Cols::_created = "created";
-const std::string States::primaryKeyName = "state_id";
+const std::string States::primaryKeyName = "stateId";
 const bool States::hasPrimaryKey = true;
 const std::string States::tableName = "states";
 
 const std::vector<typename States::MetaData> States::metaData_={
-{"state_id","uint64_t","integer",8,0,1,0},
+{"stateId","uint64_t","integer",8,0,1,0},
 {"state","std::string","varchar",0,0,0,1},
 {"player","std::string","varchar",0,0,0,1},
-{"endgame_state","std::string","varchar",0,0,0,1},
-{"n_moves","uint64_t","integer",8,0,0,1},
-{"white_captures","std::string","varchar",0,0,0,1},
-{"black_captures","std::string","varchar",0,0,0,1},
+{"endgameState","std::string","varchar",0,0,0,1},
+{"nMoves","uint64_t","integer",8,0,0,1},
+{"whiteCaptures","std::string","varchar",0,0,0,1},
+{"blackCaptures","std::string","varchar",0,0,0,1},
 {"board","std::string","varchar",0,0,0,1},
 {"created","::trantor::Date","datetime",0,0,0,1}
 };
@@ -45,9 +45,9 @@ States::States(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
-        if(!r["state_id"].isNull())
+        if(!r["stateId"].isNull())
         {
-            stateId_=std::make_shared<uint64_t>(r["state_id"].as<uint64_t>());
+            stateid_=std::make_shared<uint64_t>(r["stateId"].as<uint64_t>());
         }
         if(!r["state"].isNull())
         {
@@ -57,21 +57,21 @@ States::States(const Row &r, const ssize_t indexOffset) noexcept
         {
             player_=std::make_shared<std::string>(r["player"].as<std::string>());
         }
-        if(!r["endgame_state"].isNull())
+        if(!r["endgameState"].isNull())
         {
-            endgameState_=std::make_shared<std::string>(r["endgame_state"].as<std::string>());
+            endgamestate_=std::make_shared<std::string>(r["endgameState"].as<std::string>());
         }
-        if(!r["n_moves"].isNull())
+        if(!r["nMoves"].isNull())
         {
-            nMoves_=std::make_shared<uint64_t>(r["n_moves"].as<uint64_t>());
+            nmoves_=std::make_shared<uint64_t>(r["nMoves"].as<uint64_t>());
         }
-        if(!r["white_captures"].isNull())
+        if(!r["whiteCaptures"].isNull())
         {
-            whiteCaptures_=std::make_shared<std::string>(r["white_captures"].as<std::string>());
+            whitecaptures_=std::make_shared<std::string>(r["whiteCaptures"].as<std::string>());
         }
-        if(!r["black_captures"].isNull())
+        if(!r["blackCaptures"].isNull())
         {
-            blackCaptures_=std::make_shared<std::string>(r["black_captures"].as<std::string>());
+            blackcaptures_=std::make_shared<std::string>(r["blackCaptures"].as<std::string>());
         }
         if(!r["board"].isNull())
         {
@@ -109,7 +109,7 @@ States::States(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 0;
         if(!r[index].isNull())
         {
-            stateId_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
+            stateid_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
         }
         index = offset + 1;
         if(!r[index].isNull())
@@ -124,22 +124,22 @@ States::States(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 3;
         if(!r[index].isNull())
         {
-            endgameState_=std::make_shared<std::string>(r[index].as<std::string>());
+            endgamestate_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 4;
         if(!r[index].isNull())
         {
-            nMoves_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
+            nmoves_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
         }
         index = offset + 5;
         if(!r[index].isNull())
         {
-            whiteCaptures_=std::make_shared<std::string>(r[index].as<std::string>());
+            whitecaptures_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 6;
         if(!r[index].isNull())
         {
-            blackCaptures_=std::make_shared<std::string>(r[index].as<std::string>());
+            blackcaptures_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 7;
         if(!r[index].isNull())
@@ -182,7 +182,7 @@ States::States(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[0] = true;
         if(!pJson[pMasqueradingVector[0]].isNull())
         {
-            stateId_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[0]].asUInt64());
+            stateid_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[0]].asUInt64());
         }
     }
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
@@ -206,7 +206,7 @@ States::States(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            endgameState_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+            endgamestate_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
@@ -214,7 +214,7 @@ States::States(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            nMoves_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[4]].asUInt64());
+            nmoves_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[4]].asUInt64());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -222,7 +222,7 @@ States::States(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            whiteCaptures_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
+            whitecaptures_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -230,7 +230,7 @@ States::States(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            blackCaptures_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            blackcaptures_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -268,12 +268,12 @@ States::States(const Json::Value &pJson, const std::vector<std::string> &pMasque
 
 States::States(const Json::Value &pJson) noexcept(false)
 {
-    if(pJson.isMember("state_id"))
+    if(pJson.isMember("stateId"))
     {
         dirtyFlag_[0]=true;
-        if(!pJson["state_id"].isNull())
+        if(!pJson["stateId"].isNull())
         {
-            stateId_=std::make_shared<uint64_t>((uint64_t)pJson["state_id"].asUInt64());
+            stateid_=std::make_shared<uint64_t>((uint64_t)pJson["stateId"].asUInt64());
         }
     }
     if(pJson.isMember("state"))
@@ -292,36 +292,36 @@ States::States(const Json::Value &pJson) noexcept(false)
             player_=std::make_shared<std::string>(pJson["player"].asString());
         }
     }
-    if(pJson.isMember("endgame_state"))
+    if(pJson.isMember("endgameState"))
     {
         dirtyFlag_[3]=true;
-        if(!pJson["endgame_state"].isNull())
+        if(!pJson["endgameState"].isNull())
         {
-            endgameState_=std::make_shared<std::string>(pJson["endgame_state"].asString());
+            endgamestate_=std::make_shared<std::string>(pJson["endgameState"].asString());
         }
     }
-    if(pJson.isMember("n_moves"))
+    if(pJson.isMember("nMoves"))
     {
         dirtyFlag_[4]=true;
-        if(!pJson["n_moves"].isNull())
+        if(!pJson["nMoves"].isNull())
         {
-            nMoves_=std::make_shared<uint64_t>((uint64_t)pJson["n_moves"].asUInt64());
+            nmoves_=std::make_shared<uint64_t>((uint64_t)pJson["nMoves"].asUInt64());
         }
     }
-    if(pJson.isMember("white_captures"))
+    if(pJson.isMember("whiteCaptures"))
     {
         dirtyFlag_[5]=true;
-        if(!pJson["white_captures"].isNull())
+        if(!pJson["whiteCaptures"].isNull())
         {
-            whiteCaptures_=std::make_shared<std::string>(pJson["white_captures"].asString());
+            whitecaptures_=std::make_shared<std::string>(pJson["whiteCaptures"].asString());
         }
     }
-    if(pJson.isMember("black_captures"))
+    if(pJson.isMember("blackCaptures"))
     {
         dirtyFlag_[6]=true;
-        if(!pJson["black_captures"].isNull())
+        if(!pJson["blackCaptures"].isNull())
         {
-            blackCaptures_=std::make_shared<std::string>(pJson["black_captures"].asString());
+            blackcaptures_=std::make_shared<std::string>(pJson["blackCaptures"].asString());
         }
     }
     if(pJson.isMember("board"))
@@ -369,7 +369,7 @@ void States::updateByMasqueradedJson(const Json::Value &pJson,
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
         {
-            stateId_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[0]].asUInt64());
+            stateid_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[0]].asUInt64());
         }
     }
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
@@ -393,7 +393,7 @@ void States::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            endgameState_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+            endgamestate_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
@@ -401,7 +401,7 @@ void States::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            nMoves_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[4]].asUInt64());
+            nmoves_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[4]].asUInt64());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -409,7 +409,7 @@ void States::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            whiteCaptures_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
+            whitecaptures_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -417,7 +417,7 @@ void States::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            blackCaptures_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            blackcaptures_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -455,11 +455,11 @@ void States::updateByMasqueradedJson(const Json::Value &pJson,
                                                                     
 void States::updateByJson(const Json::Value &pJson) noexcept(false)
 {
-    if(pJson.isMember("state_id"))
+    if(pJson.isMember("stateId"))
     {
-        if(!pJson["state_id"].isNull())
+        if(!pJson["stateId"].isNull())
         {
-            stateId_=std::make_shared<uint64_t>((uint64_t)pJson["state_id"].asUInt64());
+            stateid_=std::make_shared<uint64_t>((uint64_t)pJson["stateId"].asUInt64());
         }
     }
     if(pJson.isMember("state"))
@@ -478,36 +478,36 @@ void States::updateByJson(const Json::Value &pJson) noexcept(false)
             player_=std::make_shared<std::string>(pJson["player"].asString());
         }
     }
-    if(pJson.isMember("endgame_state"))
+    if(pJson.isMember("endgameState"))
     {
         dirtyFlag_[3] = true;
-        if(!pJson["endgame_state"].isNull())
+        if(!pJson["endgameState"].isNull())
         {
-            endgameState_=std::make_shared<std::string>(pJson["endgame_state"].asString());
+            endgamestate_=std::make_shared<std::string>(pJson["endgameState"].asString());
         }
     }
-    if(pJson.isMember("n_moves"))
+    if(pJson.isMember("nMoves"))
     {
         dirtyFlag_[4] = true;
-        if(!pJson["n_moves"].isNull())
+        if(!pJson["nMoves"].isNull())
         {
-            nMoves_=std::make_shared<uint64_t>((uint64_t)pJson["n_moves"].asUInt64());
+            nmoves_=std::make_shared<uint64_t>((uint64_t)pJson["nMoves"].asUInt64());
         }
     }
-    if(pJson.isMember("white_captures"))
+    if(pJson.isMember("whiteCaptures"))
     {
         dirtyFlag_[5] = true;
-        if(!pJson["white_captures"].isNull())
+        if(!pJson["whiteCaptures"].isNull())
         {
-            whiteCaptures_=std::make_shared<std::string>(pJson["white_captures"].asString());
+            whitecaptures_=std::make_shared<std::string>(pJson["whiteCaptures"].asString());
         }
     }
-    if(pJson.isMember("black_captures"))
+    if(pJson.isMember("blackCaptures"))
     {
         dirtyFlag_[6] = true;
-        if(!pJson["black_captures"].isNull())
+        if(!pJson["blackCaptures"].isNull())
         {
-            blackCaptures_=std::make_shared<std::string>(pJson["black_captures"].asString());
+            blackcaptures_=std::make_shared<std::string>(pJson["blackCaptures"].asString());
         }
     }
     if(pJson.isMember("board"))
@@ -543,34 +543,34 @@ void States::updateByJson(const Json::Value &pJson) noexcept(false)
     }
 }
 
-const uint64_t &States::getValueOfStateId() const noexcept
+const uint64_t &States::getValueOfStateid() const noexcept
 {
     const static uint64_t defaultValue = uint64_t();
-    if(stateId_)
-        return *stateId_;
+    if(stateid_)
+        return *stateid_;
     return defaultValue;
 }
-const std::shared_ptr<uint64_t> &States::getStateId() const noexcept
+const std::shared_ptr<uint64_t> &States::getStateid() const noexcept
 {
-    return stateId_;
+    return stateid_;
 }
-void States::setStateId(const uint64_t &pStateId) noexcept
+void States::setStateid(const uint64_t &pStateid) noexcept
 {
-    stateId_ = std::make_shared<uint64_t>(pStateId);
+    stateid_ = std::make_shared<uint64_t>(pStateid);
     dirtyFlag_[0] = true;
 }
 
 
-void States::setStateIdToNull() noexcept
+void States::setStateidToNull() noexcept
 {
-    stateId_.reset();
+    stateid_.reset();
     dirtyFlag_[0] = true;
 }
 
 const typename States::PrimaryKeyType & States::getPrimaryKey() const
 {
-    assert(stateId_);
-    return *stateId_;
+    assert(stateid_);
+    return *stateid_;
 }
 
 const std::string &States::getValueOfState() const noexcept
@@ -623,95 +623,95 @@ void States::setPlayer(std::string &&pPlayer) noexcept
 
 
 
-const std::string &States::getValueOfEndgameState() const noexcept
+const std::string &States::getValueOfEndgamestate() const noexcept
 {
     const static std::string defaultValue = std::string();
-    if(endgameState_)
-        return *endgameState_;
+    if(endgamestate_)
+        return *endgamestate_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &States::getEndgameState() const noexcept
+const std::shared_ptr<std::string> &States::getEndgamestate() const noexcept
 {
-    return endgameState_;
+    return endgamestate_;
 }
-void States::setEndgameState(const std::string &pEndgameState) noexcept
+void States::setEndgamestate(const std::string &pEndgamestate) noexcept
 {
-    endgameState_ = std::make_shared<std::string>(pEndgameState);
+    endgamestate_ = std::make_shared<std::string>(pEndgamestate);
     dirtyFlag_[3] = true;
 }
-void States::setEndgameState(std::string &&pEndgameState) noexcept
+void States::setEndgamestate(std::string &&pEndgamestate) noexcept
 {
-    endgameState_ = std::make_shared<std::string>(std::move(pEndgameState));
+    endgamestate_ = std::make_shared<std::string>(std::move(pEndgamestate));
     dirtyFlag_[3] = true;
 }
 
 
 
 
-const uint64_t &States::getValueOfNMoves() const noexcept
+const uint64_t &States::getValueOfNmoves() const noexcept
 {
     const static uint64_t defaultValue = uint64_t();
-    if(nMoves_)
-        return *nMoves_;
+    if(nmoves_)
+        return *nmoves_;
     return defaultValue;
 }
-const std::shared_ptr<uint64_t> &States::getNMoves() const noexcept
+const std::shared_ptr<uint64_t> &States::getNmoves() const noexcept
 {
-    return nMoves_;
+    return nmoves_;
 }
-void States::setNMoves(const uint64_t &pNMoves) noexcept
+void States::setNmoves(const uint64_t &pNmoves) noexcept
 {
-    nMoves_ = std::make_shared<uint64_t>(pNMoves);
+    nmoves_ = std::make_shared<uint64_t>(pNmoves);
     dirtyFlag_[4] = true;
 }
 
 
 
 
-const std::string &States::getValueOfWhiteCaptures() const noexcept
+const std::string &States::getValueOfWhitecaptures() const noexcept
 {
     const static std::string defaultValue = std::string();
-    if(whiteCaptures_)
-        return *whiteCaptures_;
+    if(whitecaptures_)
+        return *whitecaptures_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &States::getWhiteCaptures() const noexcept
+const std::shared_ptr<std::string> &States::getWhitecaptures() const noexcept
 {
-    return whiteCaptures_;
+    return whitecaptures_;
 }
-void States::setWhiteCaptures(const std::string &pWhiteCaptures) noexcept
+void States::setWhitecaptures(const std::string &pWhitecaptures) noexcept
 {
-    whiteCaptures_ = std::make_shared<std::string>(pWhiteCaptures);
+    whitecaptures_ = std::make_shared<std::string>(pWhitecaptures);
     dirtyFlag_[5] = true;
 }
-void States::setWhiteCaptures(std::string &&pWhiteCaptures) noexcept
+void States::setWhitecaptures(std::string &&pWhitecaptures) noexcept
 {
-    whiteCaptures_ = std::make_shared<std::string>(std::move(pWhiteCaptures));
+    whitecaptures_ = std::make_shared<std::string>(std::move(pWhitecaptures));
     dirtyFlag_[5] = true;
 }
 
 
 
 
-const std::string &States::getValueOfBlackCaptures() const noexcept
+const std::string &States::getValueOfBlackcaptures() const noexcept
 {
     const static std::string defaultValue = std::string();
-    if(blackCaptures_)
-        return *blackCaptures_;
+    if(blackcaptures_)
+        return *blackcaptures_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &States::getBlackCaptures() const noexcept
+const std::shared_ptr<std::string> &States::getBlackcaptures() const noexcept
 {
-    return blackCaptures_;
+    return blackcaptures_;
 }
-void States::setBlackCaptures(const std::string &pBlackCaptures) noexcept
+void States::setBlackcaptures(const std::string &pBlackcaptures) noexcept
 {
-    blackCaptures_ = std::make_shared<std::string>(pBlackCaptures);
+    blackcaptures_ = std::make_shared<std::string>(pBlackcaptures);
     dirtyFlag_[6] = true;
 }
-void States::setBlackCaptures(std::string &&pBlackCaptures) noexcept
+void States::setBlackcaptures(std::string &&pBlackcaptures) noexcept
 {
-    blackCaptures_ = std::make_shared<std::string>(std::move(pBlackCaptures));
+    blackcaptures_ = std::make_shared<std::string>(std::move(pBlackcaptures));
     dirtyFlag_[6] = true;
 }
 
@@ -770,13 +770,13 @@ void States::updateId(const uint64_t id)
 const std::vector<std::string> &States::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
-        "state_id",
+        "stateId",
         "state",
         "player",
-        "endgame_state",
-        "n_moves",
-        "white_captures",
-        "black_captures",
+        "endgameState",
+        "nMoves",
+        "whiteCaptures",
+        "blackCaptures",
         "board",
         "created"
     };
@@ -787,9 +787,9 @@ void States::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
     if(dirtyFlag_[0])
     {
-        if(getStateId())
+        if(getStateid())
         {
-            binder << getValueOfStateId();
+            binder << getValueOfStateid();
         }
         else
         {
@@ -820,9 +820,9 @@ void States::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[3])
     {
-        if(getEndgameState())
+        if(getEndgamestate())
         {
-            binder << getValueOfEndgameState();
+            binder << getValueOfEndgamestate();
         }
         else
         {
@@ -831,9 +831,9 @@ void States::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[4])
     {
-        if(getNMoves())
+        if(getNmoves())
         {
-            binder << getValueOfNMoves();
+            binder << getValueOfNmoves();
         }
         else
         {
@@ -842,9 +842,9 @@ void States::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getWhiteCaptures())
+        if(getWhitecaptures())
         {
-            binder << getValueOfWhiteCaptures();
+            binder << getValueOfWhitecaptures();
         }
         else
         {
@@ -853,9 +853,9 @@ void States::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[6])
     {
-        if(getBlackCaptures())
+        if(getBlackcaptures())
         {
-            binder << getValueOfBlackCaptures();
+            binder << getValueOfBlackcaptures();
         }
         else
         {
@@ -932,9 +932,9 @@ void States::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
     if(dirtyFlag_[0])
     {
-        if(getStateId())
+        if(getStateid())
         {
-            binder << getValueOfStateId();
+            binder << getValueOfStateid();
         }
         else
         {
@@ -965,9 +965,9 @@ void States::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[3])
     {
-        if(getEndgameState())
+        if(getEndgamestate())
         {
-            binder << getValueOfEndgameState();
+            binder << getValueOfEndgamestate();
         }
         else
         {
@@ -976,9 +976,9 @@ void States::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[4])
     {
-        if(getNMoves())
+        if(getNmoves())
         {
-            binder << getValueOfNMoves();
+            binder << getValueOfNmoves();
         }
         else
         {
@@ -987,9 +987,9 @@ void States::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getWhiteCaptures())
+        if(getWhitecaptures())
         {
-            binder << getValueOfWhiteCaptures();
+            binder << getValueOfWhitecaptures();
         }
         else
         {
@@ -998,9 +998,9 @@ void States::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[6])
     {
-        if(getBlackCaptures())
+        if(getBlackcaptures())
         {
-            binder << getValueOfBlackCaptures();
+            binder << getValueOfBlackcaptures();
         }
         else
         {
@@ -1033,13 +1033,13 @@ void States::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 Json::Value States::toJson() const
 {
     Json::Value ret;
-    if(getStateId())
+    if(getStateid())
     {
-        ret["state_id"]=(Json::UInt64)getValueOfStateId();
+        ret["stateId"]=(Json::UInt64)getValueOfStateid();
     }
     else
     {
-        ret["state_id"]=Json::Value();
+        ret["stateId"]=Json::Value();
     }
     if(getState())
     {
@@ -1057,37 +1057,37 @@ Json::Value States::toJson() const
     {
         ret["player"]=Json::Value();
     }
-    if(getEndgameState())
+    if(getEndgamestate())
     {
-        ret["endgame_state"]=getValueOfEndgameState();
+        ret["endgameState"]=getValueOfEndgamestate();
     }
     else
     {
-        ret["endgame_state"]=Json::Value();
+        ret["endgameState"]=Json::Value();
     }
-    if(getNMoves())
+    if(getNmoves())
     {
-        ret["n_moves"]=(Json::UInt64)getValueOfNMoves();
-    }
-    else
-    {
-        ret["n_moves"]=Json::Value();
-    }
-    if(getWhiteCaptures())
-    {
-        ret["white_captures"]=getValueOfWhiteCaptures();
+        ret["nMoves"]=(Json::UInt64)getValueOfNmoves();
     }
     else
     {
-        ret["white_captures"]=Json::Value();
+        ret["nMoves"]=Json::Value();
     }
-    if(getBlackCaptures())
+    if(getWhitecaptures())
     {
-        ret["black_captures"]=getValueOfBlackCaptures();
+        ret["whiteCaptures"]=getValueOfWhitecaptures();
     }
     else
     {
-        ret["black_captures"]=Json::Value();
+        ret["whiteCaptures"]=Json::Value();
+    }
+    if(getBlackcaptures())
+    {
+        ret["blackCaptures"]=getValueOfBlackcaptures();
+    }
+    else
+    {
+        ret["blackCaptures"]=Json::Value();
     }
     if(getBoard())
     {
@@ -1116,9 +1116,9 @@ Json::Value States::toMasqueradedJson(
     {
         if(!pMasqueradingVector[0].empty())
         {
-            if(getStateId())
+            if(getStateid())
             {
-                ret[pMasqueradingVector[0]]=(Json::UInt64)getValueOfStateId();
+                ret[pMasqueradingVector[0]]=(Json::UInt64)getValueOfStateid();
             }
             else
             {
@@ -1149,9 +1149,9 @@ Json::Value States::toMasqueradedJson(
         }
         if(!pMasqueradingVector[3].empty())
         {
-            if(getEndgameState())
+            if(getEndgamestate())
             {
-                ret[pMasqueradingVector[3]]=getValueOfEndgameState();
+                ret[pMasqueradingVector[3]]=getValueOfEndgamestate();
             }
             else
             {
@@ -1160,9 +1160,9 @@ Json::Value States::toMasqueradedJson(
         }
         if(!pMasqueradingVector[4].empty())
         {
-            if(getNMoves())
+            if(getNmoves())
             {
-                ret[pMasqueradingVector[4]]=(Json::UInt64)getValueOfNMoves();
+                ret[pMasqueradingVector[4]]=(Json::UInt64)getValueOfNmoves();
             }
             else
             {
@@ -1171,9 +1171,9 @@ Json::Value States::toMasqueradedJson(
         }
         if(!pMasqueradingVector[5].empty())
         {
-            if(getWhiteCaptures())
+            if(getWhitecaptures())
             {
-                ret[pMasqueradingVector[5]]=getValueOfWhiteCaptures();
+                ret[pMasqueradingVector[5]]=getValueOfWhitecaptures();
             }
             else
             {
@@ -1182,9 +1182,9 @@ Json::Value States::toMasqueradedJson(
         }
         if(!pMasqueradingVector[6].empty())
         {
-            if(getBlackCaptures())
+            if(getBlackcaptures())
             {
-                ret[pMasqueradingVector[6]]=getValueOfBlackCaptures();
+                ret[pMasqueradingVector[6]]=getValueOfBlackcaptures();
             }
             else
             {
@@ -1216,13 +1216,13 @@ Json::Value States::toMasqueradedJson(
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
-    if(getStateId())
+    if(getStateid())
     {
-        ret["state_id"]=(Json::UInt64)getValueOfStateId();
+        ret["stateId"]=(Json::UInt64)getValueOfStateid();
     }
     else
     {
-        ret["state_id"]=Json::Value();
+        ret["stateId"]=Json::Value();
     }
     if(getState())
     {
@@ -1240,37 +1240,37 @@ Json::Value States::toMasqueradedJson(
     {
         ret["player"]=Json::Value();
     }
-    if(getEndgameState())
+    if(getEndgamestate())
     {
-        ret["endgame_state"]=getValueOfEndgameState();
+        ret["endgameState"]=getValueOfEndgamestate();
     }
     else
     {
-        ret["endgame_state"]=Json::Value();
+        ret["endgameState"]=Json::Value();
     }
-    if(getNMoves())
+    if(getNmoves())
     {
-        ret["n_moves"]=(Json::UInt64)getValueOfNMoves();
-    }
-    else
-    {
-        ret["n_moves"]=Json::Value();
-    }
-    if(getWhiteCaptures())
-    {
-        ret["white_captures"]=getValueOfWhiteCaptures();
+        ret["nMoves"]=(Json::UInt64)getValueOfNmoves();
     }
     else
     {
-        ret["white_captures"]=Json::Value();
+        ret["nMoves"]=Json::Value();
     }
-    if(getBlackCaptures())
+    if(getWhitecaptures())
     {
-        ret["black_captures"]=getValueOfBlackCaptures();
+        ret["whiteCaptures"]=getValueOfWhitecaptures();
     }
     else
     {
-        ret["black_captures"]=Json::Value();
+        ret["whiteCaptures"]=Json::Value();
+    }
+    if(getBlackcaptures())
+    {
+        ret["blackCaptures"]=getValueOfBlackcaptures();
+    }
+    else
+    {
+        ret["blackCaptures"]=Json::Value();
     }
     if(getBoard())
     {
@@ -1293,9 +1293,9 @@ Json::Value States::toMasqueradedJson(
 
 bool States::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
-    if(pJson.isMember("state_id"))
+    if(pJson.isMember("stateId"))
     {
-        if(!validJsonOfField(0, "state_id", pJson["state_id"], err, true))
+        if(!validJsonOfField(0, "stateId", pJson["stateId"], err, true))
             return false;
     }
     if(pJson.isMember("state"))
@@ -1318,44 +1318,44 @@ bool States::validateJsonForCreation(const Json::Value &pJson, std::string &err)
         err="The player column cannot be null";
         return false;
     }
-    if(pJson.isMember("endgame_state"))
+    if(pJson.isMember("endgameState"))
     {
-        if(!validJsonOfField(3, "endgame_state", pJson["endgame_state"], err, true))
+        if(!validJsonOfField(3, "endgameState", pJson["endgameState"], err, true))
             return false;
     }
     else
     {
-        err="The endgame_state column cannot be null";
+        err="The endgameState column cannot be null";
         return false;
     }
-    if(pJson.isMember("n_moves"))
+    if(pJson.isMember("nMoves"))
     {
-        if(!validJsonOfField(4, "n_moves", pJson["n_moves"], err, true))
+        if(!validJsonOfField(4, "nMoves", pJson["nMoves"], err, true))
             return false;
     }
     else
     {
-        err="The n_moves column cannot be null";
+        err="The nMoves column cannot be null";
         return false;
     }
-    if(pJson.isMember("white_captures"))
+    if(pJson.isMember("whiteCaptures"))
     {
-        if(!validJsonOfField(5, "white_captures", pJson["white_captures"], err, true))
+        if(!validJsonOfField(5, "whiteCaptures", pJson["whiteCaptures"], err, true))
             return false;
     }
     else
     {
-        err="The white_captures column cannot be null";
+        err="The whiteCaptures column cannot be null";
         return false;
     }
-    if(pJson.isMember("black_captures"))
+    if(pJson.isMember("blackCaptures"))
     {
-        if(!validJsonOfField(6, "black_captures", pJson["black_captures"], err, true))
+        if(!validJsonOfField(6, "blackCaptures", pJson["blackCaptures"], err, true))
             return false;
     }
     else
     {
-        err="The black_captures column cannot be null";
+        err="The blackCaptures column cannot be null";
         return false;
     }
     if(pJson.isMember("board"))
@@ -1495,9 +1495,9 @@ bool States::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool States::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
-    if(pJson.isMember("state_id"))
+    if(pJson.isMember("stateId"))
     {
-        if(!validJsonOfField(0, "state_id", pJson["state_id"], err, false))
+        if(!validJsonOfField(0, "stateId", pJson["stateId"], err, false))
             return false;
     }
     else
@@ -1515,24 +1515,24 @@ bool States::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(2, "player", pJson["player"], err, false))
             return false;
     }
-    if(pJson.isMember("endgame_state"))
+    if(pJson.isMember("endgameState"))
     {
-        if(!validJsonOfField(3, "endgame_state", pJson["endgame_state"], err, false))
+        if(!validJsonOfField(3, "endgameState", pJson["endgameState"], err, false))
             return false;
     }
-    if(pJson.isMember("n_moves"))
+    if(pJson.isMember("nMoves"))
     {
-        if(!validJsonOfField(4, "n_moves", pJson["n_moves"], err, false))
+        if(!validJsonOfField(4, "nMoves", pJson["nMoves"], err, false))
             return false;
     }
-    if(pJson.isMember("white_captures"))
+    if(pJson.isMember("whiteCaptures"))
     {
-        if(!validJsonOfField(5, "white_captures", pJson["white_captures"], err, false))
+        if(!validJsonOfField(5, "whiteCaptures", pJson["whiteCaptures"], err, false))
             return false;
     }
-    if(pJson.isMember("black_captures"))
+    if(pJson.isMember("blackCaptures"))
     {
-        if(!validJsonOfField(6, "black_captures", pJson["black_captures"], err, false))
+        if(!validJsonOfField(6, "blackCaptures", pJson["blackCaptures"], err, false))
             return false;
     }
     if(pJson.isMember("board"))

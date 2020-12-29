@@ -18,7 +18,7 @@ Game::Ptr Game::lookup_game(uint64_t game_id) {
 Game Game::create_new_game(const std::string& white, const std::string& black) {
     uint64_t state_id = State::insert_state(ChessState());
     const auto& db = drogon::app().getDbClient();
-    db->execSqlSync("INSERT INTO games(state_id, white, black) VALUES (?, ?, ?)",
+    db->execSqlSync("INSERT INTO games(stateId, white, black) VALUES (?, ?, ?)",
                     state_id, white, black);
     uint64_t game_id = last_insert_rowid();
     const auto& game = lookup_game(game_id);
@@ -30,8 +30,8 @@ Game Game::create_new_game(const std::string& white, const std::string& black) {
 void Game::history_push(uint64_t state_id) {
     const auto& db = drogon::app().getDbClient();
     uint64_t game_id = getPrimaryKey();
-    db->execSqlSync("UPDATE games SET state_id = ? WHERE game_id = ?", state_id, game_id);
-    db->execSqlSync("INSERT INTO history (game_id, state_id) VALUES (?, ?)", game_id, state_id);
+    db->execSqlSync("UPDATE games SET stateId = ? WHERE gameId = ?", state_id, game_id);
+    db->execSqlSync("INSERT INTO history (gameId, stateId) VALUES (?, ?)", game_id, state_id);
 }
 }
 }

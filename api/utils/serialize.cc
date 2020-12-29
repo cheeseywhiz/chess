@@ -169,10 +169,10 @@ Json::Value SerializedState::to_json(void) const {
     Json::Value json;
     json["state"] = state;
     json["player"] = player;
-    json["endgame_state"] = endgame_state;
-    json["n_moves"] = n_moves;
-    json["white_captures"] = white_captures;
-    json["black_captures"] = black_captures;
+    json["endgameState"] = endgame_state;
+    json["nMoves"] = n_moves;
+    json["whiteCaptures"] = white_captures;
+    json["blackCaptures"] = black_captures;
     json["board"] = board;
     return json;
 }

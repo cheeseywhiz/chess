@@ -40,13 +40,13 @@ class States
   public:
     struct Cols
     {
-        static const std::string _state_id;
+        static const std::string _stateId;
         static const std::string _state;
         static const std::string _player;
-        static const std::string _endgame_state;
-        static const std::string _n_moves;
-        static const std::string _white_captures;
-        static const std::string _black_captures;
+        static const std::string _endgameState;
+        static const std::string _nMoves;
+        static const std::string _whiteCaptures;
+        static const std::string _blackCaptures;
         static const std::string _board;
         static const std::string _created;
     };
@@ -100,15 +100,15 @@ class States
                           std::string &err, 
                           bool isForCreation);
 
-    /**  For column state_id  */
-    ///Get the value of the column state_id, returns the default value if the column is null
-    const uint64_t &getValueOfStateId() const noexcept;
+    /**  For column stateId  */
+    ///Get the value of the column stateId, returns the default value if the column is null
+    const uint64_t &getValueOfStateid() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<uint64_t> &getStateId() const noexcept;
+    const std::shared_ptr<uint64_t> &getStateid() const noexcept;
 
-    ///Set the value of the column state_id
-    void setStateId(const uint64_t &pStateId) noexcept;
-    void setStateIdToNull() noexcept;
+    ///Set the value of the column stateId
+    void setStateid(const uint64_t &pStateid) noexcept;
+    void setStateidToNull() noexcept;
 
 
     /**  For column state  */
@@ -133,47 +133,47 @@ class States
     void setPlayer(std::string &&pPlayer) noexcept;
 
 
-    /**  For column endgame_state  */
-    ///Get the value of the column endgame_state, returns the default value if the column is null
-    const std::string &getValueOfEndgameState() const noexcept;
+    /**  For column endgameState  */
+    ///Get the value of the column endgameState, returns the default value if the column is null
+    const std::string &getValueOfEndgamestate() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getEndgameState() const noexcept;
+    const std::shared_ptr<std::string> &getEndgamestate() const noexcept;
 
-    ///Set the value of the column endgame_state
-    void setEndgameState(const std::string &pEndgameState) noexcept;
-    void setEndgameState(std::string &&pEndgameState) noexcept;
+    ///Set the value of the column endgameState
+    void setEndgamestate(const std::string &pEndgamestate) noexcept;
+    void setEndgamestate(std::string &&pEndgamestate) noexcept;
 
 
-    /**  For column n_moves  */
-    ///Get the value of the column n_moves, returns the default value if the column is null
-    const uint64_t &getValueOfNMoves() const noexcept;
+    /**  For column nMoves  */
+    ///Get the value of the column nMoves, returns the default value if the column is null
+    const uint64_t &getValueOfNmoves() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<uint64_t> &getNMoves() const noexcept;
+    const std::shared_ptr<uint64_t> &getNmoves() const noexcept;
 
-    ///Set the value of the column n_moves
-    void setNMoves(const uint64_t &pNMoves) noexcept;
+    ///Set the value of the column nMoves
+    void setNmoves(const uint64_t &pNmoves) noexcept;
 
 
-    /**  For column white_captures  */
-    ///Get the value of the column white_captures, returns the default value if the column is null
-    const std::string &getValueOfWhiteCaptures() const noexcept;
+    /**  For column whiteCaptures  */
+    ///Get the value of the column whiteCaptures, returns the default value if the column is null
+    const std::string &getValueOfWhitecaptures() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getWhiteCaptures() const noexcept;
+    const std::shared_ptr<std::string> &getWhitecaptures() const noexcept;
 
-    ///Set the value of the column white_captures
-    void setWhiteCaptures(const std::string &pWhiteCaptures) noexcept;
-    void setWhiteCaptures(std::string &&pWhiteCaptures) noexcept;
+    ///Set the value of the column whiteCaptures
+    void setWhitecaptures(const std::string &pWhitecaptures) noexcept;
+    void setWhitecaptures(std::string &&pWhitecaptures) noexcept;
 
 
-    /**  For column black_captures  */
-    ///Get the value of the column black_captures, returns the default value if the column is null
-    const std::string &getValueOfBlackCaptures() const noexcept;
+    /**  For column blackCaptures  */
+    ///Get the value of the column blackCaptures, returns the default value if the column is null
+    const std::string &getValueOfBlackcaptures() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getBlackCaptures() const noexcept;
+    const std::shared_ptr<std::string> &getBlackcaptures() const noexcept;
 
-    ///Set the value of the column black_captures
-    void setBlackCaptures(const std::string &pBlackCaptures) noexcept;
-    void setBlackCaptures(std::string &&pBlackCaptures) noexcept;
+    ///Set the value of the column blackCaptures
+    void setBlackcaptures(const std::string &pBlackcaptures) noexcept;
+    void setBlackcaptures(std::string &&pBlackcaptures) noexcept;
 
 
     /**  For column board  */
@@ -212,13 +212,13 @@ class States
     void updateArgs(drogon::orm::internal::SqlBinder &binder) const;
     ///For mysql or sqlite3
     void updateId(const uint64_t id);
-    std::shared_ptr<uint64_t> stateId_;
+    std::shared_ptr<uint64_t> stateid_;
     std::shared_ptr<std::string> state_;
     std::shared_ptr<std::string> player_;
-    std::shared_ptr<std::string> endgameState_;
-    std::shared_ptr<uint64_t> nMoves_;
-    std::shared_ptr<std::string> whiteCaptures_;
-    std::shared_ptr<std::string> blackCaptures_;
+    std::shared_ptr<std::string> endgamestate_;
+    std::shared_ptr<uint64_t> nmoves_;
+    std::shared_ptr<std::string> whitecaptures_;
+    std::shared_ptr<std::string> blackcaptures_;
     std::shared_ptr<std::string> board_;
     std::shared_ptr<::trantor::Date> created_;
     struct MetaData
@@ -236,13 +236,13 @@ class States
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
-        static const std::string sql="select * from " + tableName + " where state_id = ?";
+        static const std::string sql="select * from " + tableName + " where stateId = ?";
         return sql;                   
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
-        static const std::string sql="delete from " + tableName + " where state_id = ?";
+        static const std::string sql="delete from " + tableName + " where stateId = ?";
         return sql;                   
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -252,7 +252,7 @@ class States
         needSelection = false;
         if(dirtyFlag_[0])
         {
-            sql += "state_id,";
+            sql += "stateId,";
             ++parametersCount;
         }
         if(dirtyFlag_[1])
@@ -267,22 +267,22 @@ class States
         }
         if(dirtyFlag_[3])
         {
-            sql += "endgame_state,";
+            sql += "endgameState,";
             ++parametersCount;
         }
         if(dirtyFlag_[4])
         {
-            sql += "n_moves,";
+            sql += "nMoves,";
             ++parametersCount;
         }
         if(dirtyFlag_[5])
         {
-            sql += "white_captures,";
+            sql += "whiteCaptures,";
             ++parametersCount;
         }
         if(dirtyFlag_[6])
         {
-            sql += "black_captures,";
+            sql += "blackCaptures,";
             ++parametersCount;
         }
         if(dirtyFlag_[7])

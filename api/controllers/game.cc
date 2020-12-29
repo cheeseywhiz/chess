@@ -20,7 +20,7 @@ void api::game::get_game(const HttpRequestPtr& req, Callback&& callback,
     if (username != *game->getWhite() && username != *game->getBlack())
         return callback(to_error(HttpStatusCode::k403Forbidden, "game is not owned by username"));
     Json::Value json = game->toJson();
-    uint64_t state_id = *game->getStateId();
+    uint64_t state_id = *game->getStateid();
     ChessState chess_state = State::lookup_state(state_id);
     SerializedState serialized_state(chess_state);
     json["state"] = serialized_state.to_json();

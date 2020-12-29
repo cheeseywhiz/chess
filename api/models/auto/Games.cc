@@ -12,18 +12,18 @@
 using namespace drogon;
 using namespace drogon_model::sqlite3;
 
-const std::string Games::Cols::_game_id = "game_id";
-const std::string Games::Cols::_state_id = "state_id";
+const std::string Games::Cols::_gameId = "gameId";
+const std::string Games::Cols::_stateId = "stateId";
 const std::string Games::Cols::_white = "white";
 const std::string Games::Cols::_black = "black";
 const std::string Games::Cols::_created = "created";
-const std::string Games::primaryKeyName = "game_id";
+const std::string Games::primaryKeyName = "gameId";
 const bool Games::hasPrimaryKey = true;
 const std::string Games::tableName = "games";
 
 const std::vector<typename Games::MetaData> Games::metaData_={
-{"game_id","uint64_t","integer",8,0,1,0},
-{"state_id","uint64_t","integer",8,0,0,1},
+{"gameId","uint64_t","integer",8,0,1,0},
+{"stateId","uint64_t","integer",8,0,0,1},
 {"white","std::string","varchar",0,0,0,1},
 {"black","std::string","varchar",0,0,0,1},
 {"created","::trantor::Date","datetime",0,0,0,1}
@@ -37,13 +37,13 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
-        if(!r["game_id"].isNull())
+        if(!r["gameId"].isNull())
         {
-            gameId_=std::make_shared<uint64_t>(r["game_id"].as<uint64_t>());
+            gameid_=std::make_shared<uint64_t>(r["gameId"].as<uint64_t>());
         }
-        if(!r["state_id"].isNull())
+        if(!r["stateId"].isNull())
         {
-            stateId_=std::make_shared<uint64_t>(r["state_id"].as<uint64_t>());
+            stateid_=std::make_shared<uint64_t>(r["stateId"].as<uint64_t>());
         }
         if(!r["white"].isNull())
         {
@@ -85,12 +85,12 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 0;
         if(!r[index].isNull())
         {
-            gameId_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
+            gameid_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
         }
         index = offset + 1;
         if(!r[index].isNull())
         {
-            stateId_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
+            stateid_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
         }
         index = offset + 2;
         if(!r[index].isNull())
@@ -138,7 +138,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
         dirtyFlag_[0] = true;
         if(!pJson[pMasqueradingVector[0]].isNull())
         {
-            gameId_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[0]].asUInt64());
+            gameid_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[0]].asUInt64());
         }
     }
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
@@ -146,7 +146,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
         dirtyFlag_[1] = true;
         if(!pJson[pMasqueradingVector[1]].isNull())
         {
-            stateId_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[1]].asUInt64());
+            stateid_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[1]].asUInt64());
         }
     }
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
@@ -192,20 +192,20 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
 
 Games::Games(const Json::Value &pJson) noexcept(false)
 {
-    if(pJson.isMember("game_id"))
+    if(pJson.isMember("gameId"))
     {
         dirtyFlag_[0]=true;
-        if(!pJson["game_id"].isNull())
+        if(!pJson["gameId"].isNull())
         {
-            gameId_=std::make_shared<uint64_t>((uint64_t)pJson["game_id"].asUInt64());
+            gameid_=std::make_shared<uint64_t>((uint64_t)pJson["gameId"].asUInt64());
         }
     }
-    if(pJson.isMember("state_id"))
+    if(pJson.isMember("stateId"))
     {
         dirtyFlag_[1]=true;
-        if(!pJson["state_id"].isNull())
+        if(!pJson["stateId"].isNull())
         {
-            stateId_=std::make_shared<uint64_t>((uint64_t)pJson["state_id"].asUInt64());
+            stateid_=std::make_shared<uint64_t>((uint64_t)pJson["stateId"].asUInt64());
         }
     }
     if(pJson.isMember("white"))
@@ -261,7 +261,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
         {
-            gameId_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[0]].asUInt64());
+            gameid_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[0]].asUInt64());
         }
     }
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
@@ -269,7 +269,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[1] = true;
         if(!pJson[pMasqueradingVector[1]].isNull())
         {
-            stateId_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[1]].asUInt64());
+            stateid_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[1]].asUInt64());
         }
     }
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
@@ -315,19 +315,19 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
                                                                     
 void Games::updateByJson(const Json::Value &pJson) noexcept(false)
 {
-    if(pJson.isMember("game_id"))
+    if(pJson.isMember("gameId"))
     {
-        if(!pJson["game_id"].isNull())
+        if(!pJson["gameId"].isNull())
         {
-            gameId_=std::make_shared<uint64_t>((uint64_t)pJson["game_id"].asUInt64());
+            gameid_=std::make_shared<uint64_t>((uint64_t)pJson["gameId"].asUInt64());
         }
     }
-    if(pJson.isMember("state_id"))
+    if(pJson.isMember("stateId"))
     {
         dirtyFlag_[1] = true;
-        if(!pJson["state_id"].isNull())
+        if(!pJson["stateId"].isNull())
         {
-            stateId_=std::make_shared<uint64_t>((uint64_t)pJson["state_id"].asUInt64());
+            stateid_=std::make_shared<uint64_t>((uint64_t)pJson["stateId"].asUInt64());
         }
     }
     if(pJson.isMember("white"))
@@ -371,50 +371,50 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
     }
 }
 
-const uint64_t &Games::getValueOfGameId() const noexcept
+const uint64_t &Games::getValueOfGameid() const noexcept
 {
     const static uint64_t defaultValue = uint64_t();
-    if(gameId_)
-        return *gameId_;
+    if(gameid_)
+        return *gameid_;
     return defaultValue;
 }
-const std::shared_ptr<uint64_t> &Games::getGameId() const noexcept
+const std::shared_ptr<uint64_t> &Games::getGameid() const noexcept
 {
-    return gameId_;
+    return gameid_;
 }
-void Games::setGameId(const uint64_t &pGameId) noexcept
+void Games::setGameid(const uint64_t &pGameid) noexcept
 {
-    gameId_ = std::make_shared<uint64_t>(pGameId);
+    gameid_ = std::make_shared<uint64_t>(pGameid);
     dirtyFlag_[0] = true;
 }
 
 
-void Games::setGameIdToNull() noexcept
+void Games::setGameidToNull() noexcept
 {
-    gameId_.reset();
+    gameid_.reset();
     dirtyFlag_[0] = true;
 }
 
 const typename Games::PrimaryKeyType & Games::getPrimaryKey() const
 {
-    assert(gameId_);
-    return *gameId_;
+    assert(gameid_);
+    return *gameid_;
 }
 
-const uint64_t &Games::getValueOfStateId() const noexcept
+const uint64_t &Games::getValueOfStateid() const noexcept
 {
     const static uint64_t defaultValue = uint64_t();
-    if(stateId_)
-        return *stateId_;
+    if(stateid_)
+        return *stateid_;
     return defaultValue;
 }
-const std::shared_ptr<uint64_t> &Games::getStateId() const noexcept
+const std::shared_ptr<uint64_t> &Games::getStateid() const noexcept
 {
-    return stateId_;
+    return stateid_;
 }
-void Games::setStateId(const uint64_t &pStateId) noexcept
+void Games::setStateid(const uint64_t &pStateid) noexcept
 {
-    stateId_ = std::make_shared<uint64_t>(pStateId);
+    stateid_ = std::make_shared<uint64_t>(pStateid);
     dirtyFlag_[1] = true;
 }
 
@@ -498,8 +498,8 @@ void Games::updateId(const uint64_t id)
 const std::vector<std::string> &Games::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
-        "game_id",
-        "state_id",
+        "gameId",
+        "stateId",
         "white",
         "black",
         "created"
@@ -511,9 +511,9 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
     if(dirtyFlag_[0])
     {
-        if(getGameId())
+        if(getGameid())
         {
-            binder << getValueOfGameId();
+            binder << getValueOfGameid();
         }
         else
         {
@@ -522,9 +522,9 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[1])
     {
-        if(getStateId())
+        if(getStateid())
         {
-            binder << getValueOfStateId();
+            binder << getValueOfStateid();
         }
         else
         {
@@ -596,9 +596,9 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
     if(dirtyFlag_[0])
     {
-        if(getGameId())
+        if(getGameid())
         {
-            binder << getValueOfGameId();
+            binder << getValueOfGameid();
         }
         else
         {
@@ -607,9 +607,9 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[1])
     {
-        if(getStateId())
+        if(getStateid())
         {
-            binder << getValueOfStateId();
+            binder << getValueOfStateid();
         }
         else
         {
@@ -653,21 +653,21 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 Json::Value Games::toJson() const
 {
     Json::Value ret;
-    if(getGameId())
+    if(getGameid())
     {
-        ret["game_id"]=(Json::UInt64)getValueOfGameId();
+        ret["gameId"]=(Json::UInt64)getValueOfGameid();
     }
     else
     {
-        ret["game_id"]=Json::Value();
+        ret["gameId"]=Json::Value();
     }
-    if(getStateId())
+    if(getStateid())
     {
-        ret["state_id"]=(Json::UInt64)getValueOfStateId();
+        ret["stateId"]=(Json::UInt64)getValueOfStateid();
     }
     else
     {
-        ret["state_id"]=Json::Value();
+        ret["stateId"]=Json::Value();
     }
     if(getWhite())
     {
@@ -704,9 +704,9 @@ Json::Value Games::toMasqueradedJson(
     {
         if(!pMasqueradingVector[0].empty())
         {
-            if(getGameId())
+            if(getGameid())
             {
-                ret[pMasqueradingVector[0]]=(Json::UInt64)getValueOfGameId();
+                ret[pMasqueradingVector[0]]=(Json::UInt64)getValueOfGameid();
             }
             else
             {
@@ -715,9 +715,9 @@ Json::Value Games::toMasqueradedJson(
         }
         if(!pMasqueradingVector[1].empty())
         {
-            if(getStateId())
+            if(getStateid())
             {
-                ret[pMasqueradingVector[1]]=(Json::UInt64)getValueOfStateId();
+                ret[pMasqueradingVector[1]]=(Json::UInt64)getValueOfStateid();
             }
             else
             {
@@ -760,21 +760,21 @@ Json::Value Games::toMasqueradedJson(
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
-    if(getGameId())
+    if(getGameid())
     {
-        ret["game_id"]=(Json::UInt64)getValueOfGameId();
+        ret["gameId"]=(Json::UInt64)getValueOfGameid();
     }
     else
     {
-        ret["game_id"]=Json::Value();
+        ret["gameId"]=Json::Value();
     }
-    if(getStateId())
+    if(getStateid())
     {
-        ret["state_id"]=(Json::UInt64)getValueOfStateId();
+        ret["stateId"]=(Json::UInt64)getValueOfStateid();
     }
     else
     {
-        ret["state_id"]=Json::Value();
+        ret["stateId"]=Json::Value();
     }
     if(getWhite())
     {
@@ -805,19 +805,19 @@ Json::Value Games::toMasqueradedJson(
 
 bool Games::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
-    if(pJson.isMember("game_id"))
+    if(pJson.isMember("gameId"))
     {
-        if(!validJsonOfField(0, "game_id", pJson["game_id"], err, true))
+        if(!validJsonOfField(0, "gameId", pJson["gameId"], err, true))
             return false;
     }
-    if(pJson.isMember("state_id"))
+    if(pJson.isMember("stateId"))
     {
-        if(!validJsonOfField(1, "state_id", pJson["state_id"], err, true))
+        if(!validJsonOfField(1, "stateId", pJson["stateId"], err, true))
             return false;
     }
     else
     {
-        err="The state_id column cannot be null";
+        err="The stateId column cannot be null";
         return false;
     }
     if(pJson.isMember("white"))
@@ -915,9 +915,9 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Games::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
-    if(pJson.isMember("game_id"))
+    if(pJson.isMember("gameId"))
     {
-        if(!validJsonOfField(0, "game_id", pJson["game_id"], err, false))
+        if(!validJsonOfField(0, "gameId", pJson["gameId"], err, false))
             return false;
     }
     else
@@ -925,9 +925,9 @@ bool Games::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
-    if(pJson.isMember("state_id"))
+    if(pJson.isMember("stateId"))
     {
-        if(!validJsonOfField(1, "state_id", pJson["state_id"], err, false))
+        if(!validJsonOfField(1, "stateId", pJson["stateId"], err, false))
             return false;
     }
     if(pJson.isMember("white"))
