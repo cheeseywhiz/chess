@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import NewGameFormActions from './redux';
@@ -11,6 +12,7 @@ const mapStateToProps = ({ newGameForm }) => ({
 const mapDispatchToProps = (dispatch) => ({
     setPlayer: (player) => dispatch(NewGameFormActions.player.set(player)),
     setOpponent: (opponent) => dispatch(NewGameFormActions.opponent.set(opponent)),
+    clearRedirectUrl: () => dispatch(NewGameFormActions.redirectUrl.set()),
     clear: () => dispatch(NewGameFormActions.clear()),
     submit: (player, opponent) => dispatch(NewGameFormActions.submit(player, opponent)),
 });
@@ -23,8 +25,14 @@ class NewGameForm extends React.Component {
 
     render() {
         const {
-            newGameForm, setPlayer, setOpponent, submit,
+            newGameForm, setPlayer, setOpponent, clearRedirectUrl, submit,
         } = this.props;
+
+        if (newGameForm.redirectUrl) {
+            setTimeout(() => clearRedirectUrl(), 0);
+            return <Redirect push to={newGameForm.redirectUrl} />;
+        }
+
         const players = ['White', 'Black', 'Random'];
         return (
             <Form

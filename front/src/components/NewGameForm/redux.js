@@ -14,6 +14,9 @@ const types = {
             set: 'NEW_GAME_FORM_OPPONENT_INVALID_SET',
         },
     },
+    redirectUrl: {
+        set: 'NEW_GAME_FORM_REDIRECT_URL_SET',
+    },
     clear: 'NEW_GAME_FORM_CLEAR',
 };
 
@@ -26,6 +29,7 @@ const defaultState = {
         value: '',
         invalid: '',
     },
+    redirectUrl: null,
 };
 
 const actions = {
@@ -53,13 +57,19 @@ const actions = {
             }),
         },
     },
+    redirectUrl: {
+        set: (redirectUrl = defaultState.redirectUrl) => ({
+            type: types.redirectUrl.set,
+            redirectUrl,
+        }),
+    },
     clear: () => ({ type: types.clear }),
     submit: (player, opponent) => (dispatch) => {
         fetch2({
             url: '/api/game/new_game',
             json: { player, opponent },
-        }).then((game) => {
-            console.log(game);
+        }).then(({ gameId }) => {
+            dispatch(actions.redirectUrl.set(`/game?gameId=${gameId}`));
             dispatch(actions.player.invalid.set());
             dispatch(actions.opponent.invalid.set());
         }).catch(({ status, message, reason }) => {
@@ -127,4 +137,16 @@ export const reducer = combineReducers({
             }
         },
     }),
+
+    redirectUrl: (state = defaultState.redirectUrl, { type, ...action }) => {
+        switch (type) {
+        case types.redirectUrl.set: {
+            const { redirectUrl } = action;
+            return redirectUrl; }
+        case types.clear:
+            return defaultState.redirectUrl;
+        default:
+            return state;
+        }
+    },
 });
