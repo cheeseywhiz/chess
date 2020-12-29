@@ -164,4 +164,16 @@ static BoardT json_to_board(const Json::Value& json) {
 
     return board;
 }
+
+Json::Value SerializedState::to_json(void) const {
+    Json::Value json;
+    json["state"] = state;
+    json["player"] = player;
+    json["endgame_state"] = endgame_state;
+    json["n_moves"] = n_moves;
+    json["white_captures"] = white_captures;
+    json["black_captures"] = black_captures;
+    json["board"] = board;
+    return json;
+}
 } // namespace Chess

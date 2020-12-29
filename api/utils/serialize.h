@@ -23,5 +23,6 @@ struct SerializedState {
     );
     explicit SerializedState(const ChessState& chess_state_in);
     ChessState deserialize(void) const;
+    Json::Value to_json(void) const;
 };
 } // namespace Chess

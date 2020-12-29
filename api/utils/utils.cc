@@ -4,6 +4,7 @@ HttpResponsePtr to_error(HttpStatusCode status_code, const std::string& reason) 
     static const std::map<HttpStatusCode, std::string> messages = {
         { HttpStatusCode::k400BadRequest, "Bad Request" },
         { HttpStatusCode::k401Unauthorized, "Unauthorized" },
+        { HttpStatusCode::k403Forbidden, "Forbidden" },
         { HttpStatusCode::k404NotFound, "Not Found" },
         { HttpStatusCode::k409Conflict, "Conflict" },
     };

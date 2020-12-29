@@ -6,11 +6,10 @@ using drogon::HttpResponse, drogon::HttpStatusCode;
 using drogon_model::sqlite3::User;
 
 void api::user::login(const HttpRequestPtr& req, Callback&& callback) {
-    const auto& json = req->getJsonObject();
-
     if (req->getMethod() == drogon::Post) {
         // Post -> RequireJson
         // { "username": "..." }
+        const auto& json = req->getJsonObject();
         ASSERT_JSON_MEMBER(json, username);
         const auto& username = (*json)["username"].asString();
         if (!User::lookup_user(username))
