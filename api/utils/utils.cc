@@ -15,3 +15,10 @@ HttpResponsePtr to_error(HttpStatusCode status_code, const std::string& reason) 
     res2->setStatusCode(status_code);
     return res2;
 }
+
+uint64_t last_insert_rowid(void) {
+    const auto& db = drogon::app().getDbClient();
+    const auto& rows = db->execSqlSync("SELECT last_insert_rowid() AS rowid");
+    assert(rows.size() == 1);
+    return rows[0]["rowid"].as<uint64_t>();
+}

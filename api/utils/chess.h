@@ -2,6 +2,8 @@
 #pragma once
 #include <vector>
 #include <array>
+
+namespace Chess {
 using std::vector;
 using std::array;
 using std::size_t;
@@ -94,3 +96,4 @@ bool operator&(Castles, Castles);
 Castles get_possible_castles(const BoardT&, size_t, size_t, EndgameState);
 
 EndgameState get_endgame_state(const BoardT&, Player);
+} // namespace Chess

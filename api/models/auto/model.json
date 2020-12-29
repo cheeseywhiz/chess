@@ -20,7 +20,8 @@
     //means use the default character set.
     //"client_encoding": "",
     //table: An array of tables to be modelized. if the array is empty, all revealed tables are modelized.
-    "tables": [],
+    "tables": [
+    ],
     "relationships": {
         "enabled": false,
         "items": [{

@@ -1,4 +1,4 @@
-#include "Games.h"
+#include "auto/Games.h"
 
 namespace drogon_model {
 namespace sqlite3 {
@@ -9,8 +9,7 @@ class Game : public Games {
 
         // get Game by primary id
         static Ptr lookup_game(int game_id);
-        static int last_insert_game_id(void);
-        static Game last_insert_game(void);
+        static Game create_new_game(const std::string& white, const std::string& black);
 };
 }
 }

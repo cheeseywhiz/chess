@@ -19,9 +19,9 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the default build type" FORCE)
 endif()
 
-if (CMAKE_BUILD_TYPE EQUAL Debug)
+if ("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
-endif (CMAKE_BUILD_TYPE EQUAL Debug)
+endif ()
 
 add_executable(${PROJECT_NAME} main.cc)
 
@@ -48,6 +48,7 @@ aux_source_directory(controllers CTL_SRC)
 aux_source_directory(filters FILTER_SRC)
 aux_source_directory(plugins PLUGIN_SRC)
 aux_source_directory(models MODEL_SRC)
+aux_source_directory(models/auto MODEL_AUTO_SRC)
 aux_source_directory(utils UTILS_SRC)
 
 target_include_directories(${PROJECT_NAME} PRIVATE utils)
@@ -68,6 +69,7 @@ target_sources(${PROJECT_NAME}
                ${FILTER_SRC}
                ${PLUGIN_SRC}
                ${MODEL_SRC}
+               ${MODEL_AUTO_SRC}
                ${UTILS_SRC})
 # ##############################################################################
 # uncomment the following line for dynamically loading views

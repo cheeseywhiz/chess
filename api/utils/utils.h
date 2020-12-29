@@ -3,6 +3,7 @@ using drogon::HttpResponsePtr, drogon::HttpStatusCode, drogon::HttpRequestPtr, d
 
 using Callback = std::function<void (const HttpResponsePtr&)>;
 HttpResponsePtr to_error(HttpStatusCode status_code, const std::string& reason);
+uint64_t last_insert_rowid(void);
 
 #define ASSERT_JSON_MEMBER(json, member) \
     do { \

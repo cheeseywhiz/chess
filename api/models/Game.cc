@@ -1,5 +1,6 @@
 #include <cassert>
 #include "Game.h"
+#include "utils.h"
 #include <drogon/HttpAppFramework.h>
 
 namespace drogon_model {
@@ -13,16 +14,11 @@ Game::Ptr Game::lookup_game(int game_id) {
     return std::make_shared<Game>(rows[0]);
 }
 
-int Game::last_insert_game_id(void) {
+Game Game::create_new_game(const std::string& white, const std::string& black) {
     const auto& db = drogon::app().getDbClient();
-    const auto& rows = db->execSqlSync("SELECT last_insert_rowid() AS game_id");
-    assert(rows.size() == 1);
-    return rows[0]["game_id"].as<int>();
-}
-
-Game Game::last_insert_game(void) {
-    int game_id = last_insert_game_id();
-    Ptr game = lookup_game(game_id);
+    db->execSqlSync("INSERT INTO games(white, black) VALUES (?, ?)", white, black);
+    uint64_t game_id = last_insert_rowid();
+    const auto& game = lookup_game(game_id);
     assert(game);
     return *game;
 }

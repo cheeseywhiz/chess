@@ -1,4 +1,4 @@
-#include "Users.h"
+#include "auto/Users.h"
 
 namespace drogon_model {
 namespace sqlite3 {

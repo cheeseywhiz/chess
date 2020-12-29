@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <vector>
 #include "chess.h"
+
+namespace Chess {
 using std::find;
 using std::runtime_error;
 using std::vector;
@@ -399,3 +401,4 @@ player_has_no_moves(const BoardT& board, Player player, bool is_in_check)
         is_in_check ? EndgameState::Check : EndgameState::None
     ) == Castles::None;
 }
+} // namespace Chess

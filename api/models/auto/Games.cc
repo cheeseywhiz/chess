@@ -15,6 +15,7 @@ using namespace drogon_model::sqlite3;
 const std::string Games::Cols::_game_id = "game_id";
 const std::string Games::Cols::_white = "white";
 const std::string Games::Cols::_black = "black";
+const std::string Games::Cols::_created = "created";
 const std::string Games::primaryKeyName = "game_id";
 const bool Games::hasPrimaryKey = true;
 const std::string Games::tableName = "games";
@@ -22,7 +23,8 @@ const std::string Games::tableName = "games";
 const std::vector<typename Games::MetaData> Games::metaData_={
 {"game_id","uint64_t","integer",8,0,1,0},
 {"white","std::string","varchar",0,0,0,1},
-{"black","std::string","varchar",0,0,0,1}
+{"black","std::string","varchar",0,0,0,1},
+{"created","::trantor::Date","datetime",0,0,0,1}
 };
 const std::string &Games::getColumnName(size_t index) noexcept(false)
 {
@@ -45,11 +47,30 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
         {
             black_=std::make_shared<std::string>(r["black"].as<std::string>());
         }
+        if(!r["created"].isNull())
+        {
+            auto timeStr = r["created"].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(*p=='.')
+            {
+                std::string decimals(p+1,&timeStr[timeStr.length()]);
+                while(decimals.length()<6)
+                {
+                    decimals += "0";
+                }
+                decimalNum = (size_t)atol(decimals.c_str());
+            }
+            created_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 3 > r.size())
+        if(offset + 4 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -70,13 +91,33 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
         {
             black_=std::make_shared<std::string>(r[index].as<std::string>());
         }
+        index = offset + 3;
+        if(!r[index].isNull())
+        {
+            auto timeStr = r[index].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(*p=='.')
+            {
+                std::string decimals(p+1,&timeStr[timeStr.length()]);
+                while(decimals.length()<6)
+                {
+                    decimals += "0";
+                }
+                decimalNum = (size_t)atol(decimals.c_str());
+            }
+            created_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+        }
     }
 
 }
 
 Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 3)
+    if(pMasqueradingVector.size() != 4)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -103,6 +144,29 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
             black_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+        }
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson[pMasqueradingVector[3]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[3]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(*p=='.')
+            {
+                std::string decimals(p+1,&timeStr[timeStr.length()]);
+                while(decimals.length()<6)
+                {
+                    decimals += "0";
+                }
+                decimalNum = (size_t)atol(decimals.c_str());
+            }
+            created_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
         }
     }
 }
@@ -133,12 +197,35 @@ Games::Games(const Json::Value &pJson) noexcept(false)
             black_=std::make_shared<std::string>(pJson["black"].asString());
         }
     }
+    if(pJson.isMember("created"))
+    {
+        dirtyFlag_[3]=true;
+        if(!pJson["created"].isNull())
+        {
+            auto timeStr = pJson["created"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(*p=='.')
+            {
+                std::string decimals(p+1,&timeStr[timeStr.length()]);
+                while(decimals.length()<6)
+                {
+                    decimals += "0";
+                }
+                decimalNum = (size_t)atol(decimals.c_str());
+            }
+            created_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+        }
+    }
 }
 
 void Games::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 3)
+    if(pMasqueradingVector.size() != 4)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -166,6 +253,29 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
             black_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson[pMasqueradingVector[3]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[3]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(*p=='.')
+            {
+                std::string decimals(p+1,&timeStr[timeStr.length()]);
+                while(decimals.length()<6)
+                {
+                    decimals += "0";
+                }
+                decimalNum = (size_t)atol(decimals.c_str());
+            }
+            created_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+        }
+    }
 }
                                                                     
 void Games::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -191,6 +301,29 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
         if(!pJson["black"].isNull())
         {
             black_=std::make_shared<std::string>(pJson["black"].asString());
+        }
+    }
+    if(pJson.isMember("created"))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson["created"].isNull())
+        {
+            auto timeStr = pJson["created"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(*p=='.')
+            {
+                std::string decimals(p+1,&timeStr[timeStr.length()]);
+                while(decimals.length()<6)
+                {
+                    decimals += "0";
+                }
+                decimalNum = (size_t)atol(decimals.c_str());
+            }
+            created_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
         }
     }
 }
@@ -275,6 +408,26 @@ void Games::setBlack(std::string &&pBlack) noexcept
 
 
 
+const ::trantor::Date &Games::getValueOfCreated() const noexcept
+{
+    const static ::trantor::Date defaultValue = ::trantor::Date();
+    if(created_)
+        return *created_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &Games::getCreated() const noexcept
+{
+    return created_;
+}
+void Games::setCreated(const ::trantor::Date &pCreated) noexcept
+{
+    created_ = std::make_shared<::trantor::Date>(pCreated);
+    dirtyFlag_[3] = true;
+}
+
+
+
+
 void Games::updateId(const uint64_t id)
 {
 }
@@ -284,7 +437,8 @@ const std::vector<std::string> &Games::insertColumns() noexcept
     static const std::vector<std::string> inCols={
         "game_id",
         "white",
-        "black"
+        "black",
+        "created"
     };
     return inCols;
 }
@@ -324,6 +478,17 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[3])
+    {
+        if(getCreated())
+        {
+            binder << getValueOfCreated();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> Games::updateColumns() const
@@ -340,6 +505,10 @@ const std::vector<std::string> Games::updateColumns() const
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
+    }
+    if(dirtyFlag_[3])
+    {
+        ret.push_back(getColumnName(3));
     }
     return ret;
 }
@@ -379,6 +548,17 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[3])
+    {
+        if(getCreated())
+        {
+            binder << getValueOfCreated();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value Games::toJson() const
 {
@@ -407,6 +587,14 @@ Json::Value Games::toJson() const
     {
         ret["black"]=Json::Value();
     }
+    if(getCreated())
+    {
+        ret["created"]=getCreated()->toDbStringLocal();
+    }
+    else
+    {
+        ret["created"]=Json::Value();
+    }
     return ret;
 }
 
@@ -414,7 +602,7 @@ Json::Value Games::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 3)
+    if(pMasqueradingVector.size() == 4)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -449,6 +637,17 @@ Json::Value Games::toMasqueradedJson(
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+        if(!pMasqueradingVector[3].empty())
+        {
+            if(getCreated())
+            {
+                ret[pMasqueradingVector[3]]=getCreated()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[3]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -475,6 +674,14 @@ Json::Value Games::toMasqueradedJson(
     else
     {
         ret["black"]=Json::Value();
+    }
+    if(getCreated())
+    {
+        ret["created"]=getCreated()->toDbStringLocal();
+    }
+    else
+    {
+        ret["created"]=Json::Value();
     }
     return ret;
 }
@@ -506,13 +713,18 @@ bool Games::validateJsonForCreation(const Json::Value &pJson, std::string &err)
         err="The black column cannot be null";
         return false;
     }
+    if(pJson.isMember("created"))
+    {
+        if(!validJsonOfField(3, "created", pJson["created"], err, true))
+            return false;
+    }
     return true;
 }
 bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 3)
+    if(pMasqueradingVector.size() != 4)
     {
         err = "Bad masquerading vector";
         return false;
@@ -551,6 +763,14 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
             return false;
         }
     }
+    if(!pMasqueradingVector[3].empty())
+    {
+        if(pJson.isMember(pMasqueradingVector[3]))
+        {
+            if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
+                return false;
+        }
+    }
     return true;
 }
 bool Games::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
@@ -575,13 +795,18 @@ bool Games::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(2, "black", pJson["black"], err, false))
             return false;
     }
+    if(pJson.isMember("created"))
+    {
+        if(!validJsonOfField(3, "created", pJson["created"], err, false))
+            return false;
+    }
     return true;
 }
 bool Games::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                              const std::vector<std::string> &pMasqueradingVector,
                                              std::string &err)
 {
-    if(pMasqueradingVector.size() != 3)
+    if(pMasqueradingVector.size() != 4)
     {
         err = "Bad masquerading vector";
         return false;
@@ -604,6 +829,11 @@ bool Games::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
+            return false;
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
             return false;
     }
     return true;
@@ -640,6 +870,18 @@ bool Games::validJsonOfField(size_t index,
             }
             break;
         case 2:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;                
+            }
+            break;
+        case 3:
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";

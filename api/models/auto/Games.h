@@ -43,6 +43,7 @@ class Games
         static const std::string _game_id;
         static const std::string _white;
         static const std::string _black;
+        static const std::string _created;
     };
 
     const static int primaryKeyNumber;
@@ -127,8 +128,18 @@ class Games
     void setBlack(std::string &&pBlack) noexcept;
 
 
+    /**  For column created  */
+    ///Get the value of the column created, returns the default value if the column is null
+    const ::trantor::Date &getValueOfCreated() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getCreated() const noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 3;  }
+    ///Set the value of the column created
+    void setCreated(const ::trantor::Date &pCreated) noexcept;
+
+
+
+    static size_t getColumnNumber() noexcept {  return 4;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -145,6 +156,7 @@ class Games
     std::shared_ptr<uint64_t> gameId_;
     std::shared_ptr<std::string> white_;
     std::shared_ptr<std::string> black_;
+    std::shared_ptr<::trantor::Date> created_;
     struct MetaData
     {
         const std::string colName_;
@@ -156,7 +168,7 @@ class Games
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[3]={ false };
+    bool dirtyFlag_[4]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -189,6 +201,12 @@ class Games
             sql += "black,";
             ++parametersCount;
         }
+        sql += "created,";
+        ++parametersCount;
+        if(!dirtyFlag_[3])
+        {
+            needSelection=true;
+        }
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -212,6 +230,15 @@ class Games
             sql.append("?,");
 
         } 
+        if(dirtyFlag_[3])
+        {
+            sql.append("?,");
+
+        } 
+        else
+        {
+            sql +="default,";
+        }
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);

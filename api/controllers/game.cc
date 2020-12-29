@@ -35,8 +35,8 @@ void api::game::new_game(const HttpRequestPtr& req, Callback&& callback) {
         black = username;
     }
 
-    const auto& db = drogon::app().getDbClient();
-    db->execSqlSync("INSERT INTO games(white, black) VALUES (?, ?)", white, black);
-    const auto& game = Game::last_insert_game();
-    callback(drogon::toResponse(game.toJson()));
+    const auto& game = Game::create_new_game(white, black);
+    const auto& response = drogon::toResponse(game.toJson());
+    response->setStatusCode(HttpStatusCode::k201Created);
+    callback(response);
 }
