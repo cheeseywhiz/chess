@@ -40,7 +40,8 @@ const actions = {
         }).then(() => {
             dispatch(LoginFormActions.login(username));
             dispatch(actions.username.invalid.set());
-        }).catch(({ reason }) => {
+        }).catch(({ status, message, reason }) => {
+            if (status >= 500) throw new Error(message);
             dispatch(actions.username.invalid.set(reason));
         });
     },

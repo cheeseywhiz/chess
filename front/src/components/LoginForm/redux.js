@@ -41,7 +41,8 @@ const actions = {
                 console.log(user);
                 dispatch(UsernameActions.set(username || user.username));
                 dispatch(actions.username.invalid.set());
-            }).catch(({ reason }) => {
+            }).catch(({ status, message, reason }) => {
+                if (status >= 500) throw new Error(message);
                 dispatch(UsernameActions.set());
                 if (username) dispatch(actions.username.invalid.set(reason));
             });

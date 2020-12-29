@@ -11,7 +11,16 @@ export default async ({ url, json, ...optionsIn }) => {
     }
 
     const response = await fetch(url, options);
-    if (response.status >= 500) throw new Error(response.statusText);
+
+    if (response.status >= 500) {
+        const fakeRes = {
+            status: response.status,
+            message: response.statusText,
+            reason: 'server error',
+        };
+        return Promise.reject(fakeRes);
+    }
+
     if (response.status === 204) return Promise.resolve();
     const jsonRes = await response.json();
 

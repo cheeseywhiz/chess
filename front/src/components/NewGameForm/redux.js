@@ -62,7 +62,8 @@ const actions = {
             console.log(game);
             dispatch(actions.player.invalid.set());
             dispatch(actions.opponent.invalid.set());
-        }).catch(({ reason }) => {
+        }).catch(({ status, message, reason }) => {
+            if (status >= 500) throw new Error(message);
             dispatch(actions.player.invalid.set(
                 reason.includes('player') ? reason : undefined,
             ));
