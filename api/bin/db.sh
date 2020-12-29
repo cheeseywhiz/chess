@@ -36,8 +36,9 @@ case $1 in
         ;;
     dump)
         assert_exists
-        dump-table users
-        dump-table games
+        for table in users games states history; do
+            dump-table $table
+        done
         ;;
     cmd)
         sqlite3 $DB

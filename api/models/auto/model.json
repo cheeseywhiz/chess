@@ -21,6 +21,9 @@
     //"client_encoding": "",
     //table: An array of tables to be modelized. if the array is empty, all revealed tables are modelized.
     "tables": [
+        "users",
+        "states",
+        "games"
     ],
     "relationships": {
         "enabled": false,

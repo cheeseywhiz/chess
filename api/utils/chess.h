@@ -60,6 +60,16 @@ struct ChessState {
                    endgame_state(EndgameState::None), n_moves(1) {
         init_board(board);
     }
+
+    ChessState(
+        const BoardT& board_in, State state_in, Player player_in, EndgameState endgame_state_in,
+        unsigned n_moves_in, const vector<Piece>& white_captures_in,
+        const vector<Piece>& black_captures_in
+    )
+        : board(board_in), state(state_in), player(player_in), endgame_state(endgame_state_in),
+          n_moves(n_moves_in), white_captures(white_captures_in),
+          black_captures(black_captures_in) {
+    }
 };
 
 struct MoveResult {

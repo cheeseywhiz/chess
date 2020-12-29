@@ -13,6 +13,7 @@ using namespace drogon;
 using namespace drogon_model::sqlite3;
 
 const std::string Games::Cols::_game_id = "game_id";
+const std::string Games::Cols::_state_id = "state_id";
 const std::string Games::Cols::_white = "white";
 const std::string Games::Cols::_black = "black";
 const std::string Games::Cols::_created = "created";
@@ -22,6 +23,7 @@ const std::string Games::tableName = "games";
 
 const std::vector<typename Games::MetaData> Games::metaData_={
 {"game_id","uint64_t","integer",8,0,1,0},
+{"state_id","uint64_t","integer",8,0,0,1},
 {"white","std::string","varchar",0,0,0,1},
 {"black","std::string","varchar",0,0,0,1},
 {"created","::trantor::Date","datetime",0,0,0,1}
@@ -38,6 +40,10 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
         if(!r["game_id"].isNull())
         {
             gameId_=std::make_shared<uint64_t>(r["game_id"].as<uint64_t>());
+        }
+        if(!r["state_id"].isNull())
+        {
+            stateId_=std::make_shared<uint64_t>(r["state_id"].as<uint64_t>());
         }
         if(!r["white"].isNull())
         {
@@ -70,7 +76,7 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 4 > r.size())
+        if(offset + 5 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -84,14 +90,19 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 1;
         if(!r[index].isNull())
         {
-            white_=std::make_shared<std::string>(r[index].as<std::string>());
+            stateId_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
         }
         index = offset + 2;
         if(!r[index].isNull())
         {
-            black_=std::make_shared<std::string>(r[index].as<std::string>());
+            white_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 3;
+        if(!r[index].isNull())
+        {
+            black_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 4;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -117,7 +128,7 @@ Games::Games(const Row &r, const ssize_t indexOffset) noexcept
 
 Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 5)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -135,7 +146,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
         dirtyFlag_[1] = true;
         if(!pJson[pMasqueradingVector[1]].isNull())
         {
-            white_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
+            stateId_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[1]].asUInt64());
         }
     }
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
@@ -143,7 +154,7 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            black_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+            white_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
@@ -151,7 +162,15 @@ Games::Games(const Json::Value &pJson, const std::vector<std::string> &pMasquera
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[3]].asString();
+            black_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+        }
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson[pMasqueradingVector[4]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -181,9 +200,17 @@ Games::Games(const Json::Value &pJson) noexcept(false)
             gameId_=std::make_shared<uint64_t>((uint64_t)pJson["game_id"].asUInt64());
         }
     }
-    if(pJson.isMember("white"))
+    if(pJson.isMember("state_id"))
     {
         dirtyFlag_[1]=true;
+        if(!pJson["state_id"].isNull())
+        {
+            stateId_=std::make_shared<uint64_t>((uint64_t)pJson["state_id"].asUInt64());
+        }
+    }
+    if(pJson.isMember("white"))
+    {
+        dirtyFlag_[2]=true;
         if(!pJson["white"].isNull())
         {
             white_=std::make_shared<std::string>(pJson["white"].asString());
@@ -191,7 +218,7 @@ Games::Games(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("black"))
     {
-        dirtyFlag_[2]=true;
+        dirtyFlag_[3]=true;
         if(!pJson["black"].isNull())
         {
             black_=std::make_shared<std::string>(pJson["black"].asString());
@@ -199,7 +226,7 @@ Games::Games(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("created"))
     {
-        dirtyFlag_[3]=true;
+        dirtyFlag_[4]=true;
         if(!pJson["created"].isNull())
         {
             auto timeStr = pJson["created"].asString();
@@ -225,7 +252,7 @@ Games::Games(const Json::Value &pJson) noexcept(false)
 void Games::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 5)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -242,7 +269,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[1] = true;
         if(!pJson[pMasqueradingVector[1]].isNull())
         {
-            white_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
+            stateId_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[1]].asUInt64());
         }
     }
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
@@ -250,7 +277,7 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            black_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+            white_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
@@ -258,7 +285,15 @@ void Games::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[3] = true;
         if(!pJson[pMasqueradingVector[3]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[3]].asString();
+            black_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+        }
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson[pMasqueradingVector[4]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -287,9 +322,17 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
             gameId_=std::make_shared<uint64_t>((uint64_t)pJson["game_id"].asUInt64());
         }
     }
-    if(pJson.isMember("white"))
+    if(pJson.isMember("state_id"))
     {
         dirtyFlag_[1] = true;
+        if(!pJson["state_id"].isNull())
+        {
+            stateId_=std::make_shared<uint64_t>((uint64_t)pJson["state_id"].asUInt64());
+        }
+    }
+    if(pJson.isMember("white"))
+    {
+        dirtyFlag_[2] = true;
         if(!pJson["white"].isNull())
         {
             white_=std::make_shared<std::string>(pJson["white"].asString());
@@ -297,7 +340,7 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("black"))
     {
-        dirtyFlag_[2] = true;
+        dirtyFlag_[3] = true;
         if(!pJson["black"].isNull())
         {
             black_=std::make_shared<std::string>(pJson["black"].asString());
@@ -305,7 +348,7 @@ void Games::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("created"))
     {
-        dirtyFlag_[3] = true;
+        dirtyFlag_[4] = true;
         if(!pJson["created"].isNull())
         {
             auto timeStr = pJson["created"].asString();
@@ -358,6 +401,26 @@ const typename Games::PrimaryKeyType & Games::getPrimaryKey() const
     return *gameId_;
 }
 
+const uint64_t &Games::getValueOfStateId() const noexcept
+{
+    const static uint64_t defaultValue = uint64_t();
+    if(stateId_)
+        return *stateId_;
+    return defaultValue;
+}
+const std::shared_ptr<uint64_t> &Games::getStateId() const noexcept
+{
+    return stateId_;
+}
+void Games::setStateId(const uint64_t &pStateId) noexcept
+{
+    stateId_ = std::make_shared<uint64_t>(pStateId);
+    dirtyFlag_[1] = true;
+}
+
+
+
+
 const std::string &Games::getValueOfWhite() const noexcept
 {
     const static std::string defaultValue = std::string();
@@ -372,12 +435,12 @@ const std::shared_ptr<std::string> &Games::getWhite() const noexcept
 void Games::setWhite(const std::string &pWhite) noexcept
 {
     white_ = std::make_shared<std::string>(pWhite);
-    dirtyFlag_[1] = true;
+    dirtyFlag_[2] = true;
 }
 void Games::setWhite(std::string &&pWhite) noexcept
 {
     white_ = std::make_shared<std::string>(std::move(pWhite));
-    dirtyFlag_[1] = true;
+    dirtyFlag_[2] = true;
 }
 
 
@@ -397,12 +460,12 @@ const std::shared_ptr<std::string> &Games::getBlack() const noexcept
 void Games::setBlack(const std::string &pBlack) noexcept
 {
     black_ = std::make_shared<std::string>(pBlack);
-    dirtyFlag_[2] = true;
+    dirtyFlag_[3] = true;
 }
 void Games::setBlack(std::string &&pBlack) noexcept
 {
     black_ = std::make_shared<std::string>(std::move(pBlack));
-    dirtyFlag_[2] = true;
+    dirtyFlag_[3] = true;
 }
 
 
@@ -422,7 +485,7 @@ const std::shared_ptr<::trantor::Date> &Games::getCreated() const noexcept
 void Games::setCreated(const ::trantor::Date &pCreated) noexcept
 {
     created_ = std::make_shared<::trantor::Date>(pCreated);
-    dirtyFlag_[3] = true;
+    dirtyFlag_[4] = true;
 }
 
 
@@ -436,6 +499,7 @@ const std::vector<std::string> &Games::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
         "game_id",
+        "state_id",
         "white",
         "black",
         "created"
@@ -458,6 +522,17 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[1])
     {
+        if(getStateId())
+        {
+            binder << getValueOfStateId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[2])
+    {
         if(getWhite())
         {
             binder << getValueOfWhite();
@@ -467,7 +542,7 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[2])
+    if(dirtyFlag_[3])
     {
         if(getBlack())
         {
@@ -478,7 +553,7 @@ void Games::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[3])
+    if(dirtyFlag_[4])
     {
         if(getCreated())
         {
@@ -510,6 +585,10 @@ const std::vector<std::string> Games::updateColumns() const
     {
         ret.push_back(getColumnName(3));
     }
+    if(dirtyFlag_[4])
+    {
+        ret.push_back(getColumnName(4));
+    }
     return ret;
 }
 
@@ -528,6 +607,17 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[1])
     {
+        if(getStateId())
+        {
+            binder << getValueOfStateId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[2])
+    {
         if(getWhite())
         {
             binder << getValueOfWhite();
@@ -537,7 +627,7 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[2])
+    if(dirtyFlag_[3])
     {
         if(getBlack())
         {
@@ -548,7 +638,7 @@ void Games::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[3])
+    if(dirtyFlag_[4])
     {
         if(getCreated())
         {
@@ -570,6 +660,14 @@ Json::Value Games::toJson() const
     else
     {
         ret["game_id"]=Json::Value();
+    }
+    if(getStateId())
+    {
+        ret["state_id"]=(Json::UInt64)getValueOfStateId();
+    }
+    else
+    {
+        ret["state_id"]=Json::Value();
     }
     if(getWhite())
     {
@@ -602,7 +700,7 @@ Json::Value Games::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 4)
+    if(pMasqueradingVector.size() == 5)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -617,9 +715,9 @@ Json::Value Games::toMasqueradedJson(
         }
         if(!pMasqueradingVector[1].empty())
         {
-            if(getWhite())
+            if(getStateId())
             {
-                ret[pMasqueradingVector[1]]=getValueOfWhite();
+                ret[pMasqueradingVector[1]]=(Json::UInt64)getValueOfStateId();
             }
             else
             {
@@ -628,9 +726,9 @@ Json::Value Games::toMasqueradedJson(
         }
         if(!pMasqueradingVector[2].empty())
         {
-            if(getBlack())
+            if(getWhite())
             {
-                ret[pMasqueradingVector[2]]=getValueOfBlack();
+                ret[pMasqueradingVector[2]]=getValueOfWhite();
             }
             else
             {
@@ -639,13 +737,24 @@ Json::Value Games::toMasqueradedJson(
         }
         if(!pMasqueradingVector[3].empty())
         {
-            if(getCreated())
+            if(getBlack())
             {
-                ret[pMasqueradingVector[3]]=getCreated()->toDbStringLocal();
+                ret[pMasqueradingVector[3]]=getValueOfBlack();
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[4].empty())
+        {
+            if(getCreated())
+            {
+                ret[pMasqueradingVector[4]]=getCreated()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
         return ret;
@@ -658,6 +767,14 @@ Json::Value Games::toMasqueradedJson(
     else
     {
         ret["game_id"]=Json::Value();
+    }
+    if(getStateId())
+    {
+        ret["state_id"]=(Json::UInt64)getValueOfStateId();
+    }
+    else
+    {
+        ret["state_id"]=Json::Value();
     }
     if(getWhite())
     {
@@ -693,9 +810,19 @@ bool Games::validateJsonForCreation(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(0, "game_id", pJson["game_id"], err, true))
             return false;
     }
+    if(pJson.isMember("state_id"))
+    {
+        if(!validJsonOfField(1, "state_id", pJson["state_id"], err, true))
+            return false;
+    }
+    else
+    {
+        err="The state_id column cannot be null";
+        return false;
+    }
     if(pJson.isMember("white"))
     {
-        if(!validJsonOfField(1, "white", pJson["white"], err, true))
+        if(!validJsonOfField(2, "white", pJson["white"], err, true))
             return false;
     }
     else
@@ -705,7 +832,7 @@ bool Games::validateJsonForCreation(const Json::Value &pJson, std::string &err)
     }
     if(pJson.isMember("black"))
     {
-        if(!validJsonOfField(2, "black", pJson["black"], err, true))
+        if(!validJsonOfField(3, "black", pJson["black"], err, true))
             return false;
     }
     else
@@ -715,7 +842,7 @@ bool Games::validateJsonForCreation(const Json::Value &pJson, std::string &err)
     }
     if(pJson.isMember("created"))
     {
-        if(!validJsonOfField(3, "created", pJson["created"], err, true))
+        if(!validJsonOfField(4, "created", pJson["created"], err, true))
             return false;
     }
     return true;
@@ -724,7 +851,7 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 5)
     {
         err = "Bad masquerading vector";
         return false;
@@ -770,6 +897,19 @@ bool Games::validateMasqueradedJsonForCreation(const Json::Value &pJson,
             if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                 return false;
         }
+        else
+        {
+            err="The " + pMasqueradingVector[3] + " column cannot be null";
+            return false;
+        }
+    }
+    if(!pMasqueradingVector[4].empty())
+    {
+        if(pJson.isMember(pMasqueradingVector[4]))
+        {
+            if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
+                return false;
+        }
     }
     return true;
 }
@@ -785,19 +925,24 @@ bool Games::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+    if(pJson.isMember("state_id"))
+    {
+        if(!validJsonOfField(1, "state_id", pJson["state_id"], err, false))
+            return false;
+    }
     if(pJson.isMember("white"))
     {
-        if(!validJsonOfField(1, "white", pJson["white"], err, false))
+        if(!validJsonOfField(2, "white", pJson["white"], err, false))
             return false;
     }
     if(pJson.isMember("black"))
     {
-        if(!validJsonOfField(2, "black", pJson["black"], err, false))
+        if(!validJsonOfField(3, "black", pJson["black"], err, false))
             return false;
     }
     if(pJson.isMember("created"))
     {
-        if(!validJsonOfField(3, "created", pJson["created"], err, false))
+        if(!validJsonOfField(4, "created", pJson["created"], err, false))
             return false;
     }
     return true;
@@ -806,7 +951,7 @@ bool Games::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                              const std::vector<std::string> &pMasqueradingVector,
                                              std::string &err)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 5)
     {
         err = "Bad masquerading vector";
         return false;
@@ -836,6 +981,11 @@ bool Games::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
             return false;
     }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
+            return false;
+    }
     return true;
 }
 bool Games::validJsonOfField(size_t index,
@@ -863,10 +1013,10 @@ bool Games::validJsonOfField(size_t index,
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
-            if(!pJson.isString())
+            if(!pJson.isUInt64())
             {
                 err="Type error in the "+fieldName+" field";
-                return false;                
+                return false;
             }
             break;
         case 2:
@@ -882,6 +1032,18 @@ bool Games::validJsonOfField(size_t index,
             }
             break;
         case 3:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;                
+            }
+            break;
+        case 4:
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
