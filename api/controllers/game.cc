@@ -1,5 +1,5 @@
 #include <cassert>
-#include "api_GamesCtrl.h"
+#include "game.h"
 #include "models/User.h"
 #include "models/Game.h"
 #include "utils.h"
@@ -8,7 +8,7 @@ using drogon_model::sqlite3::User, drogon_model::sqlite3::Game;
 
 // Post -> RequireAuth, RequireJson
 // { "player": "(White|Black|Random)", "opponent": "other username" }
-void api::GamesCtrl::new_game(const HttpRequestPtr& req, Callback&& callback) {
+void api::game::new_game(const HttpRequestPtr& req, Callback&& callback) {
     const auto& json = req->getJsonObject();
     ASSERT_JSON_MEMBER(json, player);
     const auto& player = (*json)["player"].asString();

@@ -17,7 +17,7 @@ const actions = {
     }),
     logout: () => (dispatch) => {
         dispatch(actions.set());
-        fetch2({ url: '/api/AuthCtrl/logout', method: 'post' });
+        fetch2({ url: '/api/user/logout', method: 'post' });
     },
 };
 export default actions;

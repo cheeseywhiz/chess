@@ -1,11 +1,11 @@
 #include <cassert>
-#include "api_AuthCtrl.h"
+#include "user.h"
 #include "models/User.h"
 #include "utils.h"
 using drogon::HttpResponse, drogon::HttpStatusCode;
 using drogon_model::sqlite3::User;
 
-void api::AuthCtrl::login(const HttpRequestPtr& req, Callback&& callback) {
+void api::user::login(const HttpRequestPtr& req, Callback&& callback) {
     const auto& json = req->getJsonObject();
 
     if (req->getMethod() == drogon::Post) {
@@ -25,7 +25,7 @@ void api::AuthCtrl::login(const HttpRequestPtr& req, Callback&& callback) {
 }
 
 // Post -> RequireAuth
-void api::AuthCtrl::logout(const HttpRequestPtr& req, Callback&& callback) {
+void api::user::logout(const HttpRequestPtr& req, Callback&& callback) {
     req->session()->erase("username");
     auto res = HttpResponse::newHttpResponse();
     res->setStatusCode(HttpStatusCode::k204NoContent);
@@ -34,7 +34,7 @@ void api::AuthCtrl::logout(const HttpRequestPtr& req, Callback&& callback) {
 
 // Post -> RequireJson
 // { "username": "..." }
-void api::AuthCtrl::create(const HttpRequestPtr& req, Callback&& callback) {
+void api::user::create(const HttpRequestPtr& req, Callback&& callback) {
     const auto& json = req->getJsonObject();
     const auto& db = drogon::app().getDbClient();
     ASSERT_JSON_MEMBER(json, username);

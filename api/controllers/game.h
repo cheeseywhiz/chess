@@ -5,10 +5,10 @@ using drogon::HttpRequestPtr, drogon::HttpResponsePtr;
 using /*drogon::Get,*/ drogon::Post;
 
 namespace api {
-class GamesCtrl : public drogon::HttpController<GamesCtrl> {
+class game : public drogon::HttpController<game> {
     public:
         METHOD_LIST_BEGIN
-        METHOD_ADD(GamesCtrl::new_game, "/new_game", Post, "RequireAuth", "RequireJson");
+        METHOD_ADD(game::new_game, "/new_game", Post, "RequireAuth", "RequireJson");
         METHOD_LIST_END
 
         void new_game(const HttpRequestPtr& req, Callback&& callback);

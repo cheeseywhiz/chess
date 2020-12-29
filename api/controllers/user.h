@@ -5,13 +5,13 @@ using drogon::HttpRequestPtr, drogon::HttpResponsePtr;
 using drogon::Get, drogon::Post;
 
 namespace api {
-class AuthCtrl : public drogon::HttpController<AuthCtrl> {
+class user : public drogon::HttpController<user> {
     public:
         METHOD_LIST_BEGIN
-        METHOD_ADD(AuthCtrl::login, "/login", Get, "RequireAuth");
-        METHOD_ADD(AuthCtrl::login, "/login", Post, "RequireJson");
-        METHOD_ADD(AuthCtrl::logout, "/logout", Post, "RequireAuth");
-        METHOD_ADD(AuthCtrl::create, "/create", Post, "RequireJson");
+        METHOD_ADD(user::login, "/login", Get, "RequireAuth");
+        METHOD_ADD(user::login, "/login", Post, "RequireJson");
+        METHOD_ADD(user::logout, "/logout", Post, "RequireAuth");
+        METHOD_ADD(user::create, "/create", Post, "RequireJson");
         METHOD_LIST_END
 
         void login(const HttpRequestPtr& req, Callback&& callback);

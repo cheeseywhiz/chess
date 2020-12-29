@@ -56,7 +56,7 @@ const actions = {
     clear: () => ({ type: types.clear }),
     submit: (player, opponent) => (dispatch) => {
         fetch2({
-            url: '/api/GamesCtrl/new_game',
+            url: '/api/game/new_game',
             json: { player, opponent },
         }).then((game) => {
             console.log(game);

@@ -35,7 +35,7 @@ const actions = {
     clear: () => ({ type: types.clear }),
     submit: (username) => (dispatch) => {
         fetch2({
-            url: '/api/AuthCtrl/create',
+            url: '/api/user/create',
             json: { username },
         }).then(() => {
             dispatch(LoginFormActions.login(username));

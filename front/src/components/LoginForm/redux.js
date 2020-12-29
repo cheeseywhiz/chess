@@ -34,7 +34,7 @@ const actions = {
     },
     clear: () => ({ type: types.clear }),
     login: (username) => (dispatch) => {
-        const req = { url: '/api/AuthCtrl/login' };
+        const req = { url: '/api/user/login' };
         if (username) req.json = { username };
         fetch2(req)
             .then((user) => {
