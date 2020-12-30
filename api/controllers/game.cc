@@ -12,7 +12,14 @@ using Chess::SerializedState;
 // Get -> RequireAuth
 void api::game::get_game(const HttpRequestPtr& req, Callback&& callback,
                          const std::string& game_id_in) {
-    uint64_t game_id = std::stoi(game_id_in);
+    uint64_t game_id;
+
+    try {
+        game_id = std::stoi(game_id_in);
+    } catch (const std::invalid_argument& err) {
+        return callback(to_error(HttpStatusCode::k400BadRequest, "bad game_id"));
+    }
+
     const auto& game = Game::lookup_game(game_id);
     if (!game)
         return callback(to_error(HttpStatusCode::k404NotFound, "Unknown game_id"));

@@ -10,6 +10,7 @@ import Navbar from './Navbar/Navbar';
 import LoginForm from './LoginForm/LoginForm';
 import CreateForm from './CreateForm/CreateForm';
 import NewGameForm from './NewGameForm/NewGameForm';
+import Game from './Game/Game';
 
 const mapStateToProps = ({ username }) => ({
     username,
@@ -49,6 +50,9 @@ class App extends React.Component {
                     </Route>
                     <Route exact path="/new_game">
                         <NewGameForm />
+                    </Route>
+                    <Route exact path="/game">
+                        <Game />
                     </Route>
                     <Route>
                         <div>404 not found</div>
