@@ -34,7 +34,7 @@ const actions = {
     clear: () => ({ type: types.clear }),
     init: (gameId) => (dispatch) => {
         fetch2({
-            url: `/api/game/${gameId}`,
+            url: `/api/game/?game_id=${gameId}`,
         }).then((game) => {
             dispatch(actions.set(game));
         }).catch(({ status, message, reason }) => {

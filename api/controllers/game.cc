@@ -68,3 +68,54 @@ void api::game::new_game(const HttpRequestPtr& req, Callback&& callback) {
     response->setStatusCode(HttpStatusCode::k201Created);
     callback(response);
 }
+
+// Get -> RequireAuth
+void api::game::get_moves(
+        const HttpRequestPtr& req, Callback&& callback, const std::string& game_id_in,
+        const std::string& row_in, const std::string& col_in) {
+    uint64_t game_id;
+
+    try {
+        game_id = std::stoi(game_id_in);
+    } catch (const std::invalid_argument& err) {
+        return callback(to_error(HttpStatusCode::k400BadRequest, "bad game_id"));
+    }
+
+    const auto& game = Game::lookup_game(game_id);
+    if (!game)
+        return callback(to_error(HttpStatusCode::k404NotFound, "Unknown game_id"));
+    const auto& username = req->session()->get<std::string>("username");
+    if (username != *game->getWhite() && username != *game->getBlack())
+        return callback(to_error(HttpStatusCode::k403Forbidden, "game is not owned by username"));
+    ChessState chess_state = State::lookup_state(*game->getStateid());
+
+    size_t row;
+
+    try {
+        row = std::stoi(row_in);
+    } catch (const std::invalid_argument& err) {
+        return callback(to_error(HttpStatusCode::k400BadRequest, "bad row"));
+    }
+
+    if (row >= Chess::BOARD_HEIGHT)
+        return callback(to_error(HttpStatusCode::k400BadRequest, "row out of range"));
+
+    size_t col;
+
+    try {
+        col = std::stoi(col_in);
+    } catch (const std::invalid_argument& err) {
+        return callback(to_error(HttpStatusCode::k400BadRequest, "bad col"));
+    }
+
+    if (col >= Chess::BOARD_WIDTH)
+        return callback(to_error(HttpStatusCode::k400BadRequest, "col out of range"));
+
+    const auto& moves = Chess::get_possible_moves(chess_state.board, row, col);
+    const auto& castles = Chess::get_possible_castles(chess_state.board, row, col,
+                                                      chess_state.endgame_state);
+    Json::Value json;
+    json["moves"] = Chess::serialize_moves(moves);
+    json["castles"] = Chess::serialize_castles(castles);
+    callback(drogon::toResponse(json));
+}

@@ -24,6 +24,26 @@ namespace Chess {
 using std::map;
 using std::string;
 
+Json::Value serialize_moves(const vector<CellReference>& moves) {
+    Json::Value json(Json::ValueType::arrayValue);
+
+    for (const auto& cell_ref : moves) {
+        Json::Value cell_ref_json;
+        cell_ref_json.append(cell_ref.row);
+        cell_ref_json.append(cell_ref.col);
+        json.append(cell_ref_json);
+    }
+
+    return json;
+}
+
+Json::Value serialize_castles(Castles castles) {
+    Json::Value json;
+    json["queen"] = castles & Castles::Queen;
+    json["king"] = castles & Castles::King;
+    return json;
+}
+
 SerializedState::SerializedState(
     const string& state_in, const string& player_in, const string& endgame_state_in,
     unsigned n_moves_in, const string& white_captures_in, const string& black_captures_in,

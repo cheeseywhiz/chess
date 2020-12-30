@@ -6,6 +6,9 @@ std::string serialize_json(const Json::Value&);
 Json::Value parse_json(const std::string&);
 
 namespace Chess {
+Json::Value serialize_moves(const vector<CellReference>& moves);
+Json::Value serialize_castles(Castles);
+
 struct SerializedState {
     std::string state;
     std::string player;
