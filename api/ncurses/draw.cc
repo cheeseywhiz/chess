@@ -2,7 +2,8 @@
 #include <unistd.h>
 #include <ncurses.h>
 #include "draw.hpp"
-#include "chess.hpp"
+#include "chess.h"
+using namespace Chess;
 
 static const short WhiteOnWhite = 1,
                    WhiteOnBlack = 2,
@@ -137,14 +138,14 @@ draw_possible_moves(const BoardT& board, EndgameState endgame_state, size_t row,
 {
     clear_possible_moves();
     vector<CellReference> moves = get_possible_moves(board, row, col);
-    size_t king_row = \
+    size_t home_row = \
         board[row][col].player == Player::White ? BOARD_HEIGHT - 1 : 0;
     Castles castles = \
         get_possible_castles(board, row, col, endgame_state);
     if (castles & Castles::Queen)
-        moves.emplace_back(king_row, 2);
+        moves.emplace_back(home_row, 2);
     if (castles & Castles::King)
-        moves.emplace_back(king_row, BOARD_WIDTH - 2);
+        moves.emplace_back(home_row, BOARD_WIDTH - 2);
 
     for (const CellReference &cell_ref : moves) {
         const bool cell_is_white = (cell_ref.row + cell_ref.col) % 2 == 0;

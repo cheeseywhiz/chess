@@ -114,9 +114,9 @@ get_possible_moves(const BoardT& board, size_t row, size_t col,
                    bool do_check_check)
 {
     const Cell& cell = board[row][col];
+    assert(cell.player != Player::None);
     CellReference cell_ref = { row, col };
     vector<CellReference> moves;
-    assert(cell.player != Player::None);
 
     if (cell.piece == Piece::Pawn) {
         if (cell.player == Player::White) {  // moves "up" (lower row)
@@ -283,6 +283,7 @@ get_possible_castles(const BoardT& board, size_t row, size_t column,
                      EndgameState endgame_state)
 {
     const Cell& cell = board[row][column];
+    assert(cell.player != Player::None);
     Castles castles = Castles::None;
     if (cell.piece != Piece::King || endgame_state == EndgameState::Check)
         return castles;

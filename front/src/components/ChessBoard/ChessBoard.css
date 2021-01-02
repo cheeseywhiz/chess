@@ -1,0 +1,40 @@
+:local(.boardContainer) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+:local(.board) {
+    max-width: 500px;
+}
+
+:local(.row) {
+    display: flex;
+}
+
+:local(.cellContainer) {
+    position: relative;
+    width: 50%;
+    font-width: bold;
+}
+
+:local(.cellContainer):after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+
+:local(.cell) {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+:local(.overlay) {
+    composes: cell;
+    opacity: 50%;
+}

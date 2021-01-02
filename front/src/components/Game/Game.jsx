@@ -3,8 +3,11 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import GameActions from './redux';
 import LoadingSpinner from '../LoadingSpinner';
+import ChessBoard from '../ChessBoard/ChessBoard';
+import { Player, EndgameState } from '../../ChessEnum';
 
-const mapStateToProps = ({ game }) => ({
+const mapStateToProps = ({ username, game }) => ({
+    username,
     game,
 });
 
@@ -22,10 +25,75 @@ class Game extends React.Component {
     }
 
     render() {
-        const { game } = this.props;
+        const { username, game } = this.props;
         const { gameId } = game;
         if (gameId === null) return <LoadingSpinner />;
-        return <code>{JSON.stringify(game)}</code>;
+        const { white, black, state } = game;
+        const { player } = state;
+        let playerUsername;
+        let opponentUsername;
+        let opponent;
+
+        if (player === Player.White) {
+            playerUsername = white;
+            opponentUsername = black;
+            opponent = Player.Black;
+        } else {
+            playerUsername = black;
+            opponentUsername = white;
+            opponent = Player.White;
+        }
+
+        let turn;
+
+        if (playerUsername === username) {
+            switch (game.state.endgameState) {
+            case EndgameState.None:
+                turn = `Your turn (${player}) against ${opponentUsername} (${opponent})`;
+                break;
+            case EndgameState.Check:
+                turn = `You (${player}) are in check against ${opponentUsername} (${opponent})`;
+                break;
+            case EndgameState.Checkmate:
+                turn = `${opponentUsername} (${opponent}) has checkmated you (${player})!`;
+                break;
+            case EndgameState.Stalemate:
+                turn = `You (${player}) have stalemated against ${opponentUsername} (${opponent})`;
+                break;
+            default:
+                break;
+            }
+        } else {
+            switch (game.state.endgameState) {
+            case EndgameState.None:
+                turn = `${playerUsername}'s (${player}) turn against you (${opponent})`;
+                break;
+            case EndgameState.Check:
+                turn = `${playerUsername} (${player}) is in check against you (${opponent})`;
+                break;
+            case EndgameState.Checkmate:
+                turn = `You (${opponent}) have checkmated ${playerUsername} (${player})`;
+                break;
+            case EndgameState.Stalemate:
+                turn = `${playerUsername} (${player}) have stalemated against you (${opponent})`;
+                break;
+            default:
+                break;
+            }
+        }
+
+        return (
+            <>
+                <ChessBoard />
+                <div>
+                    {'Move '}
+                    {game.state.nMoves}
+                </div>
+                <div>
+                    {turn}
+                </div>
+            </>
+        );
     }
 }
 

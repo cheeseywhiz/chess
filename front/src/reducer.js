@@ -4,6 +4,7 @@ import { reducer as LoginFormReducer } from './components/LoginForm/redux';
 import { reducer as CreateFormReducer } from './components/CreateForm/redux';
 import { reducer as NewGameFormReducer } from './components/NewGameForm/redux';
 import { reducer as GameReducer } from './components/Game/redux';
+import { reducer as ChessBoardReducer } from './components/ChessBoard/redux';
 
 export default combineReducers({
     username: UsernameReducer,
@@ -11,4 +12,5 @@ export default combineReducers({
     createForm: CreateFormReducer,
     newGameForm: NewGameFormReducer,
     game: GameReducer,
+    chessBoard: ChessBoardReducer,
 });

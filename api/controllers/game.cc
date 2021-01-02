@@ -88,6 +88,11 @@ void api::game::get_moves(
     if (username != *game->getWhite() && username != *game->getBlack())
         return callback(to_error(HttpStatusCode::k403Forbidden, "game is not owned by username"));
     ChessState chess_state = State::lookup_state(*game->getStateid());
+    const auto& player = chess_state.player == Chess::Player::White
+        ? *game->getWhite()
+        : *game->getBlack();
+    if (username != player)
+        return callback(to_error(HttpStatusCode::k403Forbidden, "not your turn"));
 
     size_t row;
 
@@ -111,11 +116,23 @@ void api::game::get_moves(
     if (col >= Chess::BOARD_WIDTH)
         return callback(to_error(HttpStatusCode::k400BadRequest, "col out of range"));
 
-    const auto& moves = Chess::get_possible_moves(chess_state.board, row, col);
+    const auto& cell = chess_state.board[row][col];
+    if (cell.player == Chess::Player::None)
+        return callback(to_error(HttpStatusCode::k400BadRequest, "player is None"));
+    if (cell.player != chess_state.player)
+        return callback(to_error(HttpStatusCode::k400BadRequest, "not that player's turn"));
+
+    auto moves = Chess::get_possible_moves(chess_state.board, row, col);
     const auto& castles = Chess::get_possible_castles(chess_state.board, row, col,
                                                       chess_state.endgame_state);
+    size_t home_row = chess_state.board[row][col].player == Chess::Player::White
+        ? Chess::BOARD_HEIGHT - 1
+        : 0;
+    if (castles & Chess::Castles::Queen)
+        moves.emplace_back(home_row, 2);
+    if (castles & Chess::Castles::King)
+        moves.emplace_back(home_row, Chess::BOARD_WIDTH - 2);
     Json::Value json;
     json["moves"] = Chess::serialize_moves(moves);
-    json["castles"] = Chess::serialize_castles(castles);
     callback(drogon::toResponse(json));
 }
