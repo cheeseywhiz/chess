@@ -1,11 +1,11 @@
 #pragma once
 #include <drogon/HttpFilter.h>
-using drogon::HttpFilter, drogon::HttpRequestPtr, drogon::FilterCallback, drogon::FilterChainCallback;
+using drogon::HttpFilter, drogon::HttpRequestPtr, drogon::FilterCallback,
+      drogon::FilterChainCallback;
 
-class RequireJson : public HttpFilter<RequireJson> {
+class MoveParams : public HttpFilter<MoveParams> {
     public:
-        RequireJson() = default;
+        MoveParams() = default;
         virtual void doFilter(const HttpRequestPtr& req, FilterCallback&& fcb,
                               FilterChainCallback&& fccb) override;
 };
-

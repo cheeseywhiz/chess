@@ -7,6 +7,7 @@ HttpResponsePtr to_error(HttpStatusCode status_code, const std::string& reason) 
         { HttpStatusCode::k403Forbidden, "Forbidden" },
         { HttpStatusCode::k404NotFound, "Not Found" },
         { HttpStatusCode::k409Conflict, "Conflict" },
+        { HttpStatusCode::k501NotImplemented, "Not Implemented" },
     };
     Json::Value res;
     res["status"] = status_code;
