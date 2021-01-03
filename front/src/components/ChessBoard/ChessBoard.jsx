@@ -1,20 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Container from 'react-bootstrap/Container';
-import { Player } from '../../ChessEnum';
+import { Player, State } from '../../ChessEnum';
 import Circle from '../Circle';
 import style from './ChessBoard.css';
 import ChessBoardActions from './redux';
 
 const mapStateToProps = ({ game, chessBoard }) => {
-    const { gameId, state } = game;
-    const { board } = state;
-    console.assert(board !== null, 'rendering ChessBoard without a board in the state');
-    return { gameId, board, chessBoard };
+    console.assert(game.state.board !== null, 'rendering ChessBoard without a board in the state');
+    return { game, chessBoard };
 };
 
 const mapDispatchToProps = (dispatch) => ({
     getMoves: (gameId, row, col) => dispatch(ChessBoardActions.getMoves(gameId, row, col)),
+    doMove: (gameId, { row, col }, row2, col2) => {
+        dispatch(ChessBoardActions.doMove(gameId, row, col, row2, col2));
+    },
     clear: () => {
         dispatch(ChessBoardActions.moves.clear());
         dispatch(ChessBoardActions.selected.clear());
@@ -22,7 +23,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const PieceChar = {
-    None: <>&nbsp;</>,
+    None: '',
     Pawn: 'p',
     Knight: 'N',
     Bishop: 'B',
@@ -47,8 +48,8 @@ class ChessBoard extends React.Component {
 
     getCell([piece, player], rowIndex, colIndex) {
         const {
-            gameId, chessBoard,
-            getMoves, clear,
+            game, chessBoard,
+            getMoves, doMove, clear,
         } = this.props;
         let bg;
 
@@ -64,7 +65,8 @@ class ChessBoard extends React.Component {
             style.cellContainer, bg,
             player === Player.White ? 'text-white' : 'text-dark',
         ];
-        const move = movesContains(chessBoard.moves, rowIndex, colIndex) ? (
+        const isMove = movesContains(chessBoard.moves, rowIndex, colIndex);
+        const move = isMove ? (
             <div className={style.overlay}>
                 <Circle />
             </div>
@@ -76,11 +78,14 @@ class ChessBoard extends React.Component {
                 role="button"
                 tabIndex={-1}
                 onClick={() => {
+                    if (game.state.state !== State.Ready) return;
                     if (chessBoard.selected.row === rowIndex
                             && chessBoard.selected.col === colIndex) {
                         clear();
+                    } else if (isMove) {
+                        doMove(game.gameId, chessBoard.selected, rowIndex, colIndex);
                     } else {
-                        getMoves(gameId, rowIndex, colIndex);
+                        getMoves(game.gameId, rowIndex, colIndex);
                     }
                 }}
                 onKeyDown={({ key }) => {
@@ -98,11 +103,11 @@ class ChessBoard extends React.Component {
     }
 
     render() {
-        const { board } = this.props;
+        const { game } = this.props;
         return (
             <div className={style.boardContainer}>
                 <Container className={style.board}>
-                    {board.map((row, rowIndex) => (
+                    {game.state.board.map((row, rowIndex) => (
                         <div key={rowIndex} className={style.row}>
                             {row.map((cell, colIndex) => (
                                 this.getCell(cell, rowIndex, colIndex)

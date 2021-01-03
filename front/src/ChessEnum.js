@@ -23,6 +23,6 @@ export const Player = {
 export const EndgameState = {
     None: 'None',
     Check: 'Check',
-    Checkmake: 'Checkmate',
+    Checkmate: 'Checkmate',
     Stalemate: 'Stalemate',
 };

@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import fetch2 from '../../fetch2';
+import GameActions from '../Game/redux';
 
 const defaultState = {
     moves: [],
@@ -46,6 +47,21 @@ const actions = {
             dispatch(actions.moves.set(moves));
         }).catch(({ status, message }) => {
             dispatch(actions.selected.clear());
+            if (status >= 500) throw new Error(message);
+        });
+    },
+    doMove: (gameId, row, col, row2, col2) => (dispatch) => {
+        dispatch(actions.moves.clear());
+        dispatch(actions.selected.clear());
+        fetch2({
+            url: '/api/game/moves/',
+            params: {
+                gameId, row, col, row2, col2,
+            },
+            method: 'post',
+        }).then((state) => {
+            dispatch(GameActions.state.set(state));
+        }).catch(({ status, message }) => {
             if (status >= 500) throw new Error(message);
         });
     },

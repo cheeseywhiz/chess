@@ -22,11 +22,20 @@ const defaultState = (() => {
 })();
 
 const types = {
+    state: {
+        set: 'GAME_STATE_SET',
+    },
     set: 'GAME_SET',
     clear: 'GAME_CLEAR',
 };
 
 const actions = {
+    state: {
+        set: (state) => ({
+            type: types.state.set,
+            state,
+        }),
+    },
     set: (game) => ({
         type: types.set,
         game,
@@ -67,6 +76,8 @@ export const reducer = (() => {
     stateKeys.forEach((key) => {
         stateReducers[key] = (state = defaultState.state[key], { type, ...action }) => {
             switch (type) {
+            case types.state.set:
+                return action.state[key];
             case types.set: {
                 const { game } = action;
                 return game.state[key]; }

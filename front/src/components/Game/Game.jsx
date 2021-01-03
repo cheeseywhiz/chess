@@ -49,16 +49,16 @@ class Game extends React.Component {
         if (playerUsername === username) {
             switch (game.state.endgameState) {
             case EndgameState.None:
-                turn = `Your turn (${player}) against ${opponentUsername} (${opponent})`;
+                turn = `Your (${player}) turn against ${opponentUsername} (${opponent})`;
                 break;
             case EndgameState.Check:
-                turn = `You (${player}) are in check against ${opponentUsername} (${opponent})`;
+                turn = `${opponentUsername} (${opponent}) is in check against you (${player})`;
                 break;
             case EndgameState.Checkmate:
                 turn = `${opponentUsername} (${opponent}) has checkmated you (${player})!`;
                 break;
             case EndgameState.Stalemate:
-                turn = `You (${player}) have stalemated against ${opponentUsername} (${opponent})`;
+                turn = `${opponentUsername} (${opponent}) has stalemated against you (${player})`;
                 break;
             default:
                 break;
@@ -69,13 +69,13 @@ class Game extends React.Component {
                 turn = `${playerUsername}'s (${player}) turn against you (${opponent})`;
                 break;
             case EndgameState.Check:
-                turn = `${playerUsername} (${player}) is in check against you (${opponent})`;
+                turn = `You (${opponent}) are in check against ${playerUsername} (${player})`;
                 break;
             case EndgameState.Checkmate:
-                turn = `You (${opponent}) have checkmated ${playerUsername} (${player})`;
+                turn = `You (${opponent}) have checkmated ${playerUsername} (${player})!`;
                 break;
             case EndgameState.Stalemate:
-                turn = `${playerUsername} (${player}) have stalemated against you (${opponent})`;
+                turn = `You (${opponent}) have stalemated ${playerUsername} (${player})`;
                 break;
             default:
                 break;
