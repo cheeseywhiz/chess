@@ -2,11 +2,13 @@
 #include "game.h"
 #include "models/User.h"
 #include "models/Game.h"
+#include "models/History.h"
 #include "models/State.h"
 #include "utils.h"
 #include "serialize.h"
 using drogon::HttpStatusCode;
-using drogon_model::sqlite3::User, drogon_model::sqlite3::Game, drogon_model::sqlite3::State;
+using drogon_model::sqlite3::User, drogon_model::sqlite3::Game, drogon_model::sqlite3::State,
+      drogon_model::sqlite3::History2;
 using Chess::SerializedState;
 
 // Get -> RequireAuth, GameIdParam
@@ -149,7 +151,7 @@ void api::game::do_move(
     if (new_state.player == Chess::Player::White)
         ++new_state.n_moves;
     uint64_t new_state_id = State::insert_state(new_state);
-    game->history_push(new_state_id);
+    History2::push(game_id, new_state_id);
     SerializedState serialized_state(new_state);
     return callback(drogon::toResponse(serialized_state.to_json()));
 }

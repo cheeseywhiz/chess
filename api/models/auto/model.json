@@ -23,7 +23,8 @@
     "tables": [
         "users",
         "states",
-        "games"
+        "games",
+        "history"
     ],
     "relationships": {
         "enabled": false,

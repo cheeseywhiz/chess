@@ -2,6 +2,7 @@
 #include <drogon/HttpAppFramework.h>
 #include "Game.h"
 #include "State.h"
+#include "History.h"
 #include "utils.h"
 
 namespace drogon_model {
@@ -22,16 +23,9 @@ Game Game::create_new_game(const std::string& white, const std::string& black) {
                     state_id, white, black);
     uint64_t game_id = last_insert_rowid();
     const auto& game = lookup_game(game_id);
-    game->history_push(state_id);
     assert(game);
+    History2::push(game_id, state_id);
     return *game;
-}
-
-void Game::history_push(uint64_t state_id) {
-    const auto& db = drogon::app().getDbClient();
-    uint64_t game_id = getPrimaryKey();
-    db->execSqlSync("UPDATE games SET stateId = ? WHERE gameId = ?", state_id, game_id);
-    db->execSqlSync("INSERT INTO history (gameId, stateId) VALUES (?, ?)", game_id, state_id);
 }
 }
 }
