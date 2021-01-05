@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import GameActions from './redux';
 import LoadingSpinner from '../LoadingSpinner';
 import ChessBoard from '../ChessBoard/ChessBoard';
-import { Player, EndgameState } from '../../ChessEnum';
+import PromotionForm from '../PromotionForm/PromotionForm';
+import { Player, State, EndgameState } from '../../ChessEnum';
 
 const mapStateToProps = ({ username, game }) => ({
     username,
@@ -85,6 +86,7 @@ class Game extends React.Component {
         return (
             <>
                 <ChessBoard />
+                {game.state.state === State.Promotion ? <PromotionForm /> : null}
                 <div>
                     {'Move '}
                     {game.state.nMoves}
