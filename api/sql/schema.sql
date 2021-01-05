@@ -21,11 +21,15 @@ CREATE TABLE states (
 CREATE TABLE games (
     gameId INTEGER PRIMARY KEY,
     stateId INTEGER NOT NULL,
+    newStateId INTEGER,
     white VARCHAR NOT NULL,
     black VARCHAR NOT NULL,
     created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (stateId) REFERENCES states (stateId)
         ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (newStateId) REFERENCES states (stateId)
+        ON DELETE SET NULL
         ON UPDATE CASCADE,
     FOREIGN KEY (white) REFERENCES users (username)
         ON DELETE CASCADE

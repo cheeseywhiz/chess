@@ -11,6 +11,7 @@ class State : public States {
 
         static ChessState lookup_state(uint64_t state_id);
         static uint64_t insert_state(const ChessState& chess_state);
+        static void set_state(uint64_t state_id, const ChessState& chess_state);
 };
 } // namespace sqlite3
 } // namespace drogon_model

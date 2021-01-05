@@ -42,6 +42,7 @@ class Games
     {
         static const std::string _gameId;
         static const std::string _stateId;
+        static const std::string _newStateId;
         static const std::string _white;
         static const std::string _black;
         static const std::string _created;
@@ -117,6 +118,17 @@ class Games
     void setStateid(const uint64_t &pStateid) noexcept;
 
 
+    /**  For column newStateId  */
+    ///Get the value of the column newStateId, returns the default value if the column is null
+    const uint64_t &getValueOfNewstateid() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<uint64_t> &getNewstateid() const noexcept;
+
+    ///Set the value of the column newStateId
+    void setNewstateid(const uint64_t &pNewstateid) noexcept;
+    void setNewstateidToNull() noexcept;
+
+
     /**  For column white  */
     ///Get the value of the column white, returns the default value if the column is null
     const std::string &getValueOfWhite() const noexcept;
@@ -150,7 +162,7 @@ class Games
 
 
 
-    static size_t getColumnNumber() noexcept {  return 5;  }
+    static size_t getColumnNumber() noexcept {  return 6;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -166,6 +178,7 @@ class Games
     void updateId(const uint64_t id);
     std::shared_ptr<uint64_t> gameid_;
     std::shared_ptr<uint64_t> stateid_;
+    std::shared_ptr<uint64_t> newstateid_;
     std::shared_ptr<std::string> white_;
     std::shared_ptr<std::string> black_;
     std::shared_ptr<::trantor::Date> created_;
@@ -180,7 +193,7 @@ class Games
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[5]={ false };
+    bool dirtyFlag_[6]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -210,17 +223,22 @@ class Games
         }
         if(dirtyFlag_[2])
         {
-            sql += "white,";
+            sql += "newStateId,";
             ++parametersCount;
         }
         if(dirtyFlag_[3])
+        {
+            sql += "white,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[4])
         {
             sql += "black,";
             ++parametersCount;
         }
         sql += "created,";
         ++parametersCount;
-        if(!dirtyFlag_[4])
+        if(!dirtyFlag_[5])
         {
             needSelection=true;
         }
@@ -253,6 +271,11 @@ class Games
 
         } 
         if(dirtyFlag_[4])
+        {
+            sql.append("?,");
+
+        } 
+        if(dirtyFlag_[5])
         {
             sql.append("?,");
 

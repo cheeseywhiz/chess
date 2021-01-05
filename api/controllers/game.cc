@@ -126,7 +126,7 @@ void api::game::do_move(
     const auto& result = Chess::do_move(new_state.board, new_state.endgame_state, new_state.player,
                                         row1, col1, row2, col2);
     if (!result.did_move)
-        return;
+        return callback(to_error(HttpStatusCode::k400BadRequest, "did not move"));
     auto player = new_state.player;
     auto new_player = player == Chess::Player::White
         ? Chess::Player::Black
@@ -144,14 +144,71 @@ void api::game::do_move(
         }
     }
 
-    if (result.can_promote)
-        return callback(to_error(HttpStatusCode::k501NotImplemented, "can't promote"));
+    uint64_t new_state_id;
 
-    new_state.player = new_player;
+    if (result.can_promote) {
+        new_state.state = Chess::State::Promotion;
+        new_state_id = State::insert_state(new_state);
+        game->set_new_state_id(new_state_id);
+    } else {
+        new_state.player = new_player;
+        if (new_state.player == Chess::Player::White)
+            ++new_state.n_moves;
+        new_state_id = State::insert_state(new_state);
+        History2::push(game_id, new_state_id);
+    }
+
+    SerializedState serialized_state(new_state);
+    return callback(drogon::toResponse(serialized_state.to_json()));
+}
+
+void api::game::promote(
+        const HttpRequestPtr& req, Callback&& callback, const std::string& game_id_in,
+        const std::string& piece_in) {
+    uint64_t game_id = std::stoi(game_id_in);
+    const auto& game = Game::lookup_game(game_id);
+    assert(game);
+    const auto& username = req->session()->get<std::string>("username");
+    assert(username == *game->getWhite() || username == *game->getBlack());
+    ChessState chess_state = State::lookup_state(*game->getStateid());
+    const auto& playerUsername = chess_state.player == Chess::Player::White
+        ? *game->getWhite()
+        : *game->getBlack();
+    if (username != playerUsername)
+        return callback(to_error(HttpStatusCode::k403Forbidden, "not your turn"));
+    Chess::Piece piece = Chess::str_to_piece.at(piece_in);
+    if (piece == Chess::Piece::None || piece == Chess::Piece::Pawn || piece == Chess::Piece::King)
+        return callback(to_error(HttpStatusCode::k400BadRequest, "can't promote to given piece"));
+    const auto& new_state_id = game->getNewstateid();
+    if (!new_state_id)
+        return callback(to_error(HttpStatusCode::k409Conflict, "not currently promoting"));
+    ChessState new_state = State::lookup_state(*new_state_id);
+    assert(new_state.state == Chess::State::Promotion);
+    new_state.state = Chess::State::Ready;
+    // search for the promoted pawn
+    size_t row = new_state.player == Chess::Player::White
+        ? 0
+        : Chess::BOARD_HEIGHT - 1;
+    size_t col;
+
+    for (col = 0; col < Chess::BOARD_WIDTH; ++col) {
+        if (new_state.board[row][col].piece == Chess::Piece::Pawn)
+            break;
+    }
+
+    assert(col < Chess::BOARD_WIDTH && new_state.board[row][col].piece == Chess::Piece::Pawn);
+    new_state.board[row][col].piece = piece;
+    new_state.player = new_state.player == Chess::Player::White
+        ? Chess::Player::Black
+        : Chess::Player::White;
+    new_state.endgame_state = Chess::get_endgame_state(new_state.board, new_state.player);
+    if (new_state.endgame_state == Chess::EndgameState::Checkmate ||
+            new_state.endgame_state == Chess::EndgameState::Stalemate)
+        new_state.state = Chess::State::Endgame;
     if (new_state.player == Chess::Player::White)
         ++new_state.n_moves;
-    uint64_t new_state_id = State::insert_state(new_state);
-    History2::push(game_id, new_state_id);
+    State::set_state(*new_state_id, new_state);
+    History2::push(game_id, *new_state_id);
     SerializedState serialized_state(new_state);
     return callback(drogon::toResponse(serialized_state.to_json()));
 }

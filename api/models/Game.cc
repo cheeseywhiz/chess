@@ -27,5 +27,11 @@ Game Game::create_new_game(const std::string& white, const std::string& black) {
     History2::push(game_id, state_id);
     return *game;
 }
+
+void Game::set_new_state_id(uint64_t new_state_id) {
+    const auto& db = drogon::app().getDbClient();
+    uint64_t game_id = getPrimaryKey();
+    db->execSqlSync("UPDATE games SET newStateId = ? WHERE gameId = ?", new_state_id, game_id);
+}
 }
 }

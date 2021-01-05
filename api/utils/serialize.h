@@ -1,4 +1,6 @@
 #pragma once
+#include <map>
+#include <string>
 #include <json/json.h>
 #include "chess.h"
 
@@ -8,6 +10,16 @@ Json::Value parse_json(const std::string&);
 namespace Chess {
 Json::Value serialize_moves(const vector<CellReference>& moves);
 Json::Value serialize_castles(Castles);
+
+static const std::map<std::string, Piece> str_to_piece = {
+    { "None", Piece::None },
+    { "Pawn", Piece::Pawn },
+    { "Knight", Piece::Knight },
+    { "Bishop", Piece::Bishop },
+    { "Rook", Piece::Rook },
+    { "Queen", Piece::Queen },
+    { "King", Piece::King },
+};
 
 struct SerializedState {
     std::string state;

@@ -1,6 +1,5 @@
 #include <cassert>
 #include <sstream>
-#include <map>
 #include "serialize.h"
 
 std::string serialize_json(const Json::Value& json) {
@@ -131,16 +130,6 @@ static const map<string, Player> str_to_player = {
     { "None", Player::None },
     { "White", Player::White },
     { "Black", Player::Black },
-};
-
-static const map<string, Piece> str_to_piece = {
-    { "None", Piece::None },
-    { "Pawn", Piece::Pawn },
-    { "Knight", Piece::Knight },
-    { "Bishop", Piece::Bishop },
-    { "Rook", Piece::Rook },
-    { "Queen", Piece::Queen },
-    { "King", Piece::King },
 };
 
 static const map<string, EndgameState> str_to_endgame_state = {

@@ -5,7 +5,7 @@ using drogon_model::sqlite3::Game;
 
 // RequireAuth
 void GameIdParam::doFilter(const HttpRequestPtr& req, FilterCallback&& fcb,
-                          FilterChainCallback&& fccb) {
+                           FilterChainCallback&& fccb) {
     const auto& game_id_in = req->getParameter("gameId");
     uint64_t game_id;
 
