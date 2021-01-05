@@ -144,17 +144,14 @@ void api::game::do_move(
         }
     }
 
-    uint64_t new_state_id;
-
     if (result.can_promote) {
         new_state.state = Chess::State::Promotion;
-        new_state_id = State::insert_state(new_state);
-        game->set_new_state_id(new_state_id);
+        game->set_new_state(new_state);
     } else {
         new_state.player = new_player;
         if (new_state.player == Chess::Player::White)
             ++new_state.n_moves;
-        new_state_id = State::insert_state(new_state);
+        uint64_t new_state_id = State::insert_state(new_state);
         History2::push(game_id, new_state_id);
     }
 
