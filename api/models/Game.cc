@@ -24,7 +24,7 @@ Game Game::create_new_game(const std::string& white, const std::string& black) {
     uint64_t game_id = last_insert_rowid();
     const auto& game = lookup_game(game_id);
     assert(game);
-    History2::push(game_id, state_id);
+    History2::push(*game, state_id);
     return *game;
 }
 

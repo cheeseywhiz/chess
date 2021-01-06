@@ -152,7 +152,7 @@ void api::game::do_move(
         if (new_state.player == Chess::Player::White)
             ++new_state.n_moves;
         uint64_t new_state_id = State::insert_state(new_state);
-        History2::push(game_id, new_state_id);
+        History2::push(*game, new_state_id);
     }
 
     SerializedState serialized_state(new_state);
@@ -205,7 +205,7 @@ void api::game::promote(
     if (new_state.player == Chess::Player::White)
         ++new_state.n_moves;
     State::set_state(*new_state_id, new_state);
-    History2::push(game_id, *new_state_id);
+    History2::push(*game, *new_state_id);
     SerializedState serialized_state(new_state);
     return callback(drogon::toResponse(serialized_state.to_json()));
 }

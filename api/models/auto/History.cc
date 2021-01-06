@@ -14,6 +14,8 @@ using namespace drogon_model::sqlite3;
 
 const std::string History::Cols::_gameId = "gameId";
 const std::string History::Cols::_stateId = "stateId";
+const std::string History::Cols::_prev = "prev";
+const std::string History::Cols::_next = "next";
 const std::string History::Cols::_created = "created";
 const std::string History::primaryKeyName = "gameId";
 const bool History::hasPrimaryKey = true;
@@ -22,6 +24,8 @@ const std::string History::tableName = "history";
 const std::vector<typename History::MetaData> History::metaData_={
 {"gameId","uint64_t","integer",8,0,1,1},
 {"stateId","uint64_t","integer",8,0,0,1},
+{"prev","uint64_t","integer",8,0,0,0},
+{"next","uint64_t","integer",8,0,0,0},
 {"created","::trantor::Date","datetime",0,0,0,1}
 };
 const std::string &History::getColumnName(size_t index) noexcept(false)
@@ -40,6 +44,14 @@ History::History(const Row &r, const ssize_t indexOffset) noexcept
         if(!r["stateId"].isNull())
         {
             stateid_=std::make_shared<uint64_t>(r["stateId"].as<uint64_t>());
+        }
+        if(!r["prev"].isNull())
+        {
+            prev_=std::make_shared<uint64_t>(r["prev"].as<uint64_t>());
+        }
+        if(!r["next"].isNull())
+        {
+            next_=std::make_shared<uint64_t>(r["next"].as<uint64_t>());
         }
         if(!r["created"].isNull())
         {
@@ -64,7 +76,7 @@ History::History(const Row &r, const ssize_t indexOffset) noexcept
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 3 > r.size())
+        if(offset + 5 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -81,6 +93,16 @@ History::History(const Row &r, const ssize_t indexOffset) noexcept
             stateid_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
         }
         index = offset + 2;
+        if(!r[index].isNull())
+        {
+            prev_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
+        }
+        index = offset + 3;
+        if(!r[index].isNull())
+        {
+            next_=std::make_shared<uint64_t>(r[index].as<uint64_t>());
+        }
+        index = offset + 4;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -106,7 +128,7 @@ History::History(const Row &r, const ssize_t indexOffset) noexcept
 
 History::History(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 3)
+    if(pMasqueradingVector.size() != 5)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -132,7 +154,23 @@ History::History(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[2]].asString();
+            prev_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[2]].asUInt64());
+        }
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson[pMasqueradingVector[3]].isNull())
+        {
+            next_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[3]].asUInt64());
+        }
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson[pMasqueradingVector[4]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -170,9 +208,25 @@ History::History(const Json::Value &pJson) noexcept(false)
             stateid_=std::make_shared<uint64_t>((uint64_t)pJson["stateId"].asUInt64());
         }
     }
-    if(pJson.isMember("created"))
+    if(pJson.isMember("prev"))
     {
         dirtyFlag_[2]=true;
+        if(!pJson["prev"].isNull())
+        {
+            prev_=std::make_shared<uint64_t>((uint64_t)pJson["prev"].asUInt64());
+        }
+    }
+    if(pJson.isMember("next"))
+    {
+        dirtyFlag_[3]=true;
+        if(!pJson["next"].isNull())
+        {
+            next_=std::make_shared<uint64_t>((uint64_t)pJson["next"].asUInt64());
+        }
+    }
+    if(pJson.isMember("created"))
+    {
+        dirtyFlag_[4]=true;
         if(!pJson["created"].isNull())
         {
             auto timeStr = pJson["created"].asString();
@@ -198,7 +252,7 @@ History::History(const Json::Value &pJson) noexcept(false)
 void History::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 3)
+    if(pMasqueradingVector.size() != 5)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -223,7 +277,23 @@ void History::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[2] = true;
         if(!pJson[pMasqueradingVector[2]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[2]].asString();
+            prev_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[2]].asUInt64());
+        }
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson[pMasqueradingVector[3]].isNull())
+        {
+            next_=std::make_shared<uint64_t>((uint64_t)pJson[pMasqueradingVector[3]].asUInt64());
+        }
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson[pMasqueradingVector[4]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[4]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -260,9 +330,25 @@ void History::updateByJson(const Json::Value &pJson) noexcept(false)
             stateid_=std::make_shared<uint64_t>((uint64_t)pJson["stateId"].asUInt64());
         }
     }
-    if(pJson.isMember("created"))
+    if(pJson.isMember("prev"))
     {
         dirtyFlag_[2] = true;
+        if(!pJson["prev"].isNull())
+        {
+            prev_=std::make_shared<uint64_t>((uint64_t)pJson["prev"].asUInt64());
+        }
+    }
+    if(pJson.isMember("next"))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson["next"].isNull())
+        {
+            next_=std::make_shared<uint64_t>((uint64_t)pJson["next"].asUInt64());
+        }
+    }
+    if(pJson.isMember("created"))
+    {
+        dirtyFlag_[4] = true;
         if(!pJson["created"].isNull())
         {
             auto timeStr = pJson["created"].asString();
@@ -330,6 +416,56 @@ void History::setStateid(const uint64_t &pStateid) noexcept
 
 
 
+const uint64_t &History::getValueOfPrev() const noexcept
+{
+    const static uint64_t defaultValue = uint64_t();
+    if(prev_)
+        return *prev_;
+    return defaultValue;
+}
+const std::shared_ptr<uint64_t> &History::getPrev() const noexcept
+{
+    return prev_;
+}
+void History::setPrev(const uint64_t &pPrev) noexcept
+{
+    prev_ = std::make_shared<uint64_t>(pPrev);
+    dirtyFlag_[2] = true;
+}
+
+
+void History::setPrevToNull() noexcept
+{
+    prev_.reset();
+    dirtyFlag_[2] = true;
+}
+
+
+const uint64_t &History::getValueOfNext() const noexcept
+{
+    const static uint64_t defaultValue = uint64_t();
+    if(next_)
+        return *next_;
+    return defaultValue;
+}
+const std::shared_ptr<uint64_t> &History::getNext() const noexcept
+{
+    return next_;
+}
+void History::setNext(const uint64_t &pNext) noexcept
+{
+    next_ = std::make_shared<uint64_t>(pNext);
+    dirtyFlag_[3] = true;
+}
+
+
+void History::setNextToNull() noexcept
+{
+    next_.reset();
+    dirtyFlag_[3] = true;
+}
+
+
 const ::trantor::Date &History::getValueOfCreated() const noexcept
 {
     const static ::trantor::Date defaultValue = ::trantor::Date();
@@ -344,7 +480,7 @@ const std::shared_ptr<::trantor::Date> &History::getCreated() const noexcept
 void History::setCreated(const ::trantor::Date &pCreated) noexcept
 {
     created_ = std::make_shared<::trantor::Date>(pCreated);
-    dirtyFlag_[2] = true;
+    dirtyFlag_[4] = true;
 }
 
 
@@ -359,6 +495,8 @@ const std::vector<std::string> &History::insertColumns() noexcept
     static const std::vector<std::string> inCols={
         "gameId",
         "stateId",
+        "prev",
+        "next",
         "created"
     };
     return inCols;
@@ -390,6 +528,28 @@ void History::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[2])
     {
+        if(getPrev())
+        {
+            binder << getValueOfPrev();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[3])
+    {
+        if(getNext())
+        {
+            binder << getValueOfNext();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[4])
+    {
         if(getCreated())
         {
             binder << getValueOfCreated();
@@ -415,6 +575,14 @@ const std::vector<std::string> History::updateColumns() const
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
+    }
+    if(dirtyFlag_[3])
+    {
+        ret.push_back(getColumnName(3));
+    }
+    if(dirtyFlag_[4])
+    {
+        ret.push_back(getColumnName(4));
     }
     return ret;
 }
@@ -445,6 +613,28 @@ void History::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[2])
     {
+        if(getPrev())
+        {
+            binder << getValueOfPrev();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[3])
+    {
+        if(getNext())
+        {
+            binder << getValueOfNext();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[4])
+    {
         if(getCreated())
         {
             binder << getValueOfCreated();
@@ -474,6 +664,22 @@ Json::Value History::toJson() const
     {
         ret["stateId"]=Json::Value();
     }
+    if(getPrev())
+    {
+        ret["prev"]=(Json::UInt64)getValueOfPrev();
+    }
+    else
+    {
+        ret["prev"]=Json::Value();
+    }
+    if(getNext())
+    {
+        ret["next"]=(Json::UInt64)getValueOfNext();
+    }
+    else
+    {
+        ret["next"]=Json::Value();
+    }
     if(getCreated())
     {
         ret["created"]=getCreated()->toDbStringLocal();
@@ -489,7 +695,7 @@ Json::Value History::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 3)
+    if(pMasqueradingVector.size() == 5)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -515,13 +721,35 @@ Json::Value History::toMasqueradedJson(
         }
         if(!pMasqueradingVector[2].empty())
         {
-            if(getCreated())
+            if(getPrev())
             {
-                ret[pMasqueradingVector[2]]=getCreated()->toDbStringLocal();
+                ret[pMasqueradingVector[2]]=(Json::UInt64)getValueOfPrev();
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[3].empty())
+        {
+            if(getNext())
+            {
+                ret[pMasqueradingVector[3]]=(Json::UInt64)getValueOfNext();
+            }
+            else
+            {
+                ret[pMasqueradingVector[3]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[4].empty())
+        {
+            if(getCreated())
+            {
+                ret[pMasqueradingVector[4]]=getCreated()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
         return ret;
@@ -542,6 +770,22 @@ Json::Value History::toMasqueradedJson(
     else
     {
         ret["stateId"]=Json::Value();
+    }
+    if(getPrev())
+    {
+        ret["prev"]=(Json::UInt64)getValueOfPrev();
+    }
+    else
+    {
+        ret["prev"]=Json::Value();
+    }
+    if(getNext())
+    {
+        ret["next"]=(Json::UInt64)getValueOfNext();
+    }
+    else
+    {
+        ret["next"]=Json::Value();
     }
     if(getCreated())
     {
@@ -576,9 +820,19 @@ bool History::validateJsonForCreation(const Json::Value &pJson, std::string &err
         err="The stateId column cannot be null";
         return false;
     }
+    if(pJson.isMember("prev"))
+    {
+        if(!validJsonOfField(2, "prev", pJson["prev"], err, true))
+            return false;
+    }
+    if(pJson.isMember("next"))
+    {
+        if(!validJsonOfField(3, "next", pJson["next"], err, true))
+            return false;
+    }
     if(pJson.isMember("created"))
     {
-        if(!validJsonOfField(2, "created", pJson["created"], err, true))
+        if(!validJsonOfField(4, "created", pJson["created"], err, true))
             return false;
     }
     return true;
@@ -587,7 +841,7 @@ bool History::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 3)
+    if(pMasqueradingVector.size() != 5)
     {
         err = "Bad masquerading vector";
         return false;
@@ -626,6 +880,22 @@ bool History::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                 return false;
         }
     }
+    if(!pMasqueradingVector[3].empty())
+    {
+        if(pJson.isMember(pMasqueradingVector[3]))
+        {
+            if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
+                return false;
+        }
+    }
+    if(!pMasqueradingVector[4].empty())
+    {
+        if(pJson.isMember(pMasqueradingVector[4]))
+        {
+            if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
+                return false;
+        }
+    }
     return true;
 }
 bool History::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
@@ -645,9 +915,19 @@ bool History::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(1, "stateId", pJson["stateId"], err, false))
             return false;
     }
+    if(pJson.isMember("prev"))
+    {
+        if(!validJsonOfField(2, "prev", pJson["prev"], err, false))
+            return false;
+    }
+    if(pJson.isMember("next"))
+    {
+        if(!validJsonOfField(3, "next", pJson["next"], err, false))
+            return false;
+    }
     if(pJson.isMember("created"))
     {
-        if(!validJsonOfField(2, "created", pJson["created"], err, false))
+        if(!validJsonOfField(4, "created", pJson["created"], err, false))
             return false;
     }
     return true;
@@ -656,7 +936,7 @@ bool History::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 3)
+    if(pMasqueradingVector.size() != 5)
     {
         err = "Bad masquerading vector";
         return false;
@@ -679,6 +959,16 @@ bool History::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
+            return false;
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
+            return false;
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
             return false;
     }
     return true;
@@ -716,6 +1006,28 @@ bool History::validJsonOfField(size_t index,
             }
             break;
         case 2:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isUInt64())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 3:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isUInt64())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 4:
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";

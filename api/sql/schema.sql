@@ -42,6 +42,8 @@ CREATE TABLE games (
 CREATE TABLE history (
     gameId INTEGER NOT NULL,
     stateId INTEGER NOT NULL,
+    prev INTEGER,
+    next INTEGER,
     created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     PRIMARY KEY (gameId, stateId),
     FOREIGN KEY (gameId) REFERENCES games (gameId)
@@ -49,5 +51,11 @@ CREATE TABLE history (
         ON UPDATE CASCADE,
     FOREIGN KEY (stateId) REFERENCES states (stateId)
         ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (prev) REFERENCES states (stateId)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (next) REFERENCES states (stateId)
+        ON DELETE SET NULL
         ON UPDATE CASCADE
 );

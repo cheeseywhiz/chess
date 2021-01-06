@@ -42,6 +42,8 @@ class History
     {
         static const std::string _gameId;
         static const std::string _stateId;
+        static const std::string _prev;
+        static const std::string _next;
         static const std::string _created;
     };
 
@@ -114,6 +116,28 @@ class History
     void setStateid(const uint64_t &pStateid) noexcept;
 
 
+    /**  For column prev  */
+    ///Get the value of the column prev, returns the default value if the column is null
+    const uint64_t &getValueOfPrev() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<uint64_t> &getPrev() const noexcept;
+
+    ///Set the value of the column prev
+    void setPrev(const uint64_t &pPrev) noexcept;
+    void setPrevToNull() noexcept;
+
+
+    /**  For column next  */
+    ///Get the value of the column next, returns the default value if the column is null
+    const uint64_t &getValueOfNext() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<uint64_t> &getNext() const noexcept;
+
+    ///Set the value of the column next
+    void setNext(const uint64_t &pNext) noexcept;
+    void setNextToNull() noexcept;
+
+
     /**  For column created  */
     ///Get the value of the column created, returns the default value if the column is null
     const ::trantor::Date &getValueOfCreated() const noexcept;
@@ -125,7 +149,7 @@ class History
 
 
 
-    static size_t getColumnNumber() noexcept {  return 3;  }
+    static size_t getColumnNumber() noexcept {  return 5;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -141,6 +165,8 @@ class History
     void updateId(const uint64_t id);
     std::shared_ptr<uint64_t> gameid_;
     std::shared_ptr<uint64_t> stateid_;
+    std::shared_ptr<uint64_t> prev_;
+    std::shared_ptr<uint64_t> next_;
     std::shared_ptr<::trantor::Date> created_;
     struct MetaData
     {
@@ -153,7 +179,7 @@ class History
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[3]={ false };
+    bool dirtyFlag_[5]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -181,9 +207,19 @@ class History
             sql += "stateId,";
             ++parametersCount;
         }
+        if(dirtyFlag_[2])
+        {
+            sql += "prev,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[3])
+        {
+            sql += "next,";
+            ++parametersCount;
+        }
         sql += "created,";
         ++parametersCount;
-        if(!dirtyFlag_[2])
+        if(!dirtyFlag_[4])
         {
             needSelection=true;
         }
@@ -206,6 +242,16 @@ class History
 
         } 
         if(dirtyFlag_[2])
+        {
+            sql.append("?,");
+
+        } 
+        if(dirtyFlag_[3])
+        {
+            sql.append("?,");
+
+        } 
+        if(dirtyFlag_[4])
         {
             sql.append("?,");
 
