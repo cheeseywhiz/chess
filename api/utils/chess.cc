@@ -106,7 +106,7 @@ enum MoveType { Normal, PawnStright, PawnDiagonal };
 
 static bool try_add_move(
     vector<CellReference>*, const BoardT&, CellReference, CellReference,
-    bool, MoveType move_type=MoveType::Normal);
+    bool, MoveType move_type=MoveType::Normal, bool move_through_check=true);
 
 /* generate the possible moves for the piece at the given cell */
 vector<CellReference>
@@ -237,6 +237,45 @@ get_possible_moves(const BoardT& board, size_t row, size_t col,
     return moves;
 }
 
+Castles
+get_possible_castles(const BoardT& board, size_t row, size_t column,
+                     EndgameState endgame_state)
+{
+    const Cell& cell = board[row][column];
+    assert(cell.player != Player::None);
+    Castles castles = Castles::None;
+    if (cell.piece != Piece::King || endgame_state == EndgameState::Check)
+        return castles;
+    const CellReference king_ref = { row, 4 };
+    if (board[row][4] != Cell(Piece::King, cell.player))
+        return castles;
+
+    if (board[row][0] == Cell(Piece::Rook, cell.player)
+            && board[row][1] == Cell()
+            && board[row][2] == Cell()
+            && board[row][3] == Cell()
+            && try_add_move(nullptr, board, king_ref, { row, 3 }, true,
+                            MoveType::Normal, false)
+            && try_add_move(nullptr, board, king_ref, { row, 2 }, true,
+                            MoveType::Normal, false)
+    ) {
+        castles |= Castles::Queen;
+    }
+
+    if (board[row][BOARD_WIDTH - 1] == Cell(Piece::Rook, cell.player)
+            && board[row][BOARD_WIDTH - 2] == Cell()
+            && board[row][BOARD_WIDTH - 3] == Cell()
+            && try_add_move(nullptr, board, king_ref, { row, BOARD_WIDTH - 3 },
+                            true, MoveType::Normal, false)
+            && try_add_move(nullptr, board, king_ref, { row, BOARD_WIDTH - 2 },
+                            true, MoveType::Normal, false)
+    ) {
+        castles |= Castles::King;
+    }
+
+    return castles;
+}
+
 static bool player_is_in_check(const BoardT&, Player);
 
 /* return if we can move cell1 to cell2
@@ -244,7 +283,8 @@ static bool player_is_in_check(const BoardT&, Player);
 static bool
 try_add_move(
     vector<CellReference>* moves, const BoardT& board, CellReference cell_ref_1,
-    CellReference cell_ref_2, bool do_check_check, MoveType move_type)
+    CellReference cell_ref_2, bool do_check_check, MoveType move_type,
+    bool move_through_check)
 {
     if (cell_ref_2.row >= BOARD_HEIGHT || cell_ref_2.col >= BOARD_WIDTH)
         return false;
@@ -269,50 +309,13 @@ try_add_move(
         test_cell_2.has_moved = true;
         test_cell_1 = Cell();
         if (player_is_in_check(test_board, cell1.player))
-            // do not add the move, but keep trying more moves
-            return true;
+            // do not add the move, but maybe keep trying more moves, if desired
+            return move_through_check;
     }
 
     if (moves)
         moves->push_back(cell_ref_2);
     return cell2.player == Player::None;
-}
-
-Castles
-get_possible_castles(const BoardT& board, size_t row, size_t column,
-                     EndgameState endgame_state)
-{
-    const Cell& cell = board[row][column];
-    assert(cell.player != Player::None);
-    Castles castles = Castles::None;
-    if (cell.piece != Piece::King || endgame_state == EndgameState::Check)
-        return castles;
-    const CellReference king_ref = { row, 4 };
-    if (board[row][4] != Cell(Piece::King, cell.player))
-        return castles;
-
-    if (board[row][0] == Cell(Piece::Rook, cell.player)
-            && board[row][1] == Cell()
-            && board[row][2] == Cell()
-            && board[row][3] == Cell()
-            && try_add_move(nullptr, board, king_ref, { row, 3 }, true)
-            && try_add_move(nullptr, board, king_ref, { row, 2 }, true)
-    ) {
-        castles |= Castles::Queen;
-    }
-
-    if (board[row][BOARD_WIDTH - 1] == Cell(Piece::Rook, cell.player)
-            && board[row][BOARD_WIDTH - 2] == Cell()
-            && board[row][BOARD_WIDTH - 3] == Cell()
-            && try_add_move(nullptr, board, king_ref, { row, BOARD_WIDTH - 3 },
-                            true)
-            && try_add_move(nullptr, board, king_ref, { row, BOARD_WIDTH - 2 },
-                            true)
-    ) {
-        castles |= Castles::King;
-    }
-
-    return castles;
 }
 
 Castles
