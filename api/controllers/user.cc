@@ -20,6 +20,7 @@ void api::user::login(const HttpRequestPtr& req, Callback&& callback) {
     // Get -> RequireAuth
     const auto& username = req->session()->get<std::string>("username");
     const auto& user = User::lookup_user(username);
+    assert(user);
     callback(drogon::toResponse(user->toJson()));
 }
 

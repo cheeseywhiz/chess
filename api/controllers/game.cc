@@ -159,6 +159,7 @@ void api::game::do_move(
     return callback(drogon::toResponse(serialized_state.to_json()));
 }
 
+// Post -> RequireAuth, GameIdParam, PieceParam
 void api::game::promote(
         const HttpRequestPtr& req, Callback&& callback, const std::string& game_id_in,
         const std::string& piece_in) {
