@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import HistoryActions from '../History/redux';
 import fetch2 from '../../fetch2';
 
 const gameKeys = [
@@ -35,6 +36,20 @@ const actions = {
             type: types.state.set,
             state,
         }),
+        stateId: {
+            load: (stateId) => (dispatch) => {
+                fetch2({
+                    url: '/api/state/',
+                    params: { stateId },
+                }).then((state) => {
+                    dispatch(actions.state.set(state));
+                }).catch(({ status, message, reason }) => {
+                    dispatch(actions.clear());
+                    if (status >= 500) throw new Error(message);
+                    throw new Error(reason);
+                });
+            },
+        },
     },
     set: (game) => ({
         type: types.set,
@@ -47,6 +62,9 @@ const actions = {
             params: { gameId },
         }).then((game) => {
             dispatch(actions.set(game));
+            const { state } = game;
+            const { stateId } = state;
+            dispatch(HistoryActions.load(gameId, stateId));
         }).catch(({ status, message, reason }) => {
             dispatch(actions.clear());
             if (status >= 500) throw new Error(message);

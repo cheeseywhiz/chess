@@ -6,9 +6,9 @@ import Circle from '../Circle';
 import style from './ChessBoard.css';
 import ChessBoardActions from './redux';
 
-const mapStateToProps = ({ game, chessBoard }) => {
+const mapStateToProps = ({ game, chessBoard, history }) => {
     console.assert(game.state.board !== null, 'rendering ChessBoard without a board in the state');
-    return { game, chessBoard };
+    return { game, chessBoard, history };
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -48,7 +48,7 @@ class ChessBoard extends React.Component {
 
     getCell([piece, player], rowIndex, colIndex) {
         const {
-            game, chessBoard,
+            game, chessBoard, history,
             getMoves, doMove, clear,
         } = this.props;
         let bg;
@@ -78,7 +78,7 @@ class ChessBoard extends React.Component {
                 role="button"
                 tabIndex={-1}
                 onClick={() => {
-                    if (game.state.state !== State.Ready) return;
+                    if (history.next !== null || game.state.state !== State.Ready) return;
                     if (chessBoard.selected.row === rowIndex
                             && chessBoard.selected.col === colIndex) {
                         clear();

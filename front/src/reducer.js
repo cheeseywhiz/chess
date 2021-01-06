@@ -6,6 +6,7 @@ import { reducer as NewGameFormReducer } from './components/NewGameForm/redux';
 import { reducer as GameReducer } from './components/Game/redux';
 import { reducer as ChessBoardReducer } from './components/ChessBoard/redux';
 import { reducer as PromotionFormReducer } from './components/PromotionForm/redux';
+import { reducer as HistoryReducer } from './components/History/redux';
 
 export default combineReducers({
     username: UsernameReducer,
@@ -15,4 +16,5 @@ export default combineReducers({
     game: GameReducer,
     chessBoard: ChessBoardReducer,
     promotionForm: PromotionFormReducer,
+    history: HistoryReducer,
 });

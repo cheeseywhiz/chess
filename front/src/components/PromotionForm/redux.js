@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import GameActions from '../Game/redux';
+import HistoryActions from '../History/redux';
 import fetch2 from '../../fetch2';
 
 const types = {
@@ -28,8 +29,11 @@ const actions = {
             method: 'post',
         }).then((state) => {
             dispatch(GameActions.state.set(state));
-        }).catch(({ status, message }) => {
+            const { stateId } = state;
+            dispatch(HistoryActions.load(gameId, stateId));
+        }).catch(({ status, message, reason }) => {
             if (status >= 500) throw new Error(message);
+            throw new Error(reason);
         });
     },
 };
