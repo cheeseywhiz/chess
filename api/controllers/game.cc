@@ -20,10 +20,11 @@ void api::game::get_game(const HttpRequestPtr& req, Callback&& callback,
     const auto& username = req->session()->get<std::string>("username");
     assert(username == *game->getWhite() || username == *game->getBlack());
     Json::Value json = game->toJson();
+    json.removeMember("stateId");
     uint64_t state_id = *game->getStateid();
     ChessState chess_state = State::lookup_state(state_id);
     SerializedState serialized_state(chess_state);
-    json["state"] = serialized_state.to_json();
+    json["state"] = serialized_state.to_json(state_id);
     callback(drogon::toResponse(json));
 }
 
@@ -144,19 +145,21 @@ void api::game::do_move(
         }
     }
 
+    uint64_t new_state_id;
+
     if (result.can_promote) {
         new_state.state = Chess::State::Promotion;
-        game->set_new_state(new_state);
+        new_state_id = game->set_new_state(new_state);
     } else {
         new_state.player = new_player;
         if (new_state.player == Chess::Player::White)
             ++new_state.n_moves;
-        uint64_t new_state_id = State::insert_state(new_state);
+        new_state_id = State::insert_state(new_state);
         History2::push(*game, new_state_id);
     }
 
     SerializedState serialized_state(new_state);
-    return callback(drogon::toResponse(serialized_state.to_json()));
+    return callback(drogon::toResponse(serialized_state.to_json(new_state_id)));
 }
 
 // Post -> RequireAuth, GameIdParam, PieceParam
@@ -208,5 +211,5 @@ void api::game::promote(
     State::set_state(*new_state_id, new_state);
     History2::push(*game, *new_state_id);
     SerializedState serialized_state(new_state);
-    return callback(drogon::toResponse(serialized_state.to_json()));
+    return callback(drogon::toResponse(serialized_state.to_json(*new_state_id)));
 }

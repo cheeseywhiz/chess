@@ -174,8 +174,9 @@ static BoardT json_to_board(const Json::Value& json) {
     return board;
 }
 
-Json::Value SerializedState::to_json(void) const {
+Json::Value SerializedState::to_json(uint64_t state_id) const {
     Json::Value json;
+    json["stateId"] = state_id;
     json["state"] = state;
     json["player"] = player;
     json["endgameState"] = endgame_state;

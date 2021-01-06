@@ -6,7 +6,7 @@ const gameKeys = [
 ];
 
 const stateKeys = [
-    'state', 'player', 'endgameState', 'nMoves', 'whiteCaptures', 'blackCaptures', 'board',
+    'stateId', 'state', 'player', 'endgameState', 'nMoves', 'whiteCaptures', 'blackCaptures', 'board',
 ];
 
 const defaultState = (() => {
