@@ -1,13 +1,3 @@
-:local(.boardContainer) {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-:local(.board) {
-    max-width: 500px;
-}
-
 :local(.row) {
     display: flex;
 }
@@ -15,6 +5,7 @@
 :local(.cellContainer) {
     position: relative;
     width: 50%;
+    max-width: 60px;
     font-width: bold;
 }
 

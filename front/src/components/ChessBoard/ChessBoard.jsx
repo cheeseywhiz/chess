@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Container from 'react-bootstrap/Container';
-import { Player, State } from '../../ChessEnum';
+import { PieceChar, Player, State } from '../../ChessEnum';
 import Circle from '../Circle';
 import style from './ChessBoard.css';
 import ChessBoardActions from './redux';
@@ -21,16 +20,6 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(ChessBoardActions.selected.clear());
     },
 });
-
-const PieceChar = {
-    None: '',
-    Pawn: 'p',
-    Knight: 'N',
-    Bishop: 'B',
-    Rook: 'R',
-    Queen: 'Q',
-    King: 'K',
-};
 
 const movesContains = (moves, row, col) => {
     for (let i = 0; i < moves.length; i += 1) {
@@ -106,16 +95,14 @@ export default class extends React.Component {
     render() {
         const { game } = this.props;
         return (
-            <div className={style.boardContainer}>
-                <Container className={style.board}>
-                    {game.state.board.map((row, rowIndex) => (
-                        <div key={rowIndex} className={style.row}>
-                            {row.map((cell, colIndex) => (
-                                this.getCell(cell, rowIndex, colIndex)
-                            ))}
-                        </div>
-                    ))}
-                </Container>
+            <div>
+                {game.state.board.map((row, rowIndex) => (
+                    <div key={rowIndex} className={style.row}>
+                        {row.map((cell, colIndex) => (
+                            this.getCell(cell, rowIndex, colIndex)
+                        ))}
+                    </div>
+                ))}
             </div>
         );
     }

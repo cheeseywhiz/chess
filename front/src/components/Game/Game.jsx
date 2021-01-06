@@ -6,6 +6,7 @@ import LoadingSpinner from '../LoadingSpinner';
 import ChessBoard from '../ChessBoard/ChessBoard';
 import PromotionForm from '../PromotionForm/PromotionForm';
 import History from '../History/History';
+import Captures from '../Captures';
 import { Player, State, EndgameState } from '../../ChessEnum';
 
 const mapStateToProps = ({ username, game }) => ({
@@ -88,7 +89,9 @@ export default class extends React.Component {
 
         return (
             <>
+                <Captures captures={game.state.blackCaptures} className="text-white bg-secondary" />
                 <ChessBoard />
+                <Captures captures={game.state.whiteCaptures} className="text-dark bg-primary" />
                 <History />
                 {game.state.state === State.Promotion ? <PromotionForm /> : null}
                 <div>

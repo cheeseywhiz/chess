@@ -14,6 +14,16 @@ export const Piece = {
     King: 'King',
 };
 
+export const PieceChar = {
+    None: '',
+    Pawn: 'p',
+    Knight: 'N',
+    Bishop: 'B',
+    Rook: 'R',
+    Queen: 'Q',
+    King: 'K',
+};
+
 export const Player = {
     None: 'None',
     White: 'White',
