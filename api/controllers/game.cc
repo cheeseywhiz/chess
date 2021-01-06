@@ -22,8 +22,9 @@ void api::game::get_game(const HttpRequestPtr& req, Callback&& callback,
     Json::Value json = game->toJson();
     json.removeMember("stateId");
     uint64_t state_id = *game->getStateid();
-    ChessState chess_state = State::lookup_state(state_id);
-    SerializedState serialized_state(chess_state);
+    const auto& chess_state = State::lookup_state(state_id);
+    assert(chess_state);
+    SerializedState serialized_state(*chess_state);
     json["state"] = serialized_state.to_json(state_id);
     callback(drogon::toResponse(json));
 }
@@ -72,24 +73,25 @@ void api::game::get_moves(
     assert(game);
     const auto& username = req->session()->get<std::string>("username");
     assert(username == *game->getWhite() || username == *game->getBlack());
-    ChessState chess_state = State::lookup_state(*game->getStateid());
-    const auto& player = chess_state.player == Chess::Player::White
+    const auto& chess_state = State::lookup_state(*game->getStateid());
+    assert(chess_state);
+    const auto& player = chess_state->player == Chess::Player::White
         ? *game->getWhite()
         : *game->getBlack();
     if (username != player)
         return callback(to_error(HttpStatusCode::k403Forbidden, "not your turn"));
     size_t row = std::stoi(row_in), col = std::stoi(col_in);
     assert(row < Chess::BOARD_HEIGHT && col < Chess::BOARD_WIDTH);
-    const auto& cell = chess_state.board[row][col];
+    const auto& cell = chess_state->board[row][col];
     if (cell.player == Chess::Player::None)
         return callback(to_error(HttpStatusCode::k400BadRequest, "player is None"));
-    if (cell.player != chess_state.player)
+    if (cell.player != chess_state->player)
         return callback(to_error(HttpStatusCode::k400BadRequest, "not that player's turn"));
 
-    auto moves = Chess::get_possible_moves(chess_state.board, row, col);
-    const auto& castles = Chess::get_possible_castles(chess_state.board, row, col,
-                                                      chess_state.endgame_state);
-    size_t home_row = chess_state.board[row][col].player == Chess::Player::White
+    auto moves = Chess::get_possible_moves(chess_state->board, row, col);
+    const auto& castles = Chess::get_possible_castles(chess_state->board, row, col,
+                                                      chess_state->endgame_state);
+    size_t home_row = chess_state->board[row][col].player == Chess::Player::White
         ? Chess::BOARD_HEIGHT - 1
         : 0;
     if (castles & Chess::Castles::Queen)
@@ -111,19 +113,20 @@ void api::game::do_move(
     assert(game);
     const auto& username = req->session()->get<std::string>("username");
     assert(username == *game->getWhite() || username == *game->getBlack());
-    ChessState chess_state = State::lookup_state(*game->getStateid());
-    const auto& playerUsername = chess_state.player == Chess::Player::White
+    const auto& chess_state = State::lookup_state(*game->getStateid());
+    assert(chess_state);
+    const auto& playerUsername = chess_state->player == Chess::Player::White
         ? *game->getWhite()
         : *game->getBlack();
     if (username != playerUsername)
         return callback(to_error(HttpStatusCode::k403Forbidden, "not your turn"));
-    if (chess_state.state != Chess::State::Ready)
+    if (chess_state->state != Chess::State::Ready)
         return callback(to_error(HttpStatusCode::k409Conflict, "not ready"));
     size_t row1 = std::stoi(row1_in), col1 = std::stoi(col1_in),
            row2 = std::stoi(row2_in), col2 = std::stoi(col2_in);
     assert(row1 < Chess::BOARD_HEIGHT && col1 < Chess::BOARD_WIDTH);
     assert(row2 < Chess::BOARD_HEIGHT && col2 < Chess::BOARD_WIDTH);
-    ChessState new_state = chess_state;
+    ChessState new_state = *chess_state;
     const auto& result = Chess::do_move(new_state.board, new_state.endgame_state, new_state.player,
                                         row1, col1, row2, col2);
     if (!result.did_move)
@@ -171,8 +174,8 @@ void api::game::promote(
     assert(game);
     const auto& username = req->session()->get<std::string>("username");
     assert(username == *game->getWhite() || username == *game->getBlack());
-    ChessState chess_state = State::lookup_state(*game->getStateid());
-    const auto& playerUsername = chess_state.player == Chess::Player::White
+    const auto& chess_state = State::lookup_state(*game->getStateid());
+    const auto& playerUsername = chess_state->player == Chess::Player::White
         ? *game->getWhite()
         : *game->getBlack();
     if (username != playerUsername)
@@ -183,33 +186,34 @@ void api::game::promote(
     const auto& new_state_id = game->getNewstateid();
     if (!new_state_id)
         return callback(to_error(HttpStatusCode::k409Conflict, "not currently promoting"));
-    ChessState new_state = State::lookup_state(*new_state_id);
-    assert(new_state.state == Chess::State::Promotion);
-    new_state.state = Chess::State::Ready;
+    const auto& new_state = State::lookup_state(*new_state_id);
+    assert(new_state);
+    assert(new_state->state == Chess::State::Promotion);
+    new_state->state = Chess::State::Ready;
     // search for the promoted pawn
-    size_t row = new_state.player == Chess::Player::White
+    size_t row = new_state->player == Chess::Player::White
         ? 0
         : Chess::BOARD_HEIGHT - 1;
     size_t col;
 
     for (col = 0; col < Chess::BOARD_WIDTH; ++col) {
-        if (new_state.board[row][col].piece == Chess::Piece::Pawn)
+        if (new_state->board[row][col].piece == Chess::Piece::Pawn)
             break;
     }
 
-    assert(col < Chess::BOARD_WIDTH && new_state.board[row][col].piece == Chess::Piece::Pawn);
-    new_state.board[row][col].piece = piece;
-    new_state.player = new_state.player == Chess::Player::White
+    assert(col < Chess::BOARD_WIDTH && new_state->board[row][col].piece == Chess::Piece::Pawn);
+    new_state->board[row][col].piece = piece;
+    new_state->player = new_state->player == Chess::Player::White
         ? Chess::Player::Black
         : Chess::Player::White;
-    new_state.endgame_state = Chess::get_endgame_state(new_state.board, new_state.player);
-    if (new_state.endgame_state == Chess::EndgameState::Checkmate ||
-            new_state.endgame_state == Chess::EndgameState::Stalemate)
-        new_state.state = Chess::State::Endgame;
-    if (new_state.player == Chess::Player::White)
-        ++new_state.n_moves;
-    State::set_state(*new_state_id, new_state);
+    new_state->endgame_state = Chess::get_endgame_state(new_state->board, new_state->player);
+    if (new_state->endgame_state == Chess::EndgameState::Checkmate ||
+            new_state->endgame_state == Chess::EndgameState::Stalemate)
+        new_state->state = Chess::State::Endgame;
+    if (new_state->player == Chess::Player::White)
+        ++new_state->n_moves;
+    State::set_state(*new_state_id, *new_state);
     History2::push(*game, *new_state_id);
-    SerializedState serialized_state(new_state);
+    SerializedState serialized_state(*new_state);
     return callback(drogon::toResponse(serialized_state.to_json(*new_state_id)));
 }

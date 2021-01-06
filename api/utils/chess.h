@@ -2,6 +2,7 @@
 #pragma once
 #include <vector>
 #include <array>
+#include <memory>
 
 namespace Chess {
 using std::vector;
@@ -55,6 +56,8 @@ struct ChessState {
     EndgameState endgame_state;
     unsigned n_moves;
     vector<Piece> white_captures, black_captures;
+
+    using Ptr = std::shared_ptr<ChessState>;
 
     ChessState() : state(State::Ready), player(Player::White),
                    endgame_state(EndgameState::None), n_moves(1) {

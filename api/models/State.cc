@@ -6,16 +6,18 @@ using Chess::ChessState, Chess::SerializedState;
 
 namespace drogon_model {
 namespace sqlite3 {
-ChessState State::lookup_state(uint64_t state_id) {
+ChessState::Ptr State::lookup_state(uint64_t state_id) {
     const auto& db = drogon::app().getDbClient();
     const auto& rows = db->execSqlSync("SELECT * FROM states WHERE stateId = ?", state_id);
+    if (!rows.size())
+        return nullptr;
     assert(rows.size() == 1);
     const State orm_state(rows[0]);
     SerializedState serialized_state(
         *orm_state.getState(), *orm_state.getPlayer(), *orm_state.getEndgamestate(),
         *orm_state.getNmoves(), *orm_state.getWhitecaptures(), *orm_state.getBlackcaptures(),
         *orm_state.getBoard());
-    return serialized_state.deserialize();
+    return std::make_shared<ChessState>(serialized_state.deserialize());
 }
 
 uint64_t State::insert_state(const ChessState& chess_state) {
