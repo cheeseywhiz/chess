@@ -8,6 +8,7 @@
     "devDependencies": {
         "@babel/core": "^7.12.10",
         "@babel/eslint-parser": "^7.12.1",
+        "@babel/plugin-proposal-decorators": "^7.12.12",
         "@babel/preset-env": "^7.12.11",
         "@babel/preset-react": "^7.12.10",
         "babel-loader": "^8.2.2",
@@ -43,7 +44,13 @@
             "@babel/preset-react"
         ],
         "plugins": [
-            "transform-class-properties"
+            "transform-class-properties",
+            [
+                "@babel/plugin-proposal-decorators",
+                {
+                    "legacy": true
+                }
+            ]
         ]
     },
     "eslintConfig": {

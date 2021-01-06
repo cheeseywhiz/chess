@@ -20,7 +20,9 @@ const mapDispatchToProps = (dispatch) => ({
     login: () => dispatch(LoginFormActions.login()),
 });
 
-class App extends React.Component {
+@withRouter
+@connect(mapStateToProps, mapDispatchToProps)
+export default class extends React.Component {
     componentDidMount() {
         const { login } = this.props;
         login();
@@ -83,5 +85,3 @@ class App extends React.Component {
         );
     }
 }
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

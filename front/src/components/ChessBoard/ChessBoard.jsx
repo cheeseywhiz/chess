@@ -40,7 +40,8 @@ const movesContains = (moves, row, col) => {
     return false;
 };
 
-class ChessBoard extends React.Component {
+@connect(mapStateToProps, mapDispatchToProps)
+export default class extends React.Component {
     componentDidMount() {
         const { clear } = this.props;
         clear();
@@ -119,5 +120,3 @@ class ChessBoard extends React.Component {
         );
     }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(ChessBoard);

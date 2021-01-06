@@ -15,7 +15,9 @@ const mapDispatchToProps = (dispatch) => ({
     submit: (username) => dispatch(CreateFormActions.submit(username)),
 });
 
-class CreateForm extends React.Component {
+@withRouter
+@connect(mapStateToProps, mapDispatchToProps)
+export default class extends React.Component {
     componentDidMount() {
         const { clear } = this.props;
         clear();
@@ -57,5 +59,3 @@ class CreateForm extends React.Component {
         );
     }
 }
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateForm));

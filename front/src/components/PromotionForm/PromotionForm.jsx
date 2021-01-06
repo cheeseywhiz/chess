@@ -18,7 +18,8 @@ const mapDispatchToProps = (dispatch) => ({
     cancel: (gameId) => dispatch(GameActions.init(gameId)),
 });
 
-class PromotionForm extends React.Component {
+@connect(mapStateToProps, mapDispatchToProps)
+export default class extends React.Component {
     componentDidMount() {
         const { clear } = this.props;
         clear();
@@ -66,5 +67,3 @@ class PromotionForm extends React.Component {
         );
     }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(PromotionForm);

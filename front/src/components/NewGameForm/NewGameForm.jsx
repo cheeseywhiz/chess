@@ -17,7 +17,8 @@ const mapDispatchToProps = (dispatch) => ({
     submit: (player, opponent) => dispatch(NewGameFormActions.submit(player, opponent)),
 });
 
-class NewGameForm extends React.Component {
+@connect(mapStateToProps, mapDispatchToProps)
+export default class extends React.Component {
     componentDidMount() {
         const { clear } = this.props;
         clear();
@@ -86,5 +87,3 @@ class NewGameForm extends React.Component {
         );
     }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(NewGameForm);

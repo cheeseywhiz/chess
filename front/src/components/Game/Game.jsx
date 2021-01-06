@@ -17,7 +17,9 @@ const mapDispatchToProps = (dispatch) => ({
     init: (gameId) => dispatch(GameActions.init(gameId)),
 });
 
-class Game extends React.Component {
+@withRouter
+@connect(mapStateToProps, mapDispatchToProps)
+export default class extends React.Component {
     componentDidMount() {
         const { location, init } = this.props;
         const params = new URLSearchParams(location.search);
@@ -100,5 +102,3 @@ class Game extends React.Component {
         );
     }
 }
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Game));
