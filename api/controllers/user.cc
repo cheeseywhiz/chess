@@ -1,9 +1,11 @@
 #include <cassert>
+#include <json/json.h>
 #include "user.h"
 #include "models/User.h"
+#include "models/Game.h"
 #include "utils.h"
 using drogon::HttpResponse, drogon::HttpStatusCode;
-using drogon_model::sqlite3::User;
+using drogon_model::sqlite3::User, drogon_model::sqlite3::Game;
 
 void api::user::login(const HttpRequestPtr& req, Callback&& callback) {
     if (req->getMethod() == drogon::Post) {
@@ -48,4 +50,16 @@ void api::user::create(const HttpRequestPtr& req, Callback&& callback) {
     db->execSqlSync("INSERT INTO users(username) VALUES (?)", username);
     const auto& user = User::lookup_user(username);
     callback(drogon::toResponse(user->toJson()));
+}
+
+// Get -> RequireAuth
+void api::user::games(const HttpRequestPtr& req, Callback&& callback) {
+    const auto& username = req->session()->get<std::string>("username");
+    const auto& user = User::lookup_user(username);
+    assert(user);
+    const auto& games = Game::lookup_user_games(*user);
+    Json::Value games_json(Json::ValueType::arrayValue);
+    for (const auto& game : games)
+        games_json.append(game.serialize());
+    return callback(drogon::toResponse(games_json));
 }

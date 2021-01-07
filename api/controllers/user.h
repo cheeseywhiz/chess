@@ -12,10 +12,12 @@ class user : public drogon::HttpController<user> {
         METHOD_ADD(user::login, "/login", Post, "RequireJson");
         METHOD_ADD(user::logout, "/logout", Post, "RequireAuth");
         METHOD_ADD(user::create, "/create", Post, "RequireJson");
+        METHOD_ADD(user::games, "/games", Get, "RequireAuth");
         METHOD_LIST_END
 
         void login(const HttpRequestPtr& req, Callback&& callback);
         void logout(const HttpRequestPtr& req, Callback&& callback);
         void create(const HttpRequestPtr& req, Callback&& callback);
+        void games(const HttpRequestPtr& req, Callback&& callback);
 };
 }

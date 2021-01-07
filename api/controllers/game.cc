@@ -19,14 +19,8 @@ void api::game::get_game(const HttpRequestPtr& req, Callback&& callback,
     assert(game);
     const auto& username = req->session()->get<std::string>("username");
     assert(username == *game->getWhite() || username == *game->getBlack());
-    Json::Value json = game->toJson();
-    json.removeMember("stateId");
-    uint64_t state_id = *game->getStateid();
-    const auto& chess_state = State::lookup_state(state_id);
-    assert(chess_state);
-    SerializedState serialized_state(*chess_state);
-    json["state"] = serialized_state.to_json(state_id);
-    callback(drogon::toResponse(json));
+    Json::Value json = game->serialize();
+    return callback(drogon::toResponse(json));
 }
 
 // Post -> RequireAuth, RequireJson

@@ -1,3 +1,4 @@
+#pragma once
 #include <drogon/HttpController.h>
 using drogon::HttpResponsePtr, drogon::HttpStatusCode, drogon::HttpRequestPtr, drogon::HttpResponsePtr;
 

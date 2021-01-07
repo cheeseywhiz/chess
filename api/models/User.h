@@ -1,3 +1,4 @@
+#pragma once
 #include "auto/Users.h"
 
 namespace drogon_model {
