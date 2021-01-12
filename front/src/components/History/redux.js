@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import GameActions from '../Game/redux';
+import ChessBoardActions from '../ChessBoard/redux';
 import fetch2 from '../../fetch2';
 
 const types = {
@@ -19,6 +20,8 @@ const actions = {
     }),
     load: (gameId, stateId) => (dispatch) => {
         dispatch(GameActions.state.stateId.load(stateId));
+        dispatch(ChessBoardActions.moves.clear());
+        dispatch(ChessBoardActions.selected.clear());
         fetch2({
             url: '/api/history/',
             params: { gameId, stateId },
