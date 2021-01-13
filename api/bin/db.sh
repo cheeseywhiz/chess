@@ -40,6 +40,9 @@ case $1 in
             dump-table $table
         done
         ;;
+    dump-table)
+        dump-table $2
+        ;;
     cmd)
         sqlite3 $DB
         ;;

@@ -44,6 +44,7 @@ export default withRouter(connect(mapStateToProps, mapDispatchToProps)(
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav activeKey={location.pathname}>
                         <NavLink to="/new_game" value="New Game" />
+                        <NavLink to="/games" value="Games" />
                         {account}
                     </Nav>
                 </Navbar.Collapse>
