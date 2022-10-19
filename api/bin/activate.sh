@@ -5,7 +5,7 @@ export PATH="${PATH}:$(realpath bin)"
 
 function deactivate() {
     function get_path() {
-        cat <<EOF | python -
+        cat <<EOF | python3 -
 import os
 print(':'.join(
     dir

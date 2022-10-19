@@ -28,8 +28,8 @@ Json::Value serialize_moves(const vector<CellReference>& moves) {
 
     for (const auto& cell_ref : moves) {
         Json::Value cell_ref_json;
-        cell_ref_json.append(cell_ref.row);
-        cell_ref_json.append(cell_ref.col);
+        cell_ref_json.append(Json::Value(static_cast<uint64_t>(cell_ref.row)));
+        cell_ref_json.append(Json::Value(static_cast<uint64_t>(cell_ref.col)));
         json.append(cell_ref_json);
     }
 
